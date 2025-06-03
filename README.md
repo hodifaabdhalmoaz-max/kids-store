@@ -108,7 +108,7 @@ php artisan serve
 
 **المطور**: حذيفة الحذيفي
 **البريد الإلكتروني**: hodifa.alhudaifi@example.com
-**الموقع**: [www.hodifa-dev.com](https://www.hodifa-dev.com)
+**الموقع**: [www.hodifa-dev.com](https://www.hodifatech.com)
 
 ## 📄 الترخيص
 
