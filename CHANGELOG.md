@@ -167,9 +167,9 @@ ARABIC_LOCALIZATION_GUIDE.md     - دليل شامل للتعريب
 ## 📞 التواصل والدعم
 
 **المطور**: حذيفة الحذيفي  
-**البريد الإلكتروني**: hodifa.alhudaifi@example.com  
-**الموقع**: [www.hodifa-dev.com](https://www.hodifa-dev.com)
+**البريد الإلكتروني**: hodifaabdhalmoaz@gmail.com  
+**الموقع**: [www.hodifatech.com](https://www.hodifatech.com)
 
 ---
 
-**© 2024 حذيفة الحذيفي - جميع الحقوق محفوظة**
+**© 2025 حذيفة الحذيفي - جميع الحقوق محفوظة**
