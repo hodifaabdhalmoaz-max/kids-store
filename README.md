@@ -107,8 +107,8 @@ php artisan serve
 ## 📞 التواصل
 
 **المطور**: حذيفة الحذيفي
-**البريد الإلكتروني**: hodifa.alhudaifi@example.com
-**الموقع**: [www.hodifa-dev.com](https://www.hodifa-dev.com)
+**البريد الإلكتروني**: hodifaabdhalmoaz@gmail.com
+**الموقع**: [www.hodifatech.com](https://www.hodifatech.com)
 
 ## 📄 الترخيص
 
