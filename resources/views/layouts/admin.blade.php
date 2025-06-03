@@ -48,12 +48,12 @@
                     </div>
                     <div class="center">
                         <div class="center-item">
-                            <div class="center-heading">Main Home</div>
+                            <div class="center-heading">الصفحة الرئيسية</div>
                             <ul class="menu-list">
                                 <li class="menu-item">
                                     <a href="{{route('admin.index')}}" class="">
                                         <div class="icon"><i class="icon-grid"></i></div>
-                                        <div class="text">Dashboard</div>
+                                        <div class="text">لوحة التحكم</div>
                                     </a>
                                 </li>
                             </ul>
@@ -63,17 +63,17 @@
                                 <li class="menu-item has-children">
                                     <a href="javascript:void(0);" class="menu-item-button">
                                         <div class="icon"><i class="icon-shopping-cart"></i></div>
-                                        <div class="text">Products</div>
+                                        <div class="text">المنتجات</div>
                                     </a>
                                     <ul class="sub-menu">
                                         <li class="sub-menu-item">
                                             <a href="{{route('admin.product.add')}}" class="">
-                                                <div class="text">Add Product</div>
+                                                <div class="text">إضافة منتج</div>
                                             </a>
                                         </li>
                                         <li class="sub-menu-item">
                                             <a href="{{route('admin.products')}}" class="">
-                                                <div class="text">Products</div>
+                                                <div class="text">جميع المنتجات</div>
                                             </a>
                                         </li>
                                     </ul>
@@ -81,17 +81,17 @@
                                 <li class="menu-item has-children">
                                     <a href="javascript:void(0);" class="menu-item-button">
                                         <div class="icon"><i class="icon-layers"></i></div>
-                                        <div class="text">Brand</div>
+                                        <div class="text">العلامات التجارية</div>
                                     </a>
                                     <ul class="sub-menu">
                                         <li class="sub-menu-item">
                                             <a href="{{route('admin.brand.add')}}" class="">
-                                                <div class="text">New Brand</div>
+                                                <div class="text">إضافة علامة تجارية</div>
                                             </a>
                                         </li>
                                         <li class="sub-menu-item">
                                             <a href="{{route('admin.brands')}}" class="">
-                                                <div class="text">Brands</div>
+                                                <div class="text">جميع العلامات التجارية</div>
                                             </a>
                                         </li>
                                     </ul>
@@ -99,17 +99,17 @@
                                 <li class="menu-item has-children">
                                     <a href="javascript:void(0);" class="menu-item-button">
                                         <div class="icon"><i class="icon-layers"></i></div>
-                                        <div class="text">Category</div>
+                                        <div class="text">الفئات</div>
                                     </a>
                                     <ul class="sub-menu">
                                         <li class="sub-menu-item">
                                             <a href="{{route('admin.category.add')}}" class="">
-                                                <div class="text">New Category</div>
+                                                <div class="text">إضافة فئة جديدة</div>
                                             </a>
                                         </li>
                                         <li class="sub-menu-item">
                                             <a href="{{route('admin.categories')}}" class="">
-                                                <div class="text">Categories</div>
+                                                <div class="text">جميع الفئات</div>
                                             </a>
                                         </li>
                                     </ul>
@@ -118,17 +118,17 @@
                                 <li class="menu-item has-children">
                                     <a href="javascript:void(0);" class="menu-item-button">
                                         <div class="icon"><i class="icon-file-plus"></i></div>
-                                        <div class="text">Order</div>
+                                        <div class="text">الطلبات</div>
                                     </a>
                                     <ul class="sub-menu">
                                         <li class="sub-menu-item">
                                             <a href="orders.html" class="">
-                                                <div class="text">Orders</div>
+                                                <div class="text">جميع الطلبات</div>
                                             </a>
                                         </li>
                                         <li class="sub-menu-item">
                                             <a href="order-tracking.html" class="">
-                                                <div class="text">Order tracking</div>
+                                                <div class="text">تتبع الطلبات</div>
                                             </a>
                                         </li>
                                     </ul>
@@ -136,27 +136,27 @@
                                 <li class="menu-item">
                                     <a href="slider.html" class="">
                                         <div class="icon"><i class="icon-image"></i></div>
-                                        <div class="text">Slider</div>
+                                        <div class="text">الشرائح المتحركة</div>
                                     </a>
                                 </li>
                                 <li class="menu-item">
                                     <a href="{{route('admin.coupons') }}" class="">
                                         <div class="icon"><i class="icon-grid"></i></div>
-                                        <div class="text">Coupons</div>
+                                        <div class="text">كوبونات الخصم</div>
                                     </a>
                                 </li>
 
                                 <li class="menu-item">
                                     <a href="users.html" class="">
                                         <div class="icon"><i class="icon-user"></i></div>
-                                        <div class="text">User</div>
+                                        <div class="text">المستخدمون</div>
                                     </a>
                                 </li>
 
                                 <li class="menu-item">
                                     <a href="settings.html" class="">
                                         <div class="icon"><i class="icon-settings"></i></div>
-                                        <div class="text">Settings</div>
+                                        <div class="text">الإعدادات</div>
                                     </a>
                                 </li>
 
@@ -165,7 +165,7 @@
                                         @csrf
                                     <a href="{{route('logout')}}" class="" onclick="event.preventDefault();document.getElementById('logout-form').submit();">
                                         <div class="icon"><i class="icon-log-out"></i></div>
-                                        <div class="text">Logout</div>
+                                        <div class="text">تسجيل الخروج</div>
                                     </a>
                                     </form>
                                 </li>
@@ -190,7 +190,7 @@
 
                                 <form class="form-search flex-grow">
                                     <fieldset class="name">
-                                        <input type="text" placeholder="Search here..." class="show-search" name="name"
+                                        <input type="text" placeholder="ابحث هنا..." class="show-search" name="name"
                                             tabindex="2" value="" aria-required="true" required="">
                                     </fieldset>
                                     <div class="button-submit">
@@ -331,7 +331,7 @@
                                         <ul class="dropdown-menu dropdown-menu-end has-content"
                                             aria-labelledby="dropdownMenuButton2">
                                             <li>
-                                                <h6>Notifications</h6>
+                                                <h6>الإشعارات</h6>
                                             </li>
                                             <li>
                                                 <div class="message-item item-1">
@@ -404,7 +404,7 @@
                                                             <span class="pr-6px">{{Auth::user()->name}}</span>
                                                         </div>
                                                      </span>
-                                                    <span class="text-tiny">Admin</span>
+                                                    <span class="text-tiny">مدير</span>
                                                 </span>
                                             </span>
                                         </button>
@@ -415,7 +415,7 @@
                                                     <div class="icon">
                                                         <i class="icon-user"></i>
                                                     </div>
-                                                    <div class="body-title-2">Account</div>
+                                                    <div class="body-title-2">الحساب</div>
                                                 </a>
                                             </li>
                                             <li>
@@ -423,7 +423,7 @@
                                                     <div class="icon">
                                                         <i class="icon-mail"></i>
                                                     </div>
-                                                    <div class="body-title-2">Inbox</div>
+                                                    <div class="body-title-2">صندوق الوارد</div>
                                                     <div class="number">27</div>
                                                 </a>
                                             </li>
@@ -432,7 +432,7 @@
                                                     <div class="icon">
                                                         <i class="icon-file-text"></i>
                                                     </div>
-                                                    <div class="body-title-2">Taskboard</div>
+                                                    <div class="body-title-2">لوحة المهام</div>
                                                 </a>
                                             </li>
                                             <li>
@@ -440,7 +440,7 @@
                                                     <div class="icon">
                                                         <i class="icon-headphones"></i>
                                                     </div>
-                                                    <div class="body-title-2">Support</div>
+                                                    <div class="body-title-2">الدعم الفني</div>
                                                 </a>
                                             </li>
                                             <li>
@@ -450,7 +450,7 @@
                                                         <div class="icon">
                                                             <i class="icon-log-out"></i>
                                                         </div>
-                                                        <div class="body-title-2">Log out</div>
+                                                        <div class="body-title-2">تسجيل الخروج</div>
                                                     </a>
                                                 </form>
                                             </li>
@@ -464,7 +464,7 @@
                     <div class="main-content">
                         @yield('content')
                         <div class="bottom-page">
-                            <div class="body-text">Copyright © 2024 Hodifa Abdh</div>
+                            <div class="body-text">حقوق الطبع والنشر © 2024 حذيفة الحذيفي</div>
                         </div>
                     </div>
                 </div>

@@ -1,22 +1,37 @@
 <?php
 
 return [
-    // General
+    // General - عام
     'home' => 'Home',
     'shop' => 'Shop',
     'cart' => 'Cart',
     'about' => 'About',
     'contact' => 'Contact',
     'search' => 'Search',
-    'search_placeholder' => 'Search products',
+    'search_placeholder' => 'Search products...',
     'search_what' => 'What are you looking for?',
-    'quicklinks' => 'Quicklinks',
+    'quicklinks' => 'Quick Links',
     'my_account' => 'My Account',
     'login' => 'Login',
     'register' => 'Register',
     'logout' => 'Logout',
     'dashboard' => 'Dashboard',
     'admin' => 'Admin',
+    'welcome' => 'Welcome',
+    'hello' => 'Hello',
+    'save' => 'Save',
+    'cancel' => 'Cancel',
+    'edit' => 'Edit',
+    'delete' => 'Delete',
+    'view' => 'View',
+    'back' => 'Back',
+    'submit' => 'Submit',
+    'close' => 'Close',
+    'open' => 'Open',
+    'yes' => 'Yes',
+    'no' => 'No',
+    'loading' => 'Loading...',
+    'please_wait' => 'Please wait...',
 
     // Shop
     'products' => 'Products',

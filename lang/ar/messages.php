@@ -1,14 +1,14 @@
 <?php
 
 return [
-    // General
+    // General - عام
     'home' => 'الرئيسية',
     'shop' => 'المتجر',
     'cart' => 'سلة التسوق',
     'about' => 'من نحن',
     'contact' => 'اتصل بنا',
     'search' => 'بحث',
-    'search_placeholder' => 'ابحث عن منتجات',
+    'search_placeholder' => 'ابحث عن منتجات...',
     'search_what' => 'عما تبحث؟',
     'quicklinks' => 'روابط سريعة',
     'my_account' => 'حسابي',
@@ -17,6 +17,21 @@ return [
     'logout' => 'تسجيل الخروج',
     'dashboard' => 'لوحة التحكم',
     'admin' => 'المدير',
+    'welcome' => 'مرحباً',
+    'hello' => 'أهلاً وسهلاً',
+    'save' => 'حفظ',
+    'cancel' => 'إلغاء',
+    'edit' => 'تعديل',
+    'delete' => 'حذف',
+    'view' => 'عرض',
+    'back' => 'رجوع',
+    'submit' => 'إرسال',
+    'close' => 'إغلاق',
+    'open' => 'فتح',
+    'yes' => 'نعم',
+    'no' => 'لا',
+    'loading' => 'جاري التحميل...',
+    'please_wait' => 'يرجى الانتظار...',
 
     // Shop
     'products' => 'المنتجات',
