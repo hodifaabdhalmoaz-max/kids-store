@@ -33,7 +33,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     @if(app()->getLocale() == 'ar')
@@ -71,9 +72,134 @@
     <!-- Footer -->
     @include('layouts.partials.footer')
 
+    <!-- Floating WhatsApp Button -->
+    <div class="whatsapp-float">
+        <div class="dropdown dropup">
+            <button class="btn btn-success rounded-circle whatsapp-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i data-lucide="message-circle" style="width: 20px; height: 20px;"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow-lg">
+                <li>
+                    <h6 class="dropdown-header">
+                        <i data-lucide="message-circle" class="text-success me-2" style="width: 16px; height: 16px;"></i>تواصل معنا عبر واتساب
+                    </h6>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <a class="dropdown-item" href="https://wa.me/message/R74CYLSGZQD7C1" target="_blank">
+                        <i data-lucide="store" class="text-primary me-2" style="width: 16px; height: 16px;"></i>
+                        <div>
+                            <strong>واتساب المتجر</strong>
+                            <small class="d-block text-muted">للاستفسار عن المنتجات</small>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="https://wa.me/qr/D74HW7MGE5RIK1" target="_blank">
+                        <i data-lucide="user" class="text-info me-2" style="width: 16px; height: 16px;"></i>
+                        <div>
+                            <strong>واتساب المطور</strong>
+                            <small class="d-block text-muted">للدعم التقني</small>
+                        </div>
+                    </a>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <a class="dropdown-item" href="tel:+967777548421">
+                        <i data-lucide="phone" class="text-success me-2" style="width: 16px; height: 16px;"></i>
+                        <div>
+                            <strong>اتصال مباشر</strong>
+                            <small class="d-block text-muted">+967 777548421</small>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <style>
+        .whatsapp-float {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+
+        .whatsapp-btn {
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+            border: none;
+            animation: pulse 2s infinite;
+        }
+
+        .whatsapp-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(37, 211, 102, 0.6);
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+            }
+            50% {
+                box-shadow: 0 4px 12px rgba(37, 211, 102, 0.8);
+            }
+            100% {
+                box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+            }
+        }
+
+        .dropdown-menu {
+            min-width: 280px;
+            border: none;
+            border-radius: 15px;
+        }
+
+        .dropdown-item {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin: 4px 8px;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+            transform: translateX(-5px);
+            transition: all 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .whatsapp-float {
+                bottom: 15px;
+                left: 15px;
+            }
+
+            .whatsapp-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+
+            .dropdown-menu {
+                min-width: 250px;
+            }
+        }
+    </style>
+
     <!-- Scripts -->
     <script src="{{ asset('assets/js/main.js') }}"></script>
     <script src="{{ asset('assets/js/arabic-support.js') }}"></script>
+
+    <!-- Initialize Lucide Icons -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        });
+    </script>
+
     @stack('scripts')
 
     @yield('scripts')

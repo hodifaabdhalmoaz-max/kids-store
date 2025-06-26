@@ -30,8 +30,8 @@ return new class extends Migration
             $table->string('type')->default('home');
             $table->enum('status',['ordered','delivered','canceled'])->default('ordered');
             $table->boolean('is_shipping_different')->default(false);
-            $table->date('delivered_date');
-            $table->date('canceled_date');
+            $table->date('delivered_date')->nullable();
+            $table->date('canceled_date')->nullable();
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
 

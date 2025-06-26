@@ -6,17 +6,84 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Coupon;
 use App\Models\Product;
+use App\Models\Order;
+use App\Services\RevenueAnalyticsService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use Intervention\Image\Laravel\Facades\Image;
 
 class AdminController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return view('admin.index');
+        // تحديد الفترة الزمنية للفرز مع التحقق من صحة البيانات
+        $allowedPeriods = ['this_week', 'last_week', 'this_month', 'last_month', 'this_year', 'last_year'];
+        $period = $request->get('period', 'this_week');
+
+        // التحقق من أن الفترة المطلوبة مسموحة
+        if (!in_array($period, $allowedPeriods)) {
+            $period = 'this_week';
+        }
+
+        $dateRange = $this->getDateRange($period);
+
+        // إحصائيات الطلبات
+        $totalOrders = Order::count();
+        $pendingOrders = Order::where('status', 'ordered')->count();
+        $deliveredOrders = Order::where('status', 'delivered')->count();
+        $cancelledOrders = Order::where('status', 'canceled')->count();
+
+        // إحصائيات المبالغ
+        $totalAmount = Order::sum('total');
+        $pendingAmount = Order::where('status', 'ordered')->sum('total');
+        $deliveredAmount = Order::where('status', 'delivered')->sum('total');
+        $cancelledAmount = Order::where('status', 'canceled')->sum('total');
+
+        // استخدام الخدمة الجديدة للحصول على بيانات الإيرادات
+        $revenueService = new RevenueAnalyticsService();
+        $analytics = $revenueService->getRevenueAnalytics($period);
+
+        // إعداد البيانات للعرض
+        $revenueData = [
+            'current_revenue' => $analytics['current']['revenue'] > 0 ? $analytics['current']['revenue'] : $totalAmount,
+            'current_orders' => $analytics['current']['total_orders'] > 0 ? $analytics['current']['total_orders'] : $totalAmount,
+            'revenue_change' => $analytics['changes']['revenue'],
+            'orders_change' => $analytics['changes']['orders'],
+            'total_orders_count' => $totalOrders,
+            'delivered_orders_count' => $deliveredOrders,
+            'total_amount' => $totalAmount
+        ];
+
+        $chartData = $analytics['chart_data'];
+
+        // الطلبات الحديثة مع بيانات المستخدم
+        $recentOrders = Order::with(['user', 'orderItems'])
+            ->latest()
+            ->take(10)
+            ->get();
+
+        return view('admin.index', compact(
+            'totalOrders',
+            'pendingOrders',
+            'deliveredOrders',
+            'cancelledOrders',
+            'totalAmount',
+            'pendingAmount',
+            'deliveredAmount',
+            'cancelledAmount',
+            'recentOrders',
+            'revenueData',
+            'chartData',
+            'period'
+        ));
+    }
+
+    public function dashboard()
+    {
+        return view('admin.dashboard');
     }
 
     //Brand
@@ -48,6 +115,12 @@ class AdminController extends Controller
         $this->GenerateBrandThumbailsImage($image, $file_name);
         $brand->image = $file_name;
         $brand->save();
+
+        // مسح الكاش لضمان ظهور الصور الجديدة في الواجهة الأمامية
+        if (function_exists('opcache_reset')) {
+            opcache_reset();
+        }
+
         return redirect()->route('admin.brands')->with('status', 'Brand has added succesfully!');
     }
 
@@ -79,6 +152,12 @@ class AdminController extends Controller
             $brand->image = $file_name;
         }
         $brand->save();
+
+        // مسح الكاش لضمان تحديث الصور في الواجهة الأمامية
+        if (function_exists('opcache_reset')) {
+            opcache_reset();
+        }
+
         return redirect()->route('admin.brands')->with('status', 'Brand has updated succesfully!');
     }
 
@@ -106,7 +185,7 @@ class AdminController extends Controller
     //Category
     public function categories()
     {
-        $categories = Category::orderBy('id', 'DESC')->paginate(10);
+        $categories = Category::withCount('products')->orderBy('id', 'DESC')->paginate(10);
         return view('admin.categories', compact('categories'));
     }
 
@@ -132,6 +211,12 @@ class AdminController extends Controller
         $this->GenerateCategoryThumbailsImage($image, $file_name);
         $category->image = $file_name;
         $category->save();
+
+        // مسح الكاش لضمان ظهور الصور الجديدة في الواجهة الأمامية
+        if (function_exists('opcache_reset')) {
+            opcache_reset();
+        }
+
         return redirect()->route('admin.categories')->with('status', 'Category has added succesfully!');
     }
 
@@ -163,6 +248,12 @@ class AdminController extends Controller
             $category->image = $file_name;
         }
         $category->save();
+
+        // مسح الكاش لضمان تحديث الصور في الواجهة الأمامية
+        if (function_exists('opcache_reset')) {
+            opcache_reset();
+        }
+
         return redirect()->route('admin.categories')->with('status', 'Category has updated succesfully!');
     }
 
@@ -204,19 +295,31 @@ class AdminController extends Controller
     public function product_store(Request $request)
     {
         $request->validate([
-            'name' => 'required',
-            'slug' => 'required|unique:products,slug',
-            'short_description' => 'required',
-            'description' => 'required',
-            'regular_price' => 'required',
-            'sale_price' => 'required',
-            'SKU' => 'required',
-            'stock_status' => 'required',
-            'featured' => 'required',
-            'quantity' => 'required',
+            'name' => 'required|string|max:255',
+            'slug' => 'required|string|unique:products,slug',
+            'short_description' => 'required|string',
+            'description' => 'required|string',
+            'regular_price' => 'required|numeric|min:0',
+            'sale_price' => 'required|numeric|min:0',
+            'SKU' => 'required|string|unique:products,SKU',
+            'stock_status' => 'required|in:instock,outofstock',
+            'featured' => 'required|boolean',
+            'quantity' => 'required|integer|min:0',
             'image' => 'required|mimes:png,jpg,jpeg|max:2048',
-            'category_id' => 'required',
-            'brand_id' => 'required'
+            'category_id' => 'required|integer|exists:categories,id',
+            'brand_id' => 'required|integer|exists:brands,id'
+        ], [
+            'category_id.required' => 'يجب اختيار فئة للمنتج',
+            'category_id.integer' => 'يجب اختيار فئة صحيحة',
+            'category_id.exists' => 'الفئة المختارة غير موجودة',
+            'brand_id.required' => 'يجب اختيار علامة تجارية للمنتج',
+            'brand_id.integer' => 'يجب اختيار علامة تجارية صحيحة',
+            'brand_id.exists' => 'العلامة التجارية المختارة غير موجودة',
+            'name.required' => 'اسم المنتج مطلوب',
+            'SKU.unique' => 'رمز المنتج موجود مسبقاً',
+            'regular_price.numeric' => 'السعر يجب أن يكون رقماً',
+            'sale_price.numeric' => 'سعر التخفيض يجب أن يكون رقماً',
+            'quantity.integer' => 'الكمية يجب أن تكون رقماً صحيحاً'
         ]);
 
         $product = new Product();
@@ -266,7 +369,7 @@ class AdminController extends Controller
 
         $product->images = $gallery_images;
         $product->save();
-        return redirect()->route('admin.products')->with('status', 'Product has added succesfully!');
+        return redirect()->route('admin.products')->with('status', 'تم إضافة المنتج بنجاح!');
 
     }
 
@@ -281,19 +384,31 @@ class AdminController extends Controller
     public function product_update(Request $request)
     {
         $request->validate([
-            'name' => 'required',
-            'slug' => 'required|unique:products,slug,'.$request->id,
-            'short_description' => 'required',
-            'description' => 'required',
-            'regular_price' => 'required',
-            'sale_price' => 'required',
-            'SKU' => 'required',
-            'stock_status' => 'required',
-            'featured' => 'required',
-            'quantity' => 'required',
-            'image' => 'mimes:png,jpg,jpeg|max:2048',
-            'category_id' => 'required',
-            'brand_id' => 'required'
+            'name' => 'required|string|max:255',
+            'slug' => 'required|string|unique:products,slug,'.$request->id,
+            'short_description' => 'required|string',
+            'description' => 'required|string',
+            'regular_price' => 'required|numeric|min:0',
+            'sale_price' => 'required|numeric|min:0',
+            'SKU' => 'required|string|unique:products,SKU,'.$request->id,
+            'stock_status' => 'required|in:instock,outofstock',
+            'featured' => 'required|boolean',
+            'quantity' => 'required|integer|min:0',
+            'image' => 'nullable|mimes:png,jpg,jpeg|max:2048',
+            'category_id' => 'required|integer|exists:categories,id',
+            'brand_id' => 'required|integer|exists:brands,id'
+        ], [
+            'category_id.required' => 'يجب اختيار فئة للمنتج',
+            'category_id.integer' => 'يجب اختيار فئة صحيحة',
+            'category_id.exists' => 'الفئة المختارة غير موجودة',
+            'brand_id.required' => 'يجب اختيار علامة تجارية للمنتج',
+            'brand_id.integer' => 'يجب اختيار علامة تجارية صحيحة',
+            'brand_id.exists' => 'العلامة التجارية المختارة غير موجودة',
+            'name.required' => 'اسم المنتج مطلوب',
+            'SKU.unique' => 'رمز المنتج موجود مسبقاً',
+            'regular_price.numeric' => 'السعر يجب أن يكون رقماً',
+            'sale_price.numeric' => 'سعر التخفيض يجب أن يكون رقماً',
+            'quantity.integer' => 'الكمية يجب أن تكون رقماً صحيحاً'
         ]);
 
         $product = Product::find($request->id);
@@ -359,7 +474,7 @@ class AdminController extends Controller
         }
 
         $product->save();
-        return redirect()->route('admin.products')->with('status', 'Product has updated succesfully!');
+        return redirect()->route('admin.products')->with('status', 'تم تحديث المنتج بنجاح!');
     }
 
     public function GenerateProductThumbailImage($image, $imageName)
@@ -460,6 +575,171 @@ class AdminController extends Controller
         $coupon = Coupon::find($id);
         $coupon->delete();
         return redirect()->route('admin.coupons')->with('status', 'coupon has been deleted succesfully!');
+    }
+
+    /**
+     * تحديد النطاق الزمني بناءً على الفترة المحددة
+     */
+    private function getDateRange($period)
+    {
+        $now = Carbon::now();
+
+        switch ($period) {
+            case 'this_week':
+                return [
+                    'start' => $now->startOfWeek(),
+                    'end' => $now->endOfWeek()
+                ];
+            case 'last_week':
+                return [
+                    'start' => $now->subWeek()->startOfWeek(),
+                    'end' => $now->subWeek()->endOfWeek()
+                ];
+            case 'this_month':
+                return [
+                    'start' => $now->startOfMonth(),
+                    'end' => $now->endOfMonth()
+                ];
+            case 'last_month':
+                return [
+                    'start' => $now->subMonth()->startOfMonth(),
+                    'end' => $now->subMonth()->endOfMonth()
+                ];
+            case 'this_year':
+                return [
+                    'start' => $now->startOfYear(),
+                    'end' => $now->endOfYear()
+                ];
+            case 'last_year':
+                return [
+                    'start' => $now->subYear()->startOfYear(),
+                    'end' => $now->subYear()->endOfYear()
+                ];
+            default:
+                return [
+                    'start' => $now->startOfWeek(),
+                    'end' => $now->endOfWeek()
+                ];
+        }
+    }
+
+    /**
+     * حساب بيانات الإيرادات والأرباح
+     */
+    private function calculateRevenueData($dateRange)
+    {
+        try {
+            // إجمالي الإيرادات للفترة (الطلبات المسلمة فقط)
+            $currentRevenue = Order::where('status', 'delivered')
+                ->whereNotNull('delivered_date')
+                ->whereBetween('delivered_date', [$dateRange['start'], $dateRange['end']])
+                ->sum('total') ?? 0;
+
+            // إجمالي مبلغ الطلبات للفترة (جميع الطلبات)
+            $currentOrders = Order::whereBetween('created_at', [$dateRange['start'], $dateRange['end']])
+                ->sum('total') ?? 0;
+
+            // حساب الفترة السابقة للمقارنة
+            $daysDiff = $dateRange['end']->diffInDays($dateRange['start']) + 1;
+            $previousStart = $dateRange['start']->copy()->subDays($daysDiff);
+            $previousEnd = $dateRange['start']->copy()->subDay();
+
+            $previousRevenue = Order::where('status', 'delivered')
+                ->whereNotNull('delivered_date')
+                ->whereBetween('delivered_date', [$previousStart, $previousEnd])
+                ->sum('total') ?? 0;
+
+            $previousOrders = Order::whereBetween('created_at', [$previousStart, $previousEnd])
+                ->sum('total') ?? 0;
+
+            // حساب نسبة التغيير مع معالجة القسمة على صفر
+            $revenueChange = 0;
+            if ($previousRevenue > 0) {
+                $revenueChange = (($currentRevenue - $previousRevenue) / $previousRevenue) * 100;
+            } elseif ($currentRevenue > 0) {
+                $revenueChange = 100; // زيادة 100% إذا لم تكن هناك إيرادات سابقة
+            }
+
+            $ordersChange = 0;
+            if ($previousOrders > 0) {
+                $ordersChange = (($currentOrders - $previousOrders) / $previousOrders) * 100;
+            } elseif ($currentOrders > 0) {
+                $ordersChange = 100; // زيادة 100% إذا لم تكن هناك طلبات سابقة
+            }
+
+            return [
+                'current_revenue' => floatval($currentRevenue),
+                'current_orders' => floatval($currentOrders),
+                'revenue_change' => round($revenueChange, 2),
+                'orders_change' => round($ordersChange, 2)
+            ];
+        } catch (\Exception $e) {
+            // تسجيل الخطأ للمراجعة
+            Log::error('خطأ في حساب بيانات الإيرادات: ' . $e->getMessage());
+
+            // في حالة حدوث خطأ، إرجاع قيم افتراضية
+            return [
+                'current_revenue' => 0,
+                'current_orders' => 0,
+                'revenue_change' => 0,
+                'orders_change' => 0
+            ];
+        }
+    }
+
+    /**
+     * الحصول على بيانات الرسم البياني
+     */
+    private function getChartData()
+    {
+        try {
+            $chartData = [
+                'revenue' => [],
+                'orders' => [],
+                'canceled' => [],
+                'labels' => []
+            ];
+
+            // تحديد الفترة الزمنية للرسم البياني (آخر 12 شهر)
+            for ($i = 11; $i >= 0; $i--) {
+                $month = Carbon::now()->subMonths($i);
+                $monthStart = $month->copy()->startOfMonth();
+                $monthEnd = $month->copy()->endOfMonth();
+
+                $chartData['labels'][] = $month->format('M');
+
+                // إيرادات الشهر (الطلبات المسلمة)
+                $monthRevenue = Order::where('status', 'delivered')
+                    ->whereNotNull('delivered_date')
+                    ->whereBetween('delivered_date', [$monthStart, $monthEnd])
+                    ->sum('total') ?? 0;
+
+                // طلبات الشهر (جميع الطلبات)
+                $monthOrders = Order::whereBetween('created_at', [$monthStart, $monthEnd])
+                    ->sum('total') ?? 0;
+
+                // طلبات ملغاة
+                $monthCanceled = Order::where('status', 'canceled')
+                    ->whereBetween('created_at', [$monthStart, $monthEnd])
+                    ->sum('total') ?? 0;
+
+                $chartData['revenue'][] = floatval($monthRevenue);
+                $chartData['orders'][] = floatval($monthOrders);
+                $chartData['canceled'][] = floatval($monthCanceled);
+            }
+
+            return $chartData;
+        } catch (\Exception $e) {
+            Log::error('خطأ في جلب بيانات الرسم البياني: ' . $e->getMessage());
+
+            // إرجاع بيانات فارغة في حالة الخطأ
+            return [
+                'revenue' => array_fill(0, 12, 0),
+                'orders' => array_fill(0, 12, 0),
+                'canceled' => array_fill(0, 12, 0),
+                'labels' => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+            ];
+        }
     }
 
 }

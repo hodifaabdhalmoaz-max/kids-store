@@ -3,17 +3,23 @@
     <div class="top-bar bg-primary text-white py-2">
         <div class="container">
             <div class="row align-items-center">
-                <div class="col-md-6">
-                    <div class="top-bar-contact d-flex align-items-center">
-                        <div class="me-3">
-                            <i class="fas fa-phone-alt me-1"></i> <a href="tel:+967777548421" class="text-white">+967 777548421</a>
+                <div class="col-md-8">
+                    <div class="top-bar-contact d-flex align-items-center flex-wrap">
+                        <div class="me-4 mb-1 mb-md-0">
+                            <i data-lucide="phone" class="me-1" style="width: 14px; height: 14px;"></i>
+                            <a href="tel:+967777548421" class="text-white text-decoration-none">+967 777548421</a>
                         </div>
-                        <div>
-                            <i class="fas fa-envelope me-1"></i> <a href="mailto:hodifaabdhalmoaz@gmail.com" class="text-white">hodifaabdhalmoaz@gmail.com</a>
+                        <div class="me-4 mb-1 mb-md-0">
+                            <i data-lucide="mail" class="me-1" style="width: 14px; height: 14px;"></i>
+                            <a href="mailto:hodifaabdhalmoaz@gmail.com" class="text-white text-decoration-none">hodifaabdhalmoaz@gmail.com</a>
+                        </div>
+                        <div class="mb-1 mb-md-0">
+                            <i data-lucide="globe" class="me-1" style="width: 14px; height: 14px;"></i>
+                            <a href="https://hodifatech.com/" target="_blank" class="text-white text-decoration-none">hodifatech.com</a>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="d-flex justify-content-end align-items-center">
                         <!-- Language Switcher -->
                         <div class="dropdown me-3">
@@ -27,13 +33,24 @@
                         </div>
 
                         <!-- Social Media Links -->
-                        <div class="social-links">
-                            <a href="https://www.facebook.com/share/1E3T83a8KD/" target="_blank" class="text-white me-2"><i class="fab fa-facebook-f"></i></a>
-                            <a href="https://x.com/moaz_abdh" target="_blank" class="text-white me-2"><i class="fab fa-twitter"></i></a>
-                            <a href="https://www.instagram.com/invites/contact/?utm_source=ig_contact_invite&utm_medium=copy_link&utm_content=mwfgwqx" target="_blank" class="text-white me-2"><i class="fab fa-instagram"></i></a>
-                            <a href="https://wa.me/967718706242" target="_blank" class="text-white me-2"><i class="fab fa-whatsapp"></i></a>
-                            <a href="https://www.linkedin.com/in/hodifa-al-hodify-30644b289" target="_blank" class="text-white me-2"><i class="fab fa-linkedin"></i></a>
-                            <a href="https://github.com/HA1234098765" target="_blank" class="text-white"><i class="fab fa-github"></i></a>
+                        <div class="social-links d-flex">
+                            <!-- Developer Links -->
+                            <div class="me-3">
+                                <small class="text-white-50 d-block mb-1">المطور:</small>
+                                <a href="https://www.facebook.com/share/1E3T83a8KD/" target="_blank" class="text-white me-1" title="Facebook"><i data-lucide="facebook" style="width: 14px; height: 14px;"></i></a>
+                                <a href="https://www.linkedin.com/in/hodifa-al-hodify-30644b289" target="_blank" class="text-white me-1" title="LinkedIn"><i data-lucide="linkedin" style="width: 14px; height: 14px;"></i></a>
+                                <a href="https://x.com/moaz_abdh" target="_blank" class="text-white me-1" title="Twitter"><i data-lucide="twitter" style="width: 14px; height: 14px;"></i></a>
+                                <a href="https://github.com/HA1234098765" target="_blank" class="text-white me-1" title="GitHub"><i data-lucide="github" style="width: 14px; height: 14px;"></i></a>
+                                <a href="https://wa.me/qr/D74HW7MGE5RIK1" target="_blank" class="text-white" title="WhatsApp"><i data-lucide="message-circle" style="width: 14px; height: 14px;"></i></a>
+                            </div>
+                            <!-- Store Links -->
+                            <div>
+                                <small class="text-white-50 d-block mb-1">المتجر:</small>
+                                <a href="https://www.facebook.com/profile.php?id=61558122398516&mibextid=ZbWKwL" target="_blank" class="text-white me-1" title="Facebook"><i data-lucide="facebook" style="width: 14px; height: 14px;"></i></a>
+                                <a href="https://www.instagram.com/dunya_alatfaal/profilecard/?igsh=MTd1Y2ZrazBsanAyMA==" target="_blank" class="text-white me-1" title="Instagram"><i data-lucide="instagram" style="width: 14px; height: 14px;"></i></a>
+                                <a href="https://wa.me/message/R74CYLSGZQD7C1" target="_blank" class="text-white" title="WhatsApp Business"><i data-lucide="message-circle" style="width: 14px; height: 14px;"></i></a>
+                            </div>
+                            <a href="https://github.com/HA1234098765" target="_blank" class="text-white"><i data-lucide="github" style="width: 14px; height: 14px;"></i></a>
                         </div>
                     </div>
                 </div>
@@ -60,7 +77,7 @@
                         <div class="input-group">
                             <input type="text" name="search" class="form-control" placeholder="{{ __('messages.search_placeholder') }}" value="{{ request('search') }}">
                             <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-search"></i> {{ __('messages.search') }}
+                                <i data-lucide="search" style="width: 16px; height: 16px;"></i> {{ __('messages.search') }}
                             </button>
                         </div>
                     </form>
@@ -72,30 +89,23 @@
                         <!-- Mobile Search Toggle -->
                         <div class="d-md-none me-3">
                             <button class="btn btn-link text-dark p-0" type="button" data-bs-toggle="collapse" data-bs-target="#mobileSearch" aria-expanded="false">
-                                <i class="fas fa-search fa-lg"></i>
+                                <i data-lucide="search" style="width: 20px; height: 20px;"></i>
                             </button>
                         </div>
 
                         <!-- Wishlist -->
                         <div class="me-3">
-                            <a href="{{ route('user.wishlist') }}" class="text-dark position-relative">
-                                <i class="fas fa-heart fa-lg"></i>
-                                @auth
-                                    @if(auth()->user()->wishlist->count() > 0)
-                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                        {{ auth()->user()->wishlist->count() }}
-                                    </span>
-                                    @endif
-                                @endauth
+                            <a href="#" class="text-dark position-relative" onclick="alert('قائمة الأمنيات قيد التطوير')">
+                                <i data-lucide="heart" style="width: 20px; height: 20px;"></i>
                             </a>
                         </div>
 
                         <!-- Cart -->
                         <div class="me-3">
-                            <a href="{{ route('cart.index') }}" class="text-dark position-relative">
-                                <i class="fas fa-shopping-cart fa-lg"></i>
+                            <a href="#" class="text-dark position-relative" onclick="alert('سلة التسوق قيد التطوير')">
+                                <i data-lucide="shopping-cart" style="width: 20px; height: 20px;"></i>
                                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                    {{ Cart::instance('cart')->count() }}
+                                    0
                                 </span>
                             </a>
                         </div>
@@ -103,17 +113,17 @@
                         <!-- User Account -->
                         <div class="dropdown">
                             <a class="text-dark dropdown-toggle" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-user fa-lg"></i>
+                                <i data-lucide="user" style="width: 20px; height: 20px;"></i>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                 @auth
-                                    <li><a class="dropdown-item" href="{{ route('user.dashboard') }}">{{ __('messages.dashboard') }}</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('user.orders') }}">{{ __('messages.user_orders') }}</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('user.wishlist') }}">{{ __('messages.user_wishlist') }}</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('user.profile') }}">{{ __('messages.user_profile') }}</a></li>
+                                    <li><a class="dropdown-item" href="#">{{ __('messages.dashboard') }}</a></li>
+                                    <li><a class="dropdown-item" href="#">{{ __('messages.user_orders') }}</a></li>
+                                    <li><a class="dropdown-item" href="#">{{ __('messages.user_wishlist') }}</a></li>
+                                    <li><a class="dropdown-item" href="#">{{ __('messages.user_profile') }}</a></li>
                                     <li><hr class="dropdown-divider"></li>
-                                    @if(auth()->user()->utype === 'ADM')
-                                    <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}">{{ __('messages.admin') }}</a></li>
+                                    @if(auth()->check() && auth()->user()->utype === 'ADM')
+                                    <li><a class="dropdown-item" href="#">{{ __('messages.admin') }}</a></li>
                                     <li><hr class="dropdown-divider"></li>
                                     @endif
                                     <li>
@@ -138,7 +148,7 @@
                     <div class="input-group">
                         <input type="text" name="search" class="form-control" placeholder="{{ __('messages.search_placeholder') }}" value="{{ request('search') }}">
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-search"></i>
+                            <i data-lucide="search" style="width: 16px; height: 16px;"></i>
                         </button>
                     </div>
                 </form>
@@ -166,9 +176,11 @@
                             {{ __('messages.product_category') }}
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="categoriesDropdown">
-                            @foreach($categories ?? [] as $category)
-                            <li><a class="dropdown-item" href="{{ route('shop.category', $category->slug) }}">{{ $category->name }}</a></li>
-                            @endforeach
+                            @if(isset($categories))
+                                @foreach($categories as $category)
+                                <li><a class="dropdown-item" href="{{ route('shop.category', $category->slug) }}">{{ $category->name }}</a></li>
+                                @endforeach
+                            @endif
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
@@ -176,9 +188,11 @@
                             {{ __('messages.product_brand') }}
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="brandsDropdown">
-                            @foreach($brands ?? [] as $brand)
-                            <li><a class="dropdown-item" href="{{ route('shop.brand', $brand->slug) }}">{{ $brand->name }}</a></li>
-                            @endforeach
+                            @if(isset($brands))
+                                @foreach($brands as $brand)
+                                <li><a class="dropdown-item" href="{{ route('shop.brand', $brand->slug) }}">{{ $brand->name }}</a></li>
+                                @endforeach
+                            @endif
                         </ul>
                     </li>
                     <li class="nav-item">

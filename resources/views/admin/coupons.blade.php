@@ -3,18 +3,18 @@
 <div class="main-content-inner">
     <div class="main-content-wrap">
         <div class="flex items-center flex-wrap justify-between gap20 mb-27">
-            <h3>Coupons</h3>
+            <h3>الكوبونات</h3>
             <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
                 <li>
                     <a href="{{route('admin.index')}}">
-                        <div class="text-tiny">Dashboard</div>
+                        <div class="text-tiny">لوحة التحكم</div>
                     </a>
                 </li>
                 <li>
                     <i class="icon-chevron-right"></i>
                 </li>
                 <li>
-                    <div class="text-tiny">Coupons</div>
+                    <div class="text-tiny">الكوبونات</div>
                 </li>
             </ul>
         </div>
@@ -24,7 +24,7 @@
                 <div class="wg-filter flex-grow">
                     <form class="form-search">
                         <fieldset class="name">
-                            <input type="text" placeholder="Search here..." class="" name="name"
+                            <input type="text" placeholder="البحث هنا..." class="" name="name"
                                 tabindex="2" value="" aria-required="true" required="">
                         </fieldset>
                         <div class="button-submit">
@@ -33,7 +33,7 @@
                     </form>
                 </div>
                 <a class="tf-button style-1 w208" href="{{ route('admin.coupon.add') }}"><i
-                        class="icon-plus"></i>Add new</a>
+                        class="icon-plus"></i>إضافة جديد</a>
             </div>
             <div class="wg-table table-all-user">
                 <div class="table-responsive">
@@ -44,12 +44,12 @@
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Code</th>
-                                <th>Type</th>
-                                <th>Value</th>
-                                <th>Cart Value</th>
-                                <th>Expiry Date</th>
-                                <th>Action</th>
+                                <th>الرمز</th>
+                                <th>النوع</th>
+                                <th>القيمة</th>
+                                <th>قيمة السلة</th>
+                                <th>تاريخ الانتهاء</th>
+                                <th>الإجراءات</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -98,10 +98,10 @@
                 e.preventDefault();
                 var form = $(this).closest('form');
                 swal({
-                    title: "Are you sure?",
-                    text: "You want to delete this record?",
+                    title: "هل أنت متأكد؟",
+                    text: "هل تريد حذف هذا السجل؟",
                     type: "warning",
-                    buttons: ["No", "Yes"],
+                    buttons: ["لا", "نعم"],
                     confirmButtonColor: "#dc3545"
                 }).then(function(result){
                     if(result){

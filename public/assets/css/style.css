@@ -1965,7 +1965,7 @@ progress {
   z-index: 1070;
   display: block;
   margin: 0;
-  font-family: "Rajdhani", "Jost", sans-serif;
+  font-family: "Cairo", sans-serif;
   font-style: normal;
   font-weight: 400;
   line-height: 1.7143;
@@ -2050,7 +2050,7 @@ progress {
   z-index: 1060;
   display: block;
   max-width: 276px;
-  font-family: "Rajdhani", "Jost", sans-serif;
+  font-family: "Cairo", sans-serif;
   font-style: normal;
   font-weight: 400;
   line-height: 1.7143;
@@ -6050,7 +6050,7 @@ progress {
  *
  * bootstrap-slider is released under the MIT License
  * Copyright (c) 2019 Kyle Kemp, Rohit Kalkur, and contributors
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -6059,10 +6059,10 @@ progress {
  * copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following
  * conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
  * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -6581,6 +6581,12 @@ body {
     .pos_right-center {
       left: 60%; } }
 
+.pos_left-center {
+  right: 50%; }
+  @media (min-width: 992px) {
+    .pos_left-center {
+      right: 60%; } }
+
 .scrollbar-gray ::-webkit-scrollbar {
   margin-right: 1.25rem;
   width: .25rem;
@@ -6782,7 +6788,7 @@ svg.flaticon {
   src: url(../fonts/SofiaProBold.woff); }
 body {
   color: #222222;
-  font-family: "Rajdhani", "Jost", sans-serif;
+  font-family: "Cairo", sans-serif;
   font-size: 0.875rem;
   font-weight: 400;
   line-height: 1.7143; }
@@ -6802,7 +6808,7 @@ h5,
 h6,
 .h6 {
   color: #222222;
-  font-family: "Rajdhani", "Jost", sans-serif;
+  font-family: "Cairo", sans-serif;
   font-weight: 500; }
 
 .font-special {
@@ -6932,6 +6938,24 @@ h6,
     margin-top: -1px;
     background-color: currentColor;
     color: inherit; }
+
+.text_underline {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px; }
+
+.text_inline_dash {
+  position: relative;
+  display: inline-block; }
+  .text_inline_dash::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -3rem;
+    width: 2.5rem;
+    height: 2px;
+    margin-top: -1px;
+    background-color: currentColor; }
   .text_dash_half {
     position: relative;
     padding-left: 2rem; }
@@ -10427,8 +10451,477 @@ textarea.form-control-lg {
   background-color: #222222;
   color: #fff; }
 
+/* تحسين تناسق المنتجات */
+.product-card_style3 {
+  background: #fff;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-card_style3:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
 .product-card_style3 .pc__img-wrapper {
-  border-radius: 0.625rem; }
+  border-radius: 0.625rem;
+  position: relative;
+  overflow: hidden;
+  background: #f8f9fa;
+  flex-shrink: 0;
+}
+
+.product-card_style3 .pc__img {
+  transition: transform 0.3s ease;
+}
+
+.product-card_style3:hover .pc__img {
+  transform: scale(1.05);
+}
+
+.product-card_style3 .pc__info {
+  padding: 1rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.product-card_style3 .pc__title {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
+  min-height: 2.8rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.product-card_style3 .pc__title a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.product-card_style3 .pc__title a:hover {
+  color: #007bff;
+}
+
+.product-card_style3 .product-card__price {
+  margin-top: auto;
+  padding-top: 0.5rem;
+}
+
+.product-card_style3 .money.price {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #e74c3c;
+}
+
+.product-card_style3 .money.price-old {
+  font-size: 0.9rem;
+  color: #95a5a6;
+  text-decoration: line-through;
+  margin-left: 0.5rem;
+}
+
+/* تحسين الأزرار */
+.product-card_style3 .anim_appear-bottom {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  margin: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.product-card_style3 .btn {
+  border-radius: 0.375rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.product-card_style3 .btn:hover {
+  transform: translateY(-1px);
+}
+
+/* تحسين التسميات */
+.product-card_style3 .product-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  z-index: 2;
+}
+
+/* ضمان التناسق في الشبكة */
+.products-grid .col-6,
+.products-grid .col-md-4,
+.products-grid .col-lg-3 {
+  margin-bottom: 1.5rem;
+}
+
+.products-grid .product-card_style3 {
+  height: 100%;
+  min-height: 400px;
+}
+
+/* تحسين السلايدر */
+.swiper-slide.product-card_style3 {
+  height: auto;
+  min-height: 400px;
+}
+
+/* تحسين التناسق العام للمنتجات */
+.product-card_style3 .pc__img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* ضمان تناسق الارتفاعات */
+.swiper-wrapper .product-card_style3 {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.row .product-card_style3 {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* تحسين المظهر على الشاشات الصغيرة */
+@media (max-width: 767.98px) {
+  .product-card_style3 {
+    min-height: 350px;
+  }
+
+  .product-card_style3 .pc__title {
+    font-size: 0.9rem;
+    min-height: 2.4rem;
+  }
+
+  .product-card_style3 .money.price {
+    font-size: 1rem;
+  }
+}
+
+/* تحسين المظهر على الشاشات المتوسطة */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .product-card_style3 {
+    min-height: 380px;
+  }
+}
+
+/* تحسين المظهر على الشاشات الكبيرة */
+@media (min-width: 1200px) {
+  .product-card_style3 {
+    min-height: 420px;
+  }
+
+  .product-card_style3 .pc__title {
+    font-size: 1.1rem;
+  }
+}
+
+/* تحسين تناسق الألوان والظلال */
+.product-card_style3 {
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.product-card_style3:hover {
+  border-color: rgba(0, 123, 255, 0.2);
+}
+
+/* تحسين تناسق الأسعار */
+.product-card_style3 .product-card__price {
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.product-card_style3 .money {
+  font-family: 'Cairo', sans-serif;
+  font-weight: 600;
+}
+
+/* تحسين تناسق الأزرار في المنتجات */
+.product-card_style3 .btn-outline-primary {
+  border-color: #007bff;
+  color: #007bff;
+  background: transparent;
+}
+
+.product-card_style3 .btn-outline-primary:hover {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+/* تحسين تناسق أيقونات المنتجات */
+.product-card_style3 .anim_appear-bottom svg {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+/* ضمان تناسق المسافات */
+.product-card_style3 .pc__info {
+  padding: 1.25rem 1rem 1rem;
+}
+
+.product-card_style3 .pc__img-wrapper {
+  margin-bottom: 0;
+}
+
+/* تحسين تأثيرات الحركة */
+.product-card_style3 {
+  will-change: transform, box-shadow;
+}
+
+.product-card_style3 .pc__img {
+  will-change: transform;
+}
+
+/* تحسين تناسق السلايدر */
+.swiper-container .swiper-slide {
+  height: auto;
+}
+
+.swiper-container .product-card_style3 {
+  height: 100%;
+  margin-bottom: 0;
+}
+
+/* ضمان تناسق جميع المنتجات في السلايدر */
+.swiper-wrapper {
+  align-items: stretch;
+}
+
+.swiper-slide.product-card_style3 {
+  display: flex;
+  flex-direction: column;
+}
+
+/* تحسين المظهر العام */
+.product-card_style3 * {
+  box-sizing: border-box;
+}
+
+/* تحسين تناسق النصوص */
+.product-card_style3 .pc__title,
+.product-card_style3 .money {
+  font-family: 'Cairo', sans-serif;
+}
+
+/* تحسين تناسق الخطوط العربية */
+.product-card_style3 .pc__title a {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* تحسين المسافات في الشبكة */
+.products-grid .row > [class*="col-"] {
+  display: flex;
+  align-items: stretch;
+}
+
+.products-grid .product-card_style3 {
+  width: 100%;
+}
+
+/* تطبيق خط Cairo على جميع العناصر */
+* {
+  font-family: "Cairo", sans-serif !important;
+}
+
+/* تحسين خط Cairo للعناوين */
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+  font-family: "Cairo", sans-serif !important;
+  font-weight: 600;
+}
+
+/* تحسين خط Cairo للنصوص */
+p, span, div, a, button, input, textarea, select, label {
+  font-family: "Cairo", sans-serif !important;
+}
+
+/* تحسين خط Cairo للقوائم */
+ul, ol, li {
+  font-family: "Cairo", sans-serif !important;
+}
+
+/* تحسين خط Cairo للجداول */
+table, th, td {
+  font-family: "Cairo", sans-serif !important;
+}
+
+/* تحسين خط Cairo للنماذج */
+.form-control, .form-select, .form-check-label {
+  font-family: "Cairo", sans-serif !important;
+}
+
+/* تحسين خط Cairo للأزرار */
+.btn {
+  font-family: "Cairo", sans-serif !important;
+  font-weight: 500;
+}
+
+/* تحسين خط Cairo للتنقل */
+.nav-link, .navbar-nav .nav-link {
+  font-family: "Cairo", sans-serif !important;
+  font-weight: 500;
+}
+
+/* تحسين خط Cairo للبطاقات */
+.card, .card-title, .card-text {
+  font-family: "Cairo", sans-serif !important;
+}
+
+/* تحسين خط Cairo للتنبيهات */
+.alert {
+  font-family: "Cairo", sans-serif !important;
+}
+
+/* تحسين خط Cairo للشارات */
+.badge {
+  font-family: "Cairo", sans-serif !important;
+  font-weight: 500;
+}
+
+/* تحسين خط Cairo للتبويبات */
+.tab-pane, .nav-tabs .nav-link {
+  font-family: "Cairo", sans-serif !important;
+}
+
+/* تحسين خط Cairo للقوائم المنسدلة */
+.dropdown-menu, .dropdown-item {
+  font-family: "Cairo", sans-serif !important;
+}
+
+/* تحسين خط Cairo للمودال */
+.modal-title, .modal-body, .modal-footer {
+  font-family: "Cairo", sans-serif !important;
+}
+
+/* تحسين خط Cairo للتوست */
+.toast, .toast-header, .toast-body {
+  font-family: "Cairo", sans-serif !important;
+}
+
+/* تحسين خط Cairo للأسعار */
+.price, .money {
+  font-family: "Cairo", sans-serif !important;
+  font-weight: 700;
+}
+
+/* تحسين خط Cairo للعدادات */
+.counter, .qty-control {
+  font-family: "Cairo", sans-serif !important;
+}
+
+/* تحسين خط Cairo للبحث */
+.search-field, .search-result {
+  font-family: "Cairo", sans-serif !important;
+}
+
+/* تحسين خط Cairo للفوتر */
+.footer, .footer * {
+  font-family: "Cairo", sans-serif !important;
+}
+
+/* تحسين خط Cairo للهيدر */
+.header, .header * {
+  font-family: "Cairo", sans-serif !important;
+}
+
+/* تحسين خط Cairo للنصوص العربية */
+body {
+  font-family: "Cairo", sans-serif !important;
+  direction: rtl;
+  text-align: right;
+}
+
+/* تحسين خصائص خط Cairo */
+* {
+  font-display: swap;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* تحسين أوزان خط Cairo */
+.font-light {
+  font-weight: 300 !important;
+}
+
+.font-normal {
+  font-weight: 400 !important;
+}
+
+.font-medium {
+  font-weight: 500 !important;
+}
+
+.font-semibold {
+  font-weight: 600 !important;
+}
+
+.font-bold {
+  font-weight: 700 !important;
+}
+
+.font-extrabold {
+  font-weight: 800 !important;
+}
+
+.font-black {
+  font-weight: 900 !important;
+}
+
+/* تحسين المسافات للنصوص العربية */
+.arabic-text {
+  letter-spacing: 0.02em;
+  word-spacing: 0.1em;
+}
+
+/* تحسين خط Cairo للعناوين الرئيسية */
+.section-title, .page-title {
+  font-family: "Cairo", sans-serif !important;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* تحسين خط Cairo للروابط */
+a {
+  font-family: "Cairo", sans-serif !important;
+  text-decoration: none;
+}
+
+/* تحسين خط Cairo للقوائم */
+.menu-item, .nav-item {
+  font-family: "Cairo", sans-serif !important;
+  font-weight: 500;
+}
+
+/* إزالة الخطوط القديمة */
+.font-special {
+  font-family: "Cairo", sans-serif !important;
+}
+
+.font-sofia {
+  font-family: "Cairo", sans-serif !important;
+}
 
 .product-card_style6 {
   transition: all 0.2s ease;
@@ -15539,3 +16032,26 @@ body.coming-soon-page {
     display: none; }
   .btn-video-player.playing svg.btn-pause {
     display: block; }
+.logo__image d-block {
+    width: 90px;
+    height: 90px;
+}
+
+.text-uppercase.font-sofia.fw-bold.animate.animate_fade.animate_rtl.animate_delay-10 {
+    left: -250px;
+    top: 10px;
+}
+
+/* تخصيص موضع النص "وصل حديثاً" */
+.slideshow-text .text_inline_dash {
+    position: absolute;
+    right: 0;
+    top: -2.5rem;
+    margin-right: 0;
+    text-align: right;
+}
+
+.slideshow-text .text_inline_dash::after {
+    left: -3rem;
+    right: auto;
+}

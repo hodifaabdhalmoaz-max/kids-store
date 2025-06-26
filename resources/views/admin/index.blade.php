@@ -15,8 +15,8 @@
                                     <i class="icon-shopping-bag"></i>
                                 </div>
                                 <div>
-                                    <div class="body-text mb-2">Total Orders</div>
-                                    <h4>3</h4>
+                                    <div class="body-text mb-2">إجمالي الطلبات</div>
+                                    <h4>{{ $totalOrders }}</h4>
                                 </div>
                             </div>
                         </div>
@@ -30,8 +30,8 @@
                                     <i class="icon-dollar-sign"></i>
                                 </div>
                                 <div>
-                                    <div class="body-text mb-2">Total Amount</div>
-                                    <h4>481.34</h4>
+                                    <div class="body-text mb-2">إجمالي المبلغ</div>
+                                    <h4>${{ number_format($totalAmount, 2) }}</h4>
                                 </div>
                             </div>
                         </div>
@@ -45,8 +45,8 @@
                                     <i class="icon-shopping-bag"></i>
                                 </div>
                                 <div>
-                                    <div class="body-text mb-2">Pending Orders</div>
-                                    <h4>3</h4>
+                                    <div class="body-text mb-2">الطلبات المعلقة</div>
+                                    <h4>{{ $pendingOrders }}</h4>
                                 </div>
                             </div>
                         </div>
@@ -60,8 +60,8 @@
                                     <i class="icon-dollar-sign"></i>
                                 </div>
                                 <div>
-                                    <div class="body-text mb-2">Pending Orders Amount</div>
-                                    <h4>481.34</h4>
+                                    <div class="body-text mb-2">مبلغ الطلبات المعلقة</div>
+                                    <h4>${{ number_format($pendingAmount, 2) }}</h4>
                                 </div>
                             </div>
                         </div>
@@ -78,8 +78,8 @@
                                     <i class="icon-shopping-bag"></i>
                                 </div>
                                 <div>
-                                    <div class="body-text mb-2">Delivered Orders</div>
-                                    <h4>0</h4>
+                                    <div class="body-text mb-2">الطلبات المسلمة</div>
+                                    <h4>{{ $deliveredOrders }}</h4>
                                 </div>
                             </div>
                         </div>
@@ -93,8 +93,8 @@
                                     <i class="icon-dollar-sign"></i>
                                 </div>
                                 <div>
-                                    <div class="body-text mb-2">Delivered Orders Amount</div>
-                                    <h4>0.00</h4>
+                                    <div class="body-text mb-2">مبلغ الطلبات المسلمة</div>
+                                    <h4>${{ number_format($deliveredAmount, 2) }}</h4>
                                 </div>
                             </div>
                         </div>
@@ -108,8 +108,8 @@
                                     <i class="icon-shopping-bag"></i>
                                 </div>
                                 <div>
-                                    <div class="body-text mb-2">Canceled Orders</div>
-                                    <h4>0</h4>
+                                    <div class="body-text mb-2">الطلبات الملغاة</div>
+                                    <h4>{{ $cancelledOrders }}</h4>
                                 </div>
                             </div>
                         </div>
@@ -123,8 +123,8 @@
                                     <i class="icon-dollar-sign"></i>
                                 </div>
                                 <div>
-                                    <div class="body-text mb-2">Canceled Orders Amount</div>
-                                    <h4>0.00</h4>
+                                    <div class="body-text mb-2">مبلغ الطلبات الملغاة</div>
+                                    <h4>${{ number_format($cancelledAmount, 2) }}</h4>
                                 </div>
                             </div>
                         </div>
@@ -136,7 +136,7 @@
 
             <div class="wg-box">
                 <div class="flex items-center justify-between">
-                    <h5>Earnings revenue</h5>
+                    <h5>إيرادات الأرباح</h5>
                     <div class="dropdown default">
                         <button class="btn btn-secondary dropdown-toggle" type="button"
                             data-bs-toggle="dropdown" aria-haspopup="true"
@@ -145,10 +145,42 @@
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li>
-                                <a href="javascript:void(0);">This Week</a>
+                                <a href="{{ route('admin.index', ['period' => 'this_week']) }}"
+                                   class="dropdown-item {{ $period == 'this_week' ? 'active fw-bold' : '' }}">
+                                   <i class="icon-calendar me-2"></i>هذا الأسبوع
+                                </a>
                             </li>
                             <li>
-                                <a href="javascript:void(0);">Last Week</a>
+                                <a href="{{ route('admin.index', ['period' => 'last_week']) }}"
+                                   class="dropdown-item {{ $period == 'last_week' ? 'active fw-bold' : '' }}">
+                                   <i class="icon-calendar me-2"></i>الأسبوع الماضي
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a href="{{ route('admin.index', ['period' => 'this_month']) }}"
+                                   class="dropdown-item {{ $period == 'this_month' ? 'active fw-bold' : '' }}">
+                                   <i class="icon-calendar me-2"></i>هذا الشهر
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('admin.index', ['period' => 'last_month']) }}"
+                                   class="dropdown-item {{ $period == 'last_month' ? 'active fw-bold' : '' }}">
+                                   <i class="icon-calendar me-2"></i>الشهر الماضي
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a href="{{ route('admin.index', ['period' => 'this_year']) }}"
+                                   class="dropdown-item {{ $period == 'this_year' ? 'active fw-bold' : '' }}">
+                                   <i class="icon-calendar me-2"></i>هذا العام
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('admin.index', ['period' => 'last_year']) }}"
+                                   class="dropdown-item {{ $period == 'last_year' ? 'active fw-bold' : '' }}">
+                                   <i class="icon-calendar me-2"></i>العام الماضي
+                                </a>
                             </li>
                         </ul>
                     </div>
@@ -158,14 +190,14 @@
                         <div class="mb-2">
                             <div class="block-legend">
                                 <div class="dot t1"></div>
-                                <div class="text-tiny">Revenue</div>
+                                <div class="text-tiny">الإيرادات</div>
                             </div>
                         </div>
                         <div class="flex items-center gap10">
-                            <h4>$37,802</h4>
-                            <div class="box-icon-trending up">
-                                <i class="icon-trending-up"></i>
-                                <div class="body-title number">0.56%</div>
+                            <h4>${{ number_format($revenueData['current_revenue'], 2) }}</h4>
+                            <div class="box-icon-trending {{ $revenueData['revenue_change'] >= 0 ? 'up' : 'down' }}">
+                                <i class="icon-trending-{{ $revenueData['revenue_change'] >= 0 ? 'up' : 'down' }}"></i>
+                                <div class="body-title number">{{ abs($revenueData['revenue_change']) }}%</div>
                             </div>
                         </div>
                     </div>
@@ -173,19 +205,19 @@
                         <div class="mb-2">
                             <div class="block-legend">
                                 <div class="dot t2"></div>
-                                <div class="text-tiny">Order</div>
+                                <div class="text-tiny">الطلبات</div>
                             </div>
                         </div>
                         <div class="flex items-center gap10">
-                            <h4>$28,305</h4>
-                            <div class="box-icon-trending up">
-                                <i class="icon-trending-up"></i>
-                                <div class="body-title number">0.56%</div>
+                            <h4>${{ number_format($revenueData['current_orders'], 2) }}</h4>
+                            <div class="box-icon-trending {{ $revenueData['orders_change'] >= 0 ? 'up' : 'down' }}">
+                                <i class="icon-trending-{{ $revenueData['orders_change'] >= 0 ? 'up' : 'down' }}"></i>
+                                <div class="body-title number">{{ abs($revenueData['orders_change']) }}%</div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div id="line-chart-8"></div>
+                <div id="line-chart-8" data-custom="true"></div>
             </div>
 
         </div>
@@ -193,10 +225,10 @@
 
             <div class="wg-box">
                 <div class="flex items-center justify-between">
-                    <h5>Recent orders</h5>
+                    <h5>الطلبات الحديثة</h5>
                     <div class="dropdown default">
-                        <a class="btn btn-secondary dropdown-toggle" href="#">
-                            <span class="view-all">View all</span>
+                        <a class="btn btn-secondary dropdown-toggle" href="{{ route('admin.orders') }}">
+                            <span class="view-all">عرض الكل</span>
                         </a>
                     </div>
                 </div>
@@ -205,35 +237,54 @@
                         <table class="table table-striped table-bordered">
                             <thead>
                                 <tr>
-                                    <th style="width: 80px">OrderNo</th>
-                                    <th>Name</th>
-                                    <th class="text-center">Phone</th>
-                                    <th class="text-center">Subtotal</th>
-                                    <th class="text-center">Tax</th>
-                                    <th class="text-center">Total</th>
+                                    <th style="width: 80px">رقم الطلب</th>
+                                    <th>الاسم</th>
+                                    <th class="text-center">الهاتف</th>
+                                    <th class="text-center">المجموع الفرعي</th>
+                                    <th class="text-center">الضريبة</th>
+                                    <th class="text-center">الإجمالي</th>
 
-                                    <th class="text-center">Status</th>
-                                    <th class="text-center">Order Date</th>
-                                    <th class="text-center">Total Items</th>
-                                    <th class="text-center">Delivered On</th>
+                                    <th class="text-center">الحالة</th>
+                                    <th class="text-center">تاريخ الطلب</th>
+                                    <th class="text-center">إجمالي العناصر</th>
+                                    <th class="text-center">تاريخ التسليم</th>
                                     <th></th>
                                 </tr>
                             </thead>
                             <tbody>
+                                @forelse($recentOrders as $order)
                                 <tr>
-                                    <td class="text-center">1</td>
-                                    <td class="text-center">Divyansh Kumar</td>
-                                    <td class="text-center">1234567891</td>
-                                    <td class="text-center">$172.00</td>
-                                    <td class="text-center">$36.12</td>
-                                    <td class="text-center">$208.12</td>
-
-                                    <td class="text-center">ordered</td>
-                                    <td class="text-center">2024-07-11 00:54:14</td>
-                                    <td class="text-center">2</td>
-                                    <td></td>
+                                    <td class="text-center">{{ $order->id }}</td>
+                                    <td class="text-center">{{ $order->name }}</td>
+                                    <td class="text-center">{{ $order->phone }}</td>
+                                    <td class="text-center">${{ number_format($order->subtotal, 2) }}</td>
+                                    <td class="text-center">${{ number_format($order->tax, 2) }}</td>
+                                    <td class="text-center">${{ number_format($order->total, 2) }}</td>
                                     <td class="text-center">
-                                        <a href="#">
+                                        <span class="badge
+                                            @if($order->status == 'ordered') bg-warning text-dark
+                                            @elseif($order->status == 'delivered') bg-success
+                                            @elseif($order->status == 'canceled') bg-danger
+                                            @else bg-info
+                                            @endif">
+                                            @if($order->status == 'ordered') مطلوب
+                                            @elseif($order->status == 'delivered') مُسلم
+                                            @elseif($order->status == 'canceled') ملغي
+                                            @else {{ $order->status }}
+                                            @endif
+                                        </span>
+                                    </td>
+                                    <td class="text-center">{{ $order->created_at->format('Y-m-d H:i:s') }}</td>
+                                    <td class="text-center">{{ $order->orderItems->sum('quantity') }}</td>
+                                    <td class="text-center">
+                                        @if($order->delivered_date)
+                                            {{ $order->delivered_date->format('Y-m-d') }}
+                                        @else
+                                            -
+                                        @endif
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="{{ route('admin.order.details', $order->id) }}">
                                             <div class="list-icon-function view-icon">
                                                 <div class="item eye">
                                                     <i class="icon-eye"></i>
@@ -242,6 +293,11 @@
                                         </a>
                                     </td>
                                 </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="11" class="text-center">لا توجد طلبات حتى الآن</td>
+                                </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -253,3 +309,108 @@
 
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    // تحديث بيانات الرسم البياني
+    document.addEventListener('DOMContentLoaded', function() {
+        // التأكد من وجود العنصر
+        const chartElement = document.querySelector("#line-chart-8");
+        if (!chartElement) return;
+
+        // البيانات من الخادم
+        var chartData = @json($chartData);
+
+        // التحقق من صحة البيانات
+        if (!chartData || !chartData.labels || !chartData.revenue) {
+            console.error('بيانات الرسم البياني غير صحيحة');
+            return;
+        }
+
+        // إعداد الرسم البياني
+        var options = {
+            series: [{
+                name: 'الإيرادات',
+                data: chartData.revenue || []
+            }, {
+                name: 'الطلبات',
+                data: chartData.orders || []
+            }, {
+                name: 'الملغاة',
+                data: chartData.canceled || []
+            }],
+            chart: {
+                type: 'bar',
+                height: 325,
+                toolbar: {
+                    show: false,
+                },
+                animations: {
+                    enabled: true,
+                    easing: 'easeinout',
+                    speed: 800,
+                }
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '10px',
+                    endingShape: 'rounded'
+                },
+            },
+            dataLabels: {
+                enabled: false
+            },
+            legend: {
+                show: false,
+            },
+            colors: ['#2377FC', '#FFA500', '#FF0000'],
+            stroke: {
+                show: false,
+            },
+            xaxis: {
+                labels: {
+                    style: {
+                        colors: '#212529',
+                    },
+                },
+                categories: chartData.labels || [],
+            },
+            yaxis: {
+                show: false,
+            },
+            fill: {
+                opacity: 1
+            },
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return "$ " + (val || 0).toFixed(2)
+                    }
+                }
+            },
+            responsive: [{
+                breakpoint: 480,
+                options: {
+                    chart: {
+                        height: 250
+                    },
+                    plotOptions: {
+                        bar: {
+                            columnWidth: '15px'
+                        }
+                    }
+                }
+            }]
+        };
+
+        // إنشاء الرسم البياني
+        try {
+            var chart = new ApexCharts(chartElement, options);
+            chart.render();
+        } catch (error) {
+            console.error('خطأ في إنشاء الرسم البياني:', error);
+        }
+    });
+</script>
+@endpush

@@ -17,7 +17,7 @@
 
                   <div class="swiper-slide product-single__image-item">
                     <img loading="lazy" class="h-auto" src="{{asset('uploads/products')}}/{{$product->image}}" width="674" height="674" alt="" />
-                    <a data-fancybox="gallery" href="{{asset('uploads/products')}}/{{$product->image}}" data-bs-toggle="tooltip" data-bs-placement="left" title="Zoom">
+                    <a data-fancybox="gallery" href="{{asset('uploads/products')}}/{{$product->image}}" data-bs-toggle="tooltip" data-bs-placement="left" title="تكبير">
                       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <use href="#icon_zoom" />
                       </svg>
@@ -27,7 +27,7 @@
                   @foreach(explode(',',$product->images) as $gimg)
                   <div class="swiper-slide product-single__image-item">
                     <img loading="lazy" class="h-auto" src="{{asset('uploads/products')}}/{{$gimg}}" width="674" height="674" alt="" />
-                    <a data-fancybox="gallery" href="{{asset('uploads/products')}}/{{$gimg}}" data-bs-toggle="tooltip" data-bs-placement="left" title="Zoom">
+                    <a data-fancybox="gallery" href="{{asset('uploads/products')}}/{{$gimg}}" data-bs-toggle="tooltip" data-bs-placement="left" title="تكبير">
                       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <use href="#icon_zoom" />
                       </svg>
@@ -60,9 +60,9 @@
         <div class="col-lg-5">
           <div class="d-flex justify-content-between mb-4 pb-md-2">
             <div class="breadcrumb mb-0 d-none d-md-block flex-grow-1">
-              <a href="#" class="menu-link menu-link_us-s text-uppercase fw-medium">Home</a>
+              <a href="#" class="menu-link menu-link_us-s text-uppercase fw-medium">الرئيسية</a>
               <span class="breadcrumb-separator menu-link fw-medium ps-1 pe-1">/</span>
-              <a href="#" class="menu-link menu-link_us-s text-uppercase fw-medium">The Shop</a>
+              <a href="#" class="menu-link menu-link_us-s text-uppercase fw-medium">المتجر</a>
             </div><!-- /.breadcrumb -->
 
             <div
@@ -70,8 +70,8 @@
               <a href="#" class="text-uppercase fw-medium"><svg width="10" height="10" viewBox="0 0 25 25"
                   xmlns="http://www.w3.org/2000/svg">
                   <use href="#icon_prev_md" />
-                </svg><span class="menu-link menu-link_us-s">Prev</span></a>
-              <a href="#" class="text-uppercase fw-medium"><span class="menu-link menu-link_us-s">Next</span><svg
+                </svg><span class="menu-link menu-link_us-s">السابق</span></a>
+              <a href="#" class="text-uppercase fw-medium"><span class="menu-link menu-link_us-s">التالي</span><svg
                   width="10" height="10" viewBox="0 0 25 25" xmlns="http://www.w3.org/2000/svg">
                   <use href="#icon_next_md" />
                 </svg></a>
@@ -96,7 +96,7 @@
                 <use href="#icon_star" />
               </svg>
             </div>
-            <span class="reviews-note text-lowercase text-secondary ms-1">8k+ reviews</span>
+            <span class="reviews-note text-lowercase text-secondary ms-1">أكثر من 8 آلاف تقييم</span>
           </div>
           <div class="product-single__price">
             <span class="current-price">
@@ -111,7 +111,7 @@
             <p>{{$product->short_description}}</p>
           </div>
           @if(Cart::instance('cart')->content()->where('id', $product->id)->count()>0)
-            <a href="{{route('cart.index')}}" class="btn btn-warning mb-3">Go to Cart</a>
+            <a href="{{route('cart.index')}}" class="btn btn-warning mb-3">الذهاب للسلة</a>
           @else
           <form name="addtocart-form" method="post" action="{{route('cart.add')}}">
              @csrf
@@ -124,7 +124,7 @@
               <input type="hidden" name="id" value="{{$product->id}}" />
               <input type="hidden" name="name" value="{{$product->name}}" />
               <input type="hidden" name="price" value="{{$product->sale_price == '' ? $product->regular_price : $product->sale_price}}" />
-              <button type="submit" class="btn btn-primary btn-addtocart" data-aside="cartDrawer">Add to Cart</button>
+              <button type="submit" class="btn btn-primary btn-addtocart" data-aside="cartDrawer">إضافة للسلة</button>
             </div>
           </form>
           @endif
@@ -136,7 +136,7 @@
             <a href="javascript:void(0)" class="menu-link menu-link_us-s add-to-wishlist filled-heart" onclick="document.getElementById('frm-remove-item').submit();"><svg width="16" height="16" viewBox="0 0 20 20"
                 fill="none" xmlns="http://www.w3.org/2000/svg">
                 <use href="#icon_heart" />
-              </svg><span>Remove from Wishlist</span></a>
+              </svg><span>إزالة من المفضلة</span></a>
             </form>
               @else
               <form method="POST" action="{{route('wishlist.add')}}" id ="wishlist-form">
@@ -148,7 +148,7 @@
                 <a href="javascript:void(0)" class="menu-link menu-link_us-s add-to-wishlist" onclick="document.getElementById('wishlist-form').submit();"><svg width="16" height="16" viewBox="0 0 20 20"
                 fill="none" xmlns="http://www.w3.org/2000/svg">
                 <use href="#icon_heart" />
-              </svg><span>Add To Wishlist</span></a>
+              </svg><span>إضافة للمفضلة</span></a>
               </form>
               @endif
 
@@ -157,17 +157,17 @@
                 <svg width="16" height="19" viewBox="0 0 16 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <use href="#icon_sharing" />
                 </svg>
-                <span>Share</span>
+                <span>مشاركة</span>
               </button>
               <details id="Details-share-template__main" class="m-1 xl:m-1.5" hidden="">
                 <summary class="btn-solid m-1 xl:m-1.5 pt-3.5 pb-3 px-5">+</summary>
                 <div id="Article-share-template__main"
                   class="share-button__fallback flex items-center absolute top-full left-0 w-full px-2 py-4 bg-container shadow-theme border-t z-10">
                   <div class="field grow mr-4">
-                    <label class="field__label sr-only" for="url">Link</label>
+                    <label class="field__label sr-only" for="url">الرابط</label>
                     <input type="text" class="field__input w-full" id="url"
                       value="https://uomo-crystal.myshopify.com/blogs/news/go-to-wellness-tips-for-mental-health"
-                      placeholder="Link" onclick="this.select();" readonly="">
+                      placeholder="الرابط" onclick="this.select();" readonly="">
                   </div>
                   <button class="share-button__copy no-js-hidden">
                     <svg class="icon icon-clipboard inline-block mr-1" width="11" height="13" fill="none"
@@ -176,7 +176,7 @@
                         d="M2 1a1 1 0 011-1h7a1 1 0 011 1v9a1 1 0 01-1 1V1H2zM1 2a1 1 0 00-1 1v9a1 1 0 001 1h7a1 1 0 001-1V3a1 1 0 00-1-1H1zm0 10V3h7v9H1z"
                         fill="currentColor"></path>
                     </svg>
-                    <span class="sr-only">Copy link</span>
+                    <span class="sr-only">نسخ الرابط</span>
                   </button>
                 </div>
               </details>
@@ -190,12 +190,12 @@
               <span>{{$product->SKU}}</span>
             </div>
             <div class="meta-item">
-              <label>Categories:</label>
+              <label>الفئات:</label>
               <span>{{$product->category->name}}</span>
             </div>
             <div class="meta-item">
-              <label>Tags:</label>
-              <span>NA</span>
+              <label>العلامات:</label>
+              <span>غير متوفر</span>
             </div>
           </div>
         </div>
@@ -204,16 +204,16 @@
         <ul class="nav nav-tabs" id="myTab" role="tablist">
           <li class="nav-item" role="presentation">
             <a class="nav-link nav-link_underscore active" id="tab-description-tab" data-bs-toggle="tab"
-              href="#tab-description" role="tab" aria-controls="tab-description" aria-selected="true">Description</a>
+              href="#tab-description" role="tab" aria-controls="tab-description" aria-selected="true">الوصف</a>
           </li>
           <li class="nav-item" role="presentation">
             <a class="nav-link nav-link_underscore" id="tab-additional-info-tab" data-bs-toggle="tab"
               href="#tab-additional-info" role="tab" aria-controls="tab-additional-info"
-              aria-selected="false">Additional Information</a>
+              aria-selected="false">معلومات إضافية</a>
           </li>
           <li class="nav-item" role="presentation">
             <a class="nav-link nav-link_underscore" id="tab-reviews-tab" data-bs-toggle="tab" href="#tab-reviews"
-              role="tab" aria-controls="tab-reviews" aria-selected="false">Reviews (2)</a>
+              role="tab" aria-controls="tab-reviews" aria-selected="false">التقييمات (2)</a>
           </li>
         </ul>
         <div class="tab-content">
@@ -226,29 +226,29 @@
           <div class="tab-pane fade" id="tab-additional-info" role="tabpanel" aria-labelledby="tab-additional-info-tab">
             <div class="product-single__addtional-info">
               <div class="item">
-                <label class="h6">Weight</label>
-                <span>1.25 kg</span>
+                <label class="h6">الوزن</label>
+                <span>1.25 كيلو</span>
               </div>
               <div class="item">
-                <label class="h6">Dimensions</label>
-                <span>90 x 60 x 90 cm</span>
+                <label class="h6">الأبعاد</label>
+                <span>90 × 60 × 90 سم</span>
               </div>
               <div class="item">
-                <label class="h6">Size</label>
-                <span>XS, S, M, L, XL</span>
+                <label class="h6">المقاس</label>
+                <span>صغير جداً، صغير، متوسط، كبير، كبير جداً</span>
               </div>
               <div class="item">
-                <label class="h6">Color</label>
-                <span>Black, Orange, White</span>
+                <label class="h6">اللون</label>
+                <span>أسود، برتقالي، أبيض</span>
               </div>
               <div class="item">
-                <label class="h6">Storage</label>
-                <span>Relaxed fit shirt-style dress with a rugged</span>
+                <label class="h6">التخزين</label>
+                <span>فستان بقصة مريحة بنمط القميص مع تصميم عملي</span>
               </div>
             </div>
           </div>
           <div class="tab-pane fade" id="tab-reviews" role="tabpanel" aria-labelledby="tab-reviews-tab">
-            <h2 class="product-single__reviews-title">Reviews</h2>
+            <h2 class="product-single__reviews-title">التقييمات</h2>
             <div class="product-single__reviews-list">
               <div class="product-single__reviews-item">
                 <div class="customer-avatar">
@@ -318,9 +318,9 @@
             <div class="product-single__review-form">
               <form name="customer-review-form">
                 <h5>Be the first to review “Message Cotton T-Shirt”</h5>
-                <p>Your email address will not be published. Required fields are marked *</p>
+                <p>لن يتم نشر عنوان بريدك الإلكتروني. الحقول المطلوبة مشار إليها بـ *</p>
                 <div class="select-star-rating">
-                  <label>Your rating *</label>
+                  <label>تقييمك *</label>
                   <span class="star-rating">
                     <svg class="star-rating__star-icon" width="12" height="12" fill="#ccc" viewBox="0 0 12 12"
                       xmlns="http://www.w3.org/2000/svg">
@@ -351,25 +351,25 @@
                   <input type="hidden" id="form-input-rating" value="" />
                 </div>
                 <div class="mb-4">
-                  <textarea id="form-input-review" class="form-control form-control_gray" placeholder="Your Review"
+                  <textarea id="form-input-review" class="form-control form-control_gray" placeholder="تقييمك"
                     cols="30" rows="8"></textarea>
                 </div>
                 <div class="form-label-fixed mb-4">
-                  <label for="form-input-name" class="form-label">Name *</label>
+                  <label for="form-input-name" class="form-label">الاسم *</label>
                   <input id="form-input-name" class="form-control form-control-md form-control_gray">
                 </div>
                 <div class="form-label-fixed mb-4">
-                  <label for="form-input-email" class="form-label">Email address *</label>
+                  <label for="form-input-email" class="form-label">عنوان البريد الإلكتروني *</label>
                   <input id="form-input-email" class="form-control form-control-md form-control_gray">
                 </div>
                 <div class="form-check mb-4">
                   <input class="form-check-input form-check-input_fill" type="checkbox" value="" id="remember_checkbox">
                   <label class="form-check-label" for="remember_checkbox">
-                    Save my name, email, and website in this browser for the next time I comment.
+                    احفظ اسمي وبريدي الإلكتروني والموقع في هذا المتصفح للمرة القادمة عند التعليق.
                   </label>
                 </div>
                 <div class="form-action">
-                  <button type="submit" class="btn btn-primary">Submit</button>
+                  <button type="submit" class="btn btn-primary">إرسال</button>
                 </div>
               </form>
             </div>
@@ -378,7 +378,7 @@
       </div>
     </section>
     <section class="products-carousel container">
-      <h2 class="h3 text-uppercase mb-4 pb-xl-2 mb-xl-4">Related <strong>Products</strong></h2>
+      <h2 class="h3 text-uppercase mb-4 pb-xl-2 mb-xl-4">المنتجات <strong>ذات الصلة</strong></h2>
 
       <div id="related_products" class="position-relative">
         <div class="swiper-container js-swiper-slider" data-settings='{
@@ -425,7 +425,7 @@
                   @endforeach
                 </a>
                 @if(Cart::instance('cart')->content()->where('id', $rproduct->id)->count()>0)
-                  <a href="{{route('cart.index')}}" class="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium btn-warning mb-3">Go to Cart</a>
+                  <a href="{{route('cart.index')}}" class="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium btn-warning mb-3">الذهاب للسلة</a>
                 @else
                 <form name="addtocart-form" method="post" action="{{route('cart.add')}}">
                   @csrf
@@ -433,7 +433,7 @@
                   <input type="hidden" name="quantity" value="1" />
                   <input type="hidden" name="name" value="{{$rproduct->name}}" />
                   <input type="hidden" name="price" value="{{$rproduct->sale_price == '' ? $rproduct->regular_price : $rproduct->sale_price}}" />
-                  <button type="submit" class="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium" data-aside="cartDrawer" title="Add To Cart">Add To Cart</button>
+                  <button type="submit" class="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium" data-aside="cartDrawer" title="إضافة للسلة">إضافة للسلة</button>
                 </form>
                   @endif
               </div>
@@ -452,7 +452,7 @@
                 </div>
 
                 <button class="pc__btn-wl position-absolute top-0 end-0 bg-transparent border-0 js-add-wishlist"
-                  title="Add To Wishlist">
+                  title="إضافة للمفضلة">
                   <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <use href="#icon_heart" />
                   </svg>

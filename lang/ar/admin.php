@@ -15,30 +15,30 @@ return [
     'add_product' => 'إضافة منتج',
     'all_products' => 'جميع المنتجات',
     'product_management' => 'إدارة المنتجات',
-    
+
     'categories' => 'الفئات',
     'add_category' => 'إضافة فئة جديدة',
     'all_categories' => 'جميع الفئات',
     'category_management' => 'إدارة الفئات',
-    
+
     'brands' => 'العلامات التجارية',
     'add_brand' => 'إضافة علامة تجارية',
     'all_brands' => 'جميع العلامات التجارية',
     'brand_management' => 'إدارة العلامات التجارية',
-    
+
     'orders' => 'الطلبات',
     'all_orders' => 'جميع الطلبات',
     'order_tracking' => 'تتبع الطلبات',
     'order_management' => 'إدارة الطلبات',
-    
+
     'users' => 'المستخدمون',
     'customers' => 'العملاء',
     'user_management' => 'إدارة المستخدمين',
-    
+
     'coupons' => 'كوبونات الخصم',
     'add_coupon' => 'إضافة كوبون',
     'coupon_management' => 'إدارة الكوبونات',
-    
+
     'slider' => 'الشرائح المتحركة',
     'settings' => 'الإعدادات',
     'logout' => 'تسجيل الخروج',
@@ -48,7 +48,7 @@ return [
     'notifications' => 'الإشعارات',
     'view_all' => 'عرض الكل',
     'no_notifications' => 'لا توجد إشعارات',
-    
+
     // User Menu - قائمة المستخدم
     'account' => 'الحساب',
     'inbox' => 'صندوق الوارد',
@@ -77,7 +77,7 @@ return [
     'inactive' => 'غير نشط',
     'published' => 'منشور',
     'draft' => 'مسودة',
-    
+
     // Actions - الإجراءات
     'add' => 'إضافة',
     'edit' => 'تعديل',

@@ -3,11 +3,11 @@
 <div class="main-content-inner">
     <div class="main-content-wrap">
         <div class="flex items-center flex-wrap justify-between gap20 mb-27">
-            <h3>Coupon infomation</h3>
+            <h3>معلومات الكوبون</h3>
             <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
                 <li>
                     <a href="{{route('admin.index')}}">
-                        <div class="text-tiny">Dashboard</div>
+                        <div class="text-tiny">لوحة التحكم</div>
                     </a>
                 </li>
                 <li>
@@ -15,14 +15,14 @@
                 </li>
                 <li>
                     <a href="{{route('admin.coupons')}}">
-                        <div class="text-tiny">Coupons</div>
+                        <div class="text-tiny">الكوبونات</div>
                     </a>
                 </li>
                 <li>
                     <i class="icon-chevron-right"></i>
                 </li>
                 <li>
-                    <div class="text-tiny">Edit Coupon</div>
+                    <div class="text-tiny">تعديل الكوبون</div>
                 </li>
             </ul>
         </div>
@@ -32,41 +32,41 @@
                 @method('put')
                 <input type="hidden" name ="id" value="{{ $coupon->id }}"/>
                 <fieldset class="name">
-                    <div class="body-title">Coupon Code <span class="tf-color-1">*</span></div>
-                    <input class="flex-grow" type="text" placeholder="Coupon Code" name="code"
+                    <div class="body-title">رمز الكوبون <span class="tf-color-1">*</span></div>
+                    <input class="flex-grow" type="text" placeholder="رمز الكوبون" name="code"
                         tabindex="0" value="{{$coupon->code}}" aria-required="true" required="">
                 </fieldset>
                 @error('code') <span class="alert alert-danger text-center">{{ $message}}</span> @enderror
 
                 <fieldset class="category">
-                    <div class="body-title">Coupon Type</div>
+                    <div class="body-title">نوع الكوبون</div>
                     <div class="select flex-grow">
                         <select class="" name="type">
-                            <option value="">Select</option>
-                            <option value="fixed" {{ $coupon->type=='fixed' ? 'selected':'' }}>Fixed</option>
-                            <option value="percent" {{ $coupon->type=='percent' ? 'selected':'' }}>Percent</option>
+                            <option value="">اختر</option>
+                            <option value="fixed" {{ $coupon->type=='fixed' ? 'selected':'' }}>مبلغ ثابت</option>
+                            <option value="percent" {{ $coupon->type=='percent' ? 'selected':'' }}>نسبة مئوية</option>
                         </select>
                     </div>
                 </fieldset>
                 @error('type') <span class="alert alert-danger text-center">{{ $message}}</span> @enderror
                 <fieldset class="name">
-                    <div class="body-title">Value <span class="tf-color-1">*</span></div>
-                    <input class="flex-grow" type="text" placeholder="Coupon Value" name="value"
+                    <div class="body-title">القيمة <span class="tf-color-1">*</span></div>
+                    <input class="flex-grow" type="text" placeholder="قيمة الكوبون" name="value"
                         tabindex="0" value="{{$coupon->value}}" aria-required="true" required="">
                 </fieldset>
                 @error('value') <span class="alert alert-danger text-center">{{ $message}}</span> @enderror
 
                 <fieldset class="name">
-                    <div class="body-title">Cart Value <span class="tf-color-1">*</span></div>
-                    <input class="flex-grow" type="text" placeholder="Cart Value"
+                    <div class="body-title">قيمة السلة <span class="tf-color-1">*</span></div>
+                    <input class="flex-grow" type="text" placeholder="قيمة السلة"
                         name="cart_value" tabindex="0" value="{{$coupon->cart_value}}" aria-required="true"
                         required="">
                 </fieldset>
                 @error('cart_value') <span class="alert alert-danger text-center">{{ $message}}</span> @enderror
 
                 <fieldset class="name">
-                    <div class="body-title">Expiry Date <span class="tf-color-1">*</span></div>
-                    <input class="flex-grow" type="date" placeholder="Expiry Date"
+                    <div class="body-title">تاريخ الانتهاء <span class="tf-color-1">*</span></div>
+                    <input class="flex-grow" type="date" placeholder="تاريخ الانتهاء"
                         name="expiry_date" tabindex="0" value="{{$coupon->expiry_date}}" aria-required="true"
                         required="">
                 </fieldset>
@@ -74,7 +74,7 @@
 
                 <div class="bot">
                     <div></div>
-                    <button class="tf-button w208" type="submit">Save</button>
+                    <button class="tf-button w208" type="submit">حفظ التغييرات</button>
                 </div>
             </form>
         </div>

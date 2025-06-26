@@ -11,27 +11,27 @@
 <main class="pt-90">
     <div class="mb-4 pb-4"></div>
     <section class="shop-checkout container">
-      <h2 class="page-title">Cart</h2>
+      <h2 class="page-title">السلة</h2>
       <div class="checkout-steps">
         <a href="javascript::void(0)" class="checkout-steps__item active">
           <span class="checkout-steps__item-number">01</span>
           <span class="checkout-steps__item-title">
-            <span>Shopping Bag</span>
-            <em>Manage Your Items List</em>
+            <span>حقيبة التسوق</span>
+            <em>إدارة قائمة العناصر الخاصة بك</em>
           </span>
         </a>
         <a href="javascript::void(0)" class="checkout-steps__item">
           <span class="checkout-steps__item-number">02</span>
           <span class="checkout-steps__item-title">
-            <span>Shipping and Checkout</span>
-            <em>Checkout Your Items List</em>
+            <span>الشحن والدفع</span>
+            <em>إتمام عملية الشراء</em>
           </span>
         </a>
         <a href="javascript::void(0)" class="checkout-steps__item">
           <span class="checkout-steps__item-number">03</span>
           <span class="checkout-steps__item-title">
-            <span>Confirmation</span>
-            <em>Review And Submit Your Order</em>
+            <span>التأكيد</span>
+            <em>مراجعة وإرسال طلبك</em>
           </span>
         </a>
       </div>
@@ -41,11 +41,11 @@
           <table class="cart-table">
             <thead>
               <tr>
-                <th>Product</th>
+                <th>المنتج</th>
                 <th></th>
-                <th>Price</th>
-                <th>Quantity</th>
-                <th>Subtotal</th>
+                <th>السعر</th>
+                <th>الكمية</th>
+                <th>المجموع الفرعي</th>
                 <th></th>
               </tr>
             </thead>
@@ -61,8 +61,8 @@
                   <div class="shopping-cart__product-item__detail">
                     <h4>{{$item->name}}</h4>
                     <ul class="shopping-cart__product-item__options">
-                      <li>Color: Yellow</li>
-                      <li>Size: L</li>
+                      <li>اللون: أصفر</li>
+                      <li>المقاس: كبير</li>
                     </ul>
                   </div>
                 </td>
@@ -108,23 +108,23 @@
             @if(!Session::has('coupon'))
             <form action="{{ route('cart.coupon.apply')}}" method="POST" class="position-relative bg-body">
                 @csrf
-                <input class="form-control" type="text" name="coupon_code" placeholder="Coupon Code" value="" >
+                <input class="form-control" type="text" name="coupon_code" placeholder="رمز الكوبون" value="" >
                 <input class="btn-link fw-medium position-absolute top-0 end-0 h-100 px-4" type="submit"
-                  value="APPLY COUPON">
+                  value="تطبيق الكوبون">
               </form>
             @else
             <form action="{{ route('cart.coupon.remove')}}" method="POST" class="position-relative bg-body">
               @csrf
               @method('DELETE')
-              <input class="form-control" type="text" name="coupon_code" placeholder="Coupon Code" value="@if(Session::has('coupon')) {{ Session::get('coupon')['code']}}Applied! @endif" >
+              <input class="form-control" type="text" name="coupon_code" placeholder="رمز الكوبون" value="@if(Session::has('coupon')) {{ Session::get('coupon')['code']}} مطبق! @endif" >
               <input class="btn-link fw-medium position-absolute top-0 end-0 h-100 px-4" type="submit"
-                value="REMOVE COUPON">
+                value="إزالة الكوبون">
             </form>
             @endif
             <form method="POST" action="{{route('cart.empty')}}">
               @csrf
               @method('DELETE')
-              <button class="btn btn-light" type="submit">CLEAR CART</button>
+              <button class="btn btn-light" type="submit">إفراغ السلة</button>
             </form>
           </div>
         <div>
@@ -139,32 +139,32 @@
         <div class="shopping-cart__totals-wrapper">
           <div class="sticky-content">
             <div class="shopping-cart__totals">
-              <h3>Cart Totals</h3>
+              <h3>إجمالي السلة</h3>
               @if(Session::has('discounts'))
               <table class="cart-totals">
                 <tbody>
                   <tr>
-                    <th>Subtotal</th>
+                    <th>المجموع الفرعي</th>
                     <td>${{Cart::instance('cart')->subtotal()}}</td>
                   </tr>
                   <tr>
-                    <th>Discount {{ Session::get('coupon')['code'] }}</th>
+                    <th>خصم {{ Session::get('coupon')['code'] }}</th>
                     <td>${{Session::get('discounts')['discount']}}</td>
                   </tr>
                   <tr>
-                    <th>Subtotal After Discount</th>
+                    <th>المجموع الفرعي بعد الخصم</th>
                     <td>${{Session::get('discounts')['subtotal']}}</td>
                   </tr>
                   <tr>
-                    <th>Shipping</th>
-                    <td>Free</td>
+                    <th>الشحن</th>
+                    <td>مجاني</td>
                   </tr>
                   <tr>
-                    <th>VAT</th>
+                    <th>ضريبة القيمة المضافة</th>
                     <td>${{Session::get('discounts')['tax']}}</td>
                   </tr>
                   <tr>
-                    <th>Total</th>
+                    <th>الإجمالي</th>
                     <td>${{Session::get('discounts')['total']}}</td>
                   </tr>
                 </tbody>
@@ -173,19 +173,19 @@
               <table class="cart-totals">
                 <tbody>
                   <tr>
-                    <th>Subtotal</th>
+                    <th>المجموع الفرعي</th>
                     <td>${{Cart::instance('cart')->subtotal()}}</td>
                   </tr>
                   <tr>
-                    <th>Shipping</th>
-                    <td>Free</td>
+                    <th>الشحن</th>
+                    <td>مجاني</td>
                   </tr>
                   <tr>
-                    <th>VAT</th>
+                    <th>ضريبة القيمة المضافة</th>
                     <td>${{Cart::instance('cart')->tax()}}</td>
                   </tr>
                   <tr>
-                    <th>Total</th>
+                    <th>الإجمالي</th>
                     <td>${{Cart::instance('cart')->total()}}</td>
                   </tr>
                 </tbody>
@@ -194,7 +194,7 @@
             </div>
             <div class="mobile_fixed-btn_wrapper">
               <div class="button-wrapper container">
-                <a href="{{ route('cart.checkout')}}" class="btn btn-primary btn-checkout">PROCEED TO CHECKOUT</a>
+                <a href="{{ route('cart.checkout')}}" class="btn btn-primary btn-checkout">متابعة إلى الدفع</a>
               </div>
             </div>
           </div>
@@ -202,8 +202,8 @@
         @else
             <div class="row">
                 <div class="col-md-12 text-center pt-5 bp-5">
-                    <p>No items found in your cart</p>
-                    <a href="{{route('shop.index')}}" class="btn btn-info">Shop Now</a>
+                    <p>لا توجد عناصر في سلتك</p>
+                    <a href="{{route('shop.index')}}" class="btn btn-info">تسوق الآن</a>
                 </div>
             </div>
         @endif

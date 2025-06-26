@@ -15,12 +15,67 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('css/bootstrap.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/bootstrap-select.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/style.css') }}">
+
+    <!-- تحميل خط Cairo من Google Fonts للوحة الإدارة -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- تطبيق خط Cairo على لوحة الإدارة -->
+    <style>
+        * {
+            font-family: "Cairo", sans-serif !important;
+        }
+
+        body {
+            font-family: "Cairo", sans-serif !important;
+            direction: rtl;
+            text-align: right;
+        }
+
+        /* تحسين خط Cairo للوحة الإدارة */
+        .main-content, .sidebar, .header {
+            font-family: "Cairo", sans-serif !important;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: "Cairo", sans-serif !important;
+            font-weight: 700;
+        }
+
+        .btn {
+            font-family: "Cairo", sans-serif !important;
+            font-weight: 600;
+        }
+
+        .form-control, .form-select {
+            font-family: "Cairo", sans-serif !important;
+        }
+
+        .nav-link {
+            font-family: "Cairo", sans-serif !important;
+            font-weight: 500;
+        }
+
+        .table {
+            font-family: "Cairo", sans-serif !important;
+        }
+
+        .card-title {
+            font-family: "Cairo", sans-serif !important;
+            font-weight: 600;
+        }
+    </style>
+
     <link rel="stylesheet" href="{{ asset('font/fonts.css') }}">
-    <link rel="stylesheet" href="{{ asset('icon/style.css') }}">
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <link rel="shortcut icon" href="{{ asset('images/favicon.ico') }}">
     <link rel="apple-touch-icon-precomposed" href="{{ asset('images/favicon.ico') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/sweetalert.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/custom.css') }}">
+    <!-- تحسينات خط Cairo للوحة التحكم -->
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/admin-cairo-improvements.css') }}">
 
     @stack("style")
 </head>
@@ -38,10 +93,6 @@
 
                 <div class="section-menu-left">
                     <div class="box-logo">
-                        <a href="{{route('admin.index')}}" id="site-logo-inner">
-                            <img class="" id="logo_header_1" alt="" src="{{ asset('images/logo/logo.png') }}"
-                                data-light="{{ asset('images/logo/logo.png') }}" data-dark="{{ asset('images/logo/logo.png') }}">
-                        </a>
                         <div class="button-show-hide">
                             <i class="icon-menu-left"></i>
                         </div>
@@ -122,16 +173,23 @@
                                     </a>
                                     <ul class="sub-menu">
                                         <li class="sub-menu-item">
-                                            <a href="orders.html" class="">
+                                            <a href="{{route('admin.orders')}}" class="">
                                                 <div class="text">جميع الطلبات</div>
                                             </a>
                                         </li>
                                         <li class="sub-menu-item">
-                                            <a href="order-tracking.html" class="">
+                                            <a href="#" class="">
                                                 <div class="text">تتبع الطلبات</div>
                                             </a>
                                         </li>
                                     </ul>
+                                </li>
+
+                                <li class="menu-item">
+                                    <a href="{{route('admin.revenue.analytics')}}" class="">
+                                        <div class="icon"><i class="icon-bar-chart"></i></div>
+                                        <div class="text">تحليل الإيرادات</div>
+                                    </a>
                                 </li>
                                 <li class="menu-item">
                                     <a href="slider.html" class="">
@@ -178,11 +236,6 @@
                     <div class="header-dashboard">
                         <div class="wrap">
                             <div class="header-left">
-                                <a href="index-2.html">
-                                    <img class="" id="logo_header_mobile" alt="" src="{{ asset('images/logo/logo.png') }}"
-                                        data-light="{{ asset('images/logo/logo.png') }}" data-dark="{{ asset('images/logo/logo.png') }}"
-                                        data-width="154px" data-height="52px" data-retina="{{ asset('images/logo/logo.png') }}">
-                                </a>
                                 <div class="button-show-hide">
                                     <i class="icon-menu-left"></i>
                                 </div>
@@ -199,7 +252,7 @@
                                     <div class="box-content-search" id="box-content-search">
                                         <ul class="mb-24">
                                             <li class="mb-14">
-                                                <div class="body-title">Top selling product</div>
+                                                <div class="body-title">المنتجات الأكثر مبيعاً</div>
                                             </li>
                                             <li class="mb-14">
                                                 <div class="divider"></div>
@@ -250,7 +303,7 @@
                                         </ul>
                                         <ul class="">
                                             <li class="mb-14">
-                                                <div class="body-title">Order product</div>
+                                                <div class="body-title">منتجات الطلبات</div>
                                             </li>
                                             <li class="mb-14">
                                                 <div class="divider"></div>
@@ -339,9 +392,8 @@
                                                         <i class="icon-noti-1"></i>
                                                     </div>
                                                     <div>
-                                                        <div class="body-title-2">Discount available</div>
-                                                        <div class="text-tiny">Morbi sapien massa, ultricies at rhoncus
-                                                            at, ullamcorper nec diam</div>
+                                                        <div class="body-title-2">خصم متاح</div>
+                                                        <div class="text-tiny">يوجد خصم جديد متاح على مجموعة من المنتجات المختارة</div>
                                                     </div>
                                                 </div>
                                             </li>
@@ -351,9 +403,8 @@
                                                         <i class="icon-noti-2"></i>
                                                     </div>
                                                     <div>
-                                                        <div class="body-title-2">Account has been verified</div>
-                                                        <div class="text-tiny">Mauris libero ex, iaculis vitae rhoncus
-                                                            et</div>
+                                                        <div class="body-title-2">تم التحقق من الحساب</div>
+                                                        <div class="text-tiny">تم التحقق من حسابك بنجاح ويمكنك الآن الوصول لجميع الميزات</div>
                                                     </div>
                                                 </div>
                                             </li>
@@ -363,9 +414,8 @@
                                                         <i class="icon-noti-3"></i>
                                                     </div>
                                                     <div>
-                                                        <div class="body-title-2">Order shipped successfully</div>
-                                                        <div class="text-tiny">Integer aliquam eros nec sollicitudin
-                                                            sollicitudin</div>
+                                                        <div class="body-title-2">تم شحن الطلب بنجاح</div>
+                                                        <div class="text-tiny">تم شحن طلبك وسيصل إليك في الموعد المحدد</div>
                                                     </div>
                                                 </div>
                                             </li>
@@ -375,13 +425,13 @@
                                                         <i class="icon-noti-4"></i>
                                                     </div>
                                                     <div>
-                                                        <div class="body-title-2">Order pending: <span>ID 305830</span>
+                                                        <div class="body-title-2">طلب معلق: <span>رقم 305830</span>
                                                         </div>
-                                                        <div class="text-tiny">Ultricies at rhoncus at ullamcorper</div>
+                                                        <div class="text-tiny">يوجد طلب معلق يحتاج إلى مراجعة وموافقة</div>
                                                     </div>
                                                 </div>
                                             </li>
-                                            <li><a href="#" class="tf-button w-full">View all</a></li>
+                                            <li><a href="#" class="tf-button w-full">عرض الكل</a></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -551,7 +601,7 @@
                         document.querySelector("#line-chart-8"),
                         options
                     );
-                    if ($("#line-chart-8").length > 0) {
+                    if ($("#line-chart-8").length > 0 && !document.querySelector("#line-chart-8").hasAttribute('data-custom')) {
                         chart.render();
                     }
                 };
@@ -576,6 +626,16 @@
             jQuery(window).on("resize", function () { });
         })(jQuery);
     </script>
+
+    <!-- Initialize Lucide Icons -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        });
+    </script>
+
     @stack("scripts")
 </body>
 </html>

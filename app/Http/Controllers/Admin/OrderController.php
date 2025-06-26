@@ -11,15 +11,15 @@ use App\Models\User;
 use App\Models\UserActivity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
-use PDF;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 class OrderController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
-        $this->middleware('admin');
+        // Middleware is handled at route level
     }
 
     /**
@@ -28,19 +28,19 @@ class OrderController extends Controller
     public function index(Request $request)
     {
         $query = Order::with(['user', 'shippingMethod', 'transaction.paymentMethod']);
-        
+
         // Apply status filter
         if ($request->has('status') && $request->status != 'all') {
             $query->where('status', $request->status);
         }
-        
+
         // Apply date range filter
         if ($request->has('start_date') && $request->has('end_date')) {
             $startDate = Carbon::parse($request->start_date)->startOfDay();
             $endDate = Carbon::parse($request->end_date)->endOfDay();
             $query->whereBetween('created_at', [$startDate, $endDate]);
         }
-        
+
         // Apply search filter
         if ($request->has('search')) {
             $search = $request->search;
@@ -55,19 +55,24 @@ class OrderController extends Controller
                   });
             });
         }
-        
+
         $orders = $query->latest()->paginate(10);
-        
-        // Get order status counts
+
+        // Get order status counts efficiently with single query
+        $statusCountsRaw = Order::selectRaw('status, COUNT(*) as count')
+            ->groupBy('status')
+            ->pluck('count', 'status')
+            ->toArray();
+
         $statusCounts = [
             'all' => Order::count(),
-            'ordered' => Order::where('status', 'ordered')->count(),
-            'processing' => Order::where('status', 'processing')->count(),
-            'shipped' => Order::where('status', 'shipped')->count(),
-            'delivered' => Order::where('status', 'delivered')->count(),
-            'cancelled' => Order::where('status', 'cancelled')->count(),
+            'ordered' => $statusCountsRaw['ordered'] ?? 0,
+            'processing' => $statusCountsRaw['processing'] ?? 0,
+            'shipped' => $statusCountsRaw['shipped'] ?? 0,
+            'delivered' => $statusCountsRaw['delivered'] ?? 0,
+            'canceled' => $statusCountsRaw['canceled'] ?? 0,
         ];
-        
+
         return view('admin.orders.index', compact('orders', 'statusCounts'));
     }
 
@@ -77,7 +82,7 @@ class OrderController extends Controller
     public function show(Order $order)
     {
         $order->load(['orderItems.product', 'user', 'shippingMethod', 'shippingAddress', 'transaction.paymentMethod', 'tracking']);
-        
+
         return view('admin.orders.show', compact('order'));
     }
 
@@ -87,10 +92,10 @@ class OrderController extends Controller
     public function edit(Order $order)
     {
         $order->load(['orderItems.product', 'user', 'shippingMethod', 'shippingAddress', 'transaction.paymentMethod', 'tracking']);
-        
+
         $shippingMethods = ShippingMethod::active()->ordered()->get();
         $paymentMethods = PaymentMethod::active()->ordered()->get();
-        
+
         return view('admin.orders.edit', compact('order', 'shippingMethods', 'paymentMethods'));
     }
 
@@ -100,24 +105,24 @@ class OrderController extends Controller
     public function update(Request $request, Order $order)
     {
         $request->validate([
-            'status' => 'required|in:ordered,processing,shipped,delivered,cancelled',
+            'status' => 'required|in:ordered,processing,shipped,delivered,canceled',
             'shipping_method_id' => 'required|exists:shipping_methods,id',
         ]);
-        
+
         // Update order status
         $oldStatus = $order->status;
         $order->status = $request->status;
         $order->shipping_method_id = $request->shipping_method_id;
-        
+
         // Update delivered or cancelled date
         if ($request->status == 'delivered' && $oldStatus != 'delivered') {
             $order->delivered_date = Carbon::now();
-        } elseif ($request->status == 'cancelled' && $oldStatus != 'cancelled') {
+        } elseif ($request->status == 'canceled' && $oldStatus != 'canceled') {
             $order->canceled_date = Carbon::now();
         }
-        
+
         $order->save();
-        
+
         // Add tracking information
         if ($request->has('tracking_comment') && !empty($request->tracking_comment)) {
             OrderTracking::create([
@@ -128,15 +133,47 @@ class OrderController extends Controller
                 'updated_by' => Auth::id(),
             ]);
         }
-        
+
         // Log order update
         UserActivity::log(Auth::id(), 'order_update', [
             'order_id' => $order->id,
             'old_status' => $oldStatus,
             'new_status' => $request->status,
         ]);
-        
+
         return redirect()->route('admin.orders.show', $order)->with('success', __('messages.order_updated'));
+    }
+
+    /**
+     * Update order status only.
+     */
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:ordered,processing,shipped,delivered,canceled',
+        ]);
+
+        $order = Order::findOrFail($id);
+        $oldStatus = $order->status;
+        $order->status = $request->status;
+
+        // Update delivered or cancelled date
+        if ($request->status == 'delivered' && $oldStatus != 'delivered') {
+            $order->delivered_date = Carbon::now();
+        } elseif ($request->status == 'canceled' && $oldStatus != 'canceled') {
+            $order->canceled_date = Carbon::now();
+        }
+
+        $order->save();
+
+        // Log order update
+        UserActivity::log(Auth::id(), 'order_status_update', [
+            'order_id' => $order->id,
+            'old_status' => $oldStatus,
+            'new_status' => $request->status,
+        ]);
+
+        return redirect()->route('admin.order.details', $order)->with('status', 'تم تحديث حالة الطلب بنجاح');
     }
 
     /**
@@ -145,9 +182,9 @@ class OrderController extends Controller
     public function invoice(Order $order)
     {
         $order->load(['orderItems.product', 'user', 'shippingMethod', 'shippingAddress', 'transaction.paymentMethod']);
-        
+
         $pdf = PDF::loadView('admin.orders.invoice', compact('order'));
-        
+
         return $pdf->download('invoice-' . $order->id . '.pdf');
     }
 
@@ -157,7 +194,7 @@ class OrderController extends Controller
     public function tracking(Order $order)
     {
         $order->load(['tracking.updatedBy']);
-        
+
         return view('admin.orders.tracking', compact('order'));
     }
 
@@ -167,11 +204,12 @@ class OrderController extends Controller
     public function addTracking(Request $request, Order $order)
     {
         $request->validate([
-            'status' => 'required|in:ordered,processing,shipped,delivered,cancelled',
-            'comment' => 'required|string',
-            'location' => 'nullable|string',
+            'status' => 'required|in:ordered,processing,shipped,delivered,canceled',
+            'comment' => 'required|string|max:500',
+            'location' => 'nullable|string|max:255',
         ]);
-        
+
+        // Add tracking information
         OrderTracking::create([
             'order_id' => $order->id,
             'status' => $request->status,
@@ -179,21 +217,21 @@ class OrderController extends Controller
             'location' => $request->location,
             'updated_by' => Auth::id(),
         ]);
-        
+
         // Update order status if needed
         if ($order->status != $request->status) {
             $oldStatus = $order->status;
             $order->status = $request->status;
-            
+
             // Update delivered or cancelled date
             if ($request->status == 'delivered' && $oldStatus != 'delivered') {
                 $order->delivered_date = Carbon::now();
-            } elseif ($request->status == 'cancelled' && $oldStatus != 'cancelled') {
+            } elseif ($request->status == 'canceled' && $oldStatus != 'canceled') {
                 $order->canceled_date = Carbon::now();
             }
-            
+
             $order->save();
-            
+
             // Log order update
             UserActivity::log(Auth::id(), 'order_update', [
                 'order_id' => $order->id,
@@ -201,9 +239,11 @@ class OrderController extends Controller
                 'new_status' => $request->status,
             ]);
         }
-        
-        return redirect()->route('admin.orders.tracking', $order)->with('success', __('messages.tracking_added'));
+
+        return redirect()->route('admin.order.tracking', $order)->with('success', 'تم إضافة معلومات التتبع بنجاح');
     }
+
+
 
     /**
      * Display order statistics.
@@ -213,34 +253,34 @@ class OrderController extends Controller
         // Set default date range to last 30 days
         $startDate = $request->start_date ? Carbon::parse($request->start_date)->startOfDay() : Carbon::now()->subDays(30)->startOfDay();
         $endDate = $request->end_date ? Carbon::parse($request->end_date)->endOfDay() : Carbon::now()->endOfDay();
-        
+
         // Get total orders and sales
         $totalOrders = Order::whereBetween('created_at', [$startDate, $endDate])->count();
         $totalSales = Order::where('status', 'delivered')->whereBetween('created_at', [$startDate, $endDate])->sum('total');
-        
+
         // Get orders by status
         $ordersByStatus = Order::whereBetween('created_at', [$startDate, $endDate])
-            ->select('status', \DB::raw('count(*) as count'))
+            ->select('status', DB::raw('count(*) as count'))
             ->groupBy('status')
             ->get()
             ->pluck('count', 'status')
             ->toArray();
-        
+
         // Get sales by day
         $salesByDay = Order::where('status', 'delivered')
             ->whereBetween('created_at', [$startDate, $endDate])
             ->select(
-                \DB::raw('DATE(created_at) as date'),
-                \DB::raw('SUM(total) as total_sales'),
-                \DB::raw('COUNT(*) as order_count')
+                DB::raw('DATE(created_at) as date'),
+                DB::raw('SUM(total) as total_sales'),
+                DB::raw('COUNT(*) as order_count')
             )
             ->groupBy('date')
             ->orderBy('date')
             ->get();
-        
+
         // Get top customers
         $topCustomers = Order::whereBetween('created_at', [$startDate, $endDate])
-            ->select('user_id', \DB::raw('COUNT(*) as order_count'), \DB::raw('SUM(total) as total_spent'))
+            ->select('user_id', DB::raw('COUNT(*) as order_count'), DB::raw('SUM(total) as total_spent'))
             ->groupBy('user_id')
             ->orderByDesc('total_spent')
             ->take(10)
@@ -253,7 +293,7 @@ class OrderController extends Controller
                     'total_spent' => $item->total_spent
                 ];
             });
-        
+
         return view('admin.orders.statistics', compact(
             'startDate',
             'endDate',

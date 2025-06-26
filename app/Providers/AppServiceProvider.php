@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\View;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -22,8 +23,9 @@ class AppServiceProvider extends ServiceProvider
         // Load translation helper
         require_once app_path('Helpers/TranslationHelper.php');
 
-        // Set default locale to Arabic
-        app()->setLocale('ar');
+        // Set locale from session or default to Arabic
+        $locale = session('locale', 'ar');
+        app()->setLocale($locale);
 
         // Share translation helper with all views
         view()->share('trans', \App\Helpers\TranslationHelper::class);
@@ -34,5 +36,8 @@ class AppServiceProvider extends ServiceProvider
             $view->with('isRtl', \App\Helpers\TranslationHelper::isRtl());
             $view->with('direction', \App\Helpers\TranslationHelper::getDirection());
         });
+
+        // Share categories and brands with header
+        View::composer('layouts.partials.header', \App\Http\View\Composers\HeaderComposer::class);
     }
 }

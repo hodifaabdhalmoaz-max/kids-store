@@ -3,18 +3,18 @@
 <div class="main-content-inner">
     <div class="main-content-wrap">
         <div class="flex items-center flex-wrap justify-between gap20 mb-27">
-            <h3>Brands</h3>
+            <h3>العلامات التجارية</h3>
             <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
                 <li>
                     <a href="{{route('admin.index')}}">
-                        <div class="text-tiny">Dashboard</div>
+                        <div class="text-tiny">لوحة التحكم</div>
                     </a>
                 </li>
                 <li>
-                    <i class="icon-chevron-right"></i>
+                    <i data-lucide="chevron-right" style="width: 16px; height: 16px;"></i>
                 </li>
                 <li>
-                    <div class="text-tiny">Brands</div>
+                    <div class="text-tiny">العلامات التجارية</div>
                 </li>
             </ul>
         </div>
@@ -24,16 +24,15 @@
                 <div class="wg-filter flex-grow">
                     <form class="form-search">
                         <fieldset class="name">
-                            <input type="text" placeholder="Search here..." class="" name="name"
+                            <input type="text" placeholder="البحث هنا..." class="" name="name"
                                 tabindex="2" value="" aria-required="true" required="">
                         </fieldset>
                         <div class="button-submit">
-                            <button class="" type="submit"><i class="icon-search"></i></button>
+                            <button class="" type="submit"><i data-lucide="search" style="width: 16px; height: 16px;"></i></button>
                         </div>
                     </form>
                 </div>
-                <a class="tf-button style-1 w208" href="{{route('admin.brand.add')}}"><i
-                        class="icon-plus"></i>Add new</a>
+                <a class="tf-button style-1 w208" href="{{route('admin.brand.add')}}"><i data-lucide="plus" style="width: 16px; height: 16px;"></i>إضافة جديد</a>
             </div>
             <div class="wg-table table-all-user">
                 <div class="table-responsive">
@@ -44,10 +43,10 @@
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Name</th>
-                                <th>Slug</th>
-                                <th>Products</th>
-                                <th>Action</th>
+                                <th>الاسم</th>
+                                <th>الرابط</th>
+                                <th>المنتجات</th>
+                                <th>الإجراءات</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -68,14 +67,14 @@
                                     <div class="list-icon-function">
                                         <a href="{{route('admin.brand.edit',['id'=>$brand->id])}}">
                                             <div class="item edit">
-                                                <i class="icon-edit-3"></i>
+                                                <i data-lucide="edit" style="width: 16px; height: 16px;"></i>
                                             </div>
                                         </a>
                                         <form action="{{route('admin.brand.delete',['id'=>$brand->id])}}" method="POST">
                                             @csrf
                                             @method('DELETE')
                                             <div class="item text-danger delete">
-                                                <i class="icon-trash-2"></i>
+                                                <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
                                             </div>
                                         </form>
                                     </div>
@@ -102,10 +101,10 @@
                 e.preventDefault();
                 var form = $(this).closest('form');
                 swal({
-                    title: "Are you sure?",
-                    text: "You want to delete this record?",
+                    title: "هل أنت متأكد؟",
+                    text: "هل تريد حذف هذا السجل؟",
                     type: "warning",
-                    buttons: ["No", "Yes"],
+                    buttons: ["لا", "نعم"],
                     confirmButtonColor: "#dc3545"
                 }).then(function(result){
                     if(result){

@@ -7,22 +7,91 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    <!-- Security Meta Tags -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+    <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(self), payment=(self)">
+
     <title>{{ config('app.name', 'Laravel') }}</title>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <meta name="author" content="surfside media" />
+    <meta name="author" content="Hudhaifa Al-Hudhaifi" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <meta name="theme-color" content="#007bff">
     <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}" type="image/x-icon">
-    <link rel="preconnect" href="https://fonts.gstatic.com/">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap"
-        rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Allura&amp;display=swap" rel="stylesheet">
+    <!-- تحميل خط Cairo من Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- تطبيق خط Cairo مباشرة -->
+    <style>
+        * {
+            font-family: "Cairo", sans-serif !important;
+        }
+
+        body {
+            font-family: "Cairo", sans-serif !important;
+            direction: rtl;
+            text-align: right;
+        }
+    </style>
     <link rel="stylesheet" href="{{ asset('assets/css/plugins/swiper.min.css') }}" type="text/css" />
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" type="text/css" />
     <link rel="stylesheet" href="{{ asset('assets/css/custom.css') }}" type="text/css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
-        integrity="sha512-SfTiTlX6kk+qitfevl/7LibUOeJWlt9rbyDn92a1DqWOw9vWG2MFoays0sgObmWazO5BQPiFucnnEAjpAB+/Sw=="
-        crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="{{ asset('assets/css/advanced-search.css') }}" type="text/css" />
+    <link rel="stylesheet" href="{{ asset('css/custom-pages.css') }}" type="text/css" />
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     @stack("style")
+    @stack("styles")
+
+    <!-- تصميم الخط التحتي للعناوين -->
+    <style>
+        /* تصميم العناوين مع الخط التحتي الأزرق */
+        .section-title {
+            position: relative !important;
+            display: block !important;
+            width: 100% !important;
+            margin-bottom: 2rem !important;
+            padding-bottom: 1.5rem !important;
+            text-align: center !important;
+        }
+
+        .section-title::after {
+            content: '' !important;
+            position: absolute !important;
+            bottom: 0 !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            width: 60px !important;
+            height: 4px !important;
+            background: linear-gradient(90deg, #007bff, #0056b3) !important;
+            border-radius: 2px !important;
+            transition: all 0.3s ease !important;
+            z-index: 1 !important;
+            box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3) !important;
+        }
+
+        .section-title:hover::after {
+            width: 80px !important;
+            background: linear-gradient(90deg, #0056b3, #004085) !important;
+            box-shadow: 0 3px 6px rgba(0, 123, 255, 0.4) !important;
+        }
+
+        /* تحسين للأجهزة المحمولة */
+        @media (max-width: 768px) {
+            .section-title::after {
+                width: 40px !important;
+                height: 3px !important;
+            }
+
+            .section-title:hover::after {
+                width: 50px !important;
+            }
+        }
+    </style>
 </head>
 <body class="gradient-bg">
   <svg class="d-none">
@@ -284,10 +353,10 @@
     <nav
       class="header-mobile__navigation navigation d-flex flex-column w-100 position-absolute top-100 bg-body overflow-auto">
       <div class="container">
-        <form action="#" method="GET" class="search-field position-relative mt-4 mb-3">
+        <form action="{{ route('shop.search') }}" method="GET" class="search-field position-relative mt-4 mb-3">
           <div class="position-relative">
-            <input class="search-field__input w-100 border rounded-1" type="text" name="search-keyword"
-              placeholder="ابحث عن المنتجات..." />
+            <input class="search-field__input w-100 border rounded-1" type="text" name="search"
+              placeholder="ابحث عن المنتجات..." value="{{ request('search') }}" autocomplete="off" />
             <button class="btn-icon search-popup__submit pb-0 me-2" type="submit">
               <svg class="d-block" width="20" height="20" viewBox="0 0 20 20" fill="none"
                 xmlns="http://www.w3.org/2000/svg">
@@ -297,8 +366,8 @@
             <button class="btn-icon btn-close-lg search-popup__reset pb-0 me-2" type="reset"></button>
           </div>
 
-          <div class="position-absolute start-0 top-100 m-0 w-100">
-            <div class="search-result"></div>
+          <div class="position-absolute start-0 top-100 m-0 w-100 z-3">
+            <div class="search-result bg-white border rounded shadow-sm" style="display: none;"></div>
           </div>
         </form>
       </div>
@@ -307,19 +376,19 @@
         <div class="overflow-hidden">
           <ul class="navigation__list list-unstyled position-relative">
             <li class="navigation__item">
-              <a href="{{route('home.index')}}" class="navigation__link">Home</a>
+              <a href="{{route('home.index')}}" class="navigation__link">الرئيسية</a>
             </li>
             <li class="navigation__item">
-              <a href="{{route('shop.index')}}" class="navigation__link">Shop</a>
+              <a href="{{route('shop.index')}}" class="navigation__link">المتجر</a>
             </li>
             <li class="navigation__item">
-              <a href="{{route('cart.index')}}" class="navigation__link">Cart</a>
+              <a href="{{route('cart.index')}}" class="navigation__link">السلة</a>
             </li>
             <li class="navigation__item">
-              <a href="about.html" class="navigation__link">About</a>
+              <a href="{{route('about')}}" class="navigation__link">من نحن</a>
             </li>
             <li class="navigation__item">
-              <a href="contact.html" class="navigation__link">Contact</a>
+              <a href="{{route('contact')}}" class="navigation__link">اتصل بنا</a>
             </li>
           </ul>
         </div>
@@ -331,7 +400,7 @@
             xmlns="http://www.w3.org/2000/svg">
             <use href="#icon_user" />
           </svg>
-          <span class="d-inline-block ms-2 text-uppercase align-middle fw-medium">My Account</span>
+          <span class="d-inline-block ms-2 text-uppercase align-middle fw-medium">حسابي</span>
         </div>
 
 
@@ -389,26 +458,26 @@
       <div class="header-desk header-desk_type_1">
         <div class="logo">
           <a href="{{route('home.index')}}">
-            <img src="{{ asset('assets/images/logo.png') }}" alt="Uomo" class="logo__image d-block" />
+            <img src="{{ asset('assets/images/logo.png') }}" alt="Uomo" class="logo__image d-block" width="90px" height="90px"/>
           </a>
         </div>
 
         <nav class="navigation">
           <ul class="navigation__list list-unstyled d-flex">
             <li class="navigation__item">
-              <a href="{{route('home.index')}}" class="navigation__link">Home</a>
+              <a href="{{route('home.index')}}" class="navigation__link">الرئيسية</a>
             </li>
             <li class="navigation__item">
-              <a href="{{route('shop.index')}}" class="navigation__link">Shop</a>
+              <a href="{{route('shop.index')}}" class="navigation__link">المتجر</a>
             </li>
             <li class="navigation__item">
-              <a href="{{route('cart.index')}}" class="navigation__link">Cart</a>
+              <a href="{{route('cart.index')}}" class="navigation__link">السلة</a>
             </li>
             <li class="navigation__item">
-              <a href="about.html" class="navigation__link">About</a>
+              <a href="{{route('about')}}" class="navigation__link">من نحن</a>
             </li>
             <li class="navigation__item">
-              <a href="contact.html" class="navigation__link">Contact</a>
+              <a href="{{route('contact')}}" class="navigation__link">اتصل بنا</a>
             </li>
           </ul>
         </nav>
@@ -426,11 +495,12 @@
             </div>
 
             <div class="search-popup js-hidden-content">
-              <form action="#" method="GET" class="search-field container">
+              <form action="{{ route('shop.search') }}" method="GET" class="search-field container">
                 <p class="text-uppercase text-secondary fw-medium mb-4">عما تبحث؟</p>
                 <div class="position-relative">
                   <input class="search-field__input search-popup__input w-100 fw-medium" type="text"
-                    name="search-keyword" placeholder="ابحث عن المنتجات..." />
+                    name="search" placeholder="ابحث عن المنتجات..." value="{{ request('search') }}"
+                    autocomplete="off" id="main-search-input" />
                   <button class="btn-icon search-popup__submit" type="submit">
                     <svg class="d-block" width="20" height="20" viewBox="0 0 20 20" fill="none"
                       xmlns="http://www.w3.org/2000/svg">
@@ -442,19 +512,20 @@
 
                 <div class="search-popup__results">
                   <div class="sub-menu search-suggestion">
-                    <h6 class="sub-menu__title fs-base">Quicklinks</h6>
+                    <h6 class="sub-menu__title fs-base">روابط سريعة</h6>
                     <ul class="sub-menu__list list-unstyled">
-                      <li class="sub-menu__item"><a href="shop2.html" class="menu-link menu-link_us-s">New Arrivals</a>
+                      <li class="sub-menu__item"><a href="{{route('shop.search', ['sort_by' => 'newest'])}}" class="menu-link menu-link_us-s">وصل حديثاً</a>
                       </li>
-                      <li class="sub-menu__item"><a href="#" class="menu-link menu-link_us-s">Dresses</a></li>
-                      <li class="sub-menu__item"><a href="shop3.html" class="menu-link menu-link_us-s">Accessories</a>
+                      <li class="sub-menu__item"><a href="{{route('shop.search', ['category' => 'ملابس-اطفال'])}}" class="menu-link menu-link_us-s">ملابس أطفال</a></li>
+                      <li class="sub-menu__item"><a href="{{route('shop.search', ['category' => 'العاب-اطفال'])}}" class="menu-link menu-link_us-s">ألعاب أطفال</a>
                       </li>
-                      <li class="sub-menu__item"><a href="#" class="menu-link menu-link_us-s">Footwear</a></li>
-                      <li class="sub-menu__item"><a href="#" class="menu-link menu-link_us-s">Sweatshirt</a></li>
+                      <li class="sub-menu__item"><a href="{{route('shop.search', ['category' => 'احذية-اطفال'])}}" class="menu-link menu-link_us-s">أحذية أطفال</a></li>
+                      <li class="sub-menu__item"><a href="{{route('shop.search', ['category' => 'اكسسوارات-اطفال'])}}" class="menu-link menu-link_us-s">إكسسوارات أطفال</a></li>
+                      <li class="sub-menu__item"><a href="{{route('shop.search', ['featured' => '1'])}}" class="menu-link menu-link_us-s">المنتجات المميزة</a></li>
                     </ul>
                   </div>
 
-                  <div class="search-result row row-cols-5"></div>
+                  <div class="search-result row row-cols-5" id="quick-search-results"></div>
                 </div>
               </form>
             </div>
@@ -520,98 +591,134 @@
               <img src="{{ asset('assets/images/logo.png') }}" alt="SurfsideMedia" class="logo__image d-block" />
             </a>
           </div>
-          <p class="footer-address">104 Al-hana street, Cryter- Aden City, HA 00000</p>
-          <p class="m-0"><strong class="fw-medium">contact: hodifaabdhalmoaz@gmail.com</strong></p>
-          <p><strong class="fw-medium">+967 777-548-421</strong></p>
+          <p class="footer-address">صنعاء، اليمن</p>
+          <p class="m-0"><strong class="fw-medium">البريد الإلكتروني: hodifaabdhalmoaz@gmail.com</strong></p>
+          <p class="mb-1"><strong class="fw-medium">هاتف 1: +967 777-548-421</strong></p>
+          <p class="mb-1"><strong class="fw-medium">هاتف 2: +967 718-706-242</strong></p>
+          <p><strong class="fw-medium">الموقع: <a href="https://hodifatech.com/" target="_blank" class="text-decoration-none">hodifatech.com</a></strong></p>
 
-          <ul class="social-links list-unstyled d-flex flex-wrap mb-0">
-            <li>
-              <a href="#" class="footer__social-link d-block">
-                <svg class="svg-icon svg-icon_facebook" width="9" height="15" viewBox="0 0 9 15"
-                  xmlns="http://www.w3.org/2000/svg">
-                  <use href="#icon_facebook" />
-                </svg>
-              </a>
-            </li>
-            <li>
-              <a href="#" class="footer__social-link d-block">
-                <svg class="svg-icon svg-icon_twitter" width="14" height="13" viewBox="0 0 14 13"
-                  xmlns="http://www.w3.org/2000/svg">
-                  <use href="#icon_twitter" />
-                </svg>
-              </a>
-            </li>
-            <li>
-              <a href="#" class="footer__social-link d-block">
-                <svg class="svg-icon svg-icon_instagram" width="14" height="13" viewBox="0 0 14 13"
-                  xmlns="http://www.w3.org/2000/svg">
-                  <use href="#icon_instagram" />
-                </svg>
-              </a>
-            </li>
-            <li>
-              <a href="#" class="footer__social-link d-block">
-                <svg class="svg-icon svg-icon_youtube" width="16" height="11" viewBox="0 0 16 11"
-                  xmlns="http://www.w3.org/2000/svg">
-                  <path
-                    d="M15.0117 1.8584C14.8477 1.20215 14.3281 0.682617 13.6992 0.518555C12.5234 0.19043 7.875 0.19043 7.875 0.19043C7.875 0.19043 3.19922 0.19043 2.02344 0.518555C1.39453 0.682617 0.875 1.20215 0.710938 1.8584C0.382812 3.00684 0.382812 5.46777 0.382812 5.46777C0.382812 5.46777 0.382812 7.90137 0.710938 9.07715C0.875 9.7334 1.39453 10.2256 2.02344 10.3896C3.19922 10.6904 7.875 10.6904 7.875 10.6904C7.875 10.6904 12.5234 10.6904 13.6992 10.3896C14.3281 10.2256 14.8477 9.7334 15.0117 9.07715C15.3398 7.90137 15.3398 5.46777 15.3398 5.46777C15.3398 5.46777 15.3398 3.00684 15.0117 1.8584ZM6.34375 7.68262V3.25293L10.2266 5.46777L6.34375 7.68262Z" />
-                </svg>
-              </a>
-            </li>
-            <li>
-              <a href="#" class="footer__social-link d-block">
-                <svg class="svg-icon svg-icon_pinterest" width="14" height="15" viewBox="0 0 14 15"
-                  xmlns="http://www.w3.org/2000/svg">
-                  <use href="#icon_pinterest" />
-                </svg>
-              </a>
-            </li>
+          <!-- Developer Social Links -->
+          <div class="mb-3">
+            <h6 class="text-uppercase mb-2">تواصل مع المطور</h6>
+            <ul class="social-links list-unstyled d-flex flex-wrap mb-0">
+              <li class="me-2">
+                <a href="https://www.facebook.com/share/1E3T83a8KD/" target="_blank" class="footer__social-link d-block" title="Facebook">
+                  <svg class="svg-icon svg-icon_facebook" width="9" height="15" viewBox="0 0 9 15"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <use href="#icon_facebook" />
+                  </svg>
+                </a>
+              </li>
+              <li class="me-2">
+                <a href="https://www.linkedin.com/in/hodifa-al-hodify-30644b289" target="_blank" class="footer__social-link d-block" title="LinkedIn">
+                  <i data-lucide="linkedin" style="width: 15px; height: 15px;"></i>
+                </a>
+              </li>
+              <li class="me-2">
+                <a href="https://x.com/moaz_abdh" target="_blank" class="footer__social-link d-block" title="Twitter">
+                  <svg class="svg-icon svg-icon_twitter" width="14" height="13" viewBox="0 0 14 13"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <use href="#icon_twitter" />
+                  </svg>
+                </a>
+              </li>
+              <li class="me-2">
+                <a href="https://github.com/HA1234098765" target="_blank" class="footer__social-link d-block" title="GitHub">
+                  <i data-lucide="github" style="width: 15px; height: 15px;"></i>
+                </a>
+              </li>
+              <li class="me-2">
+                <a href="https://www.instagram.com/invites/contact/?utm_source=ig_contact_invite&utm_medium=copy_link&utm_content=mwfgwqx" target="_blank" class="footer__social-link d-block" title="Instagram">
+                  <svg class="svg-icon svg-icon_instagram" width="14" height="13" viewBox="0 0 14 13"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <use href="#icon_instagram" />
+                  </svg>
+                </a>
+              </li>
+              <li>
+                <a href="https://wa.me/qr/D74HW7MGE5RIK1" target="_blank" class="footer__social-link d-block" title="WhatsApp">
+                  <i data-lucide="message-circle" style="width: 15px; height: 15px; color: #25d366;"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Store Social Links -->
+          <div>
+            <h6 class="text-uppercase mb-2">تواصل مع المتجر</h6>
+            <ul class="social-links list-unstyled d-flex flex-wrap mb-0">
+              <li class="me-2">
+                <a href="https://www.facebook.com/profile.php?id=61558122398516&mibextid=ZbWKwL" target="_blank" class="footer__social-link d-block" title="Facebook">
+                  <svg class="svg-icon svg-icon_facebook" width="9" height="15" viewBox="0 0 9 15"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <use href="#icon_facebook" />
+                  </svg>
+                </a>
+              </li>
+              <li class="me-2">
+                <a href="https://www.instagram.com/dunya_alatfaal/profilecard/?igsh=MTd1Y2ZrazBsanAyMA==" target="_blank" class="footer__social-link d-block" title="Instagram">
+                  <svg class="svg-icon svg-icon_instagram" width="14" height="13" viewBox="0 0 14 13"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <use href="#icon_instagram" />
+                  </svg>
+                </a>
+              </li>
+              <li>
+                <a href="https://wa.me/message/R74CYLSGZQD7C1" target="_blank" class="footer__social-link d-block" title="WhatsApp Business">
+                  <i data-lucide="message-circle" style="width: 15px; height: 15px; color: #25d366;"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="footer-column footer-menu mb-4 mb-lg-0">
+          <h6 class="sub-menu__title text-uppercase">الشركة</h6>
+          <ul class="sub-menu__list list-unstyled">
+            <li class="sub-menu__item"><a href="{{route('about')}}" class="menu-link menu-link_us-s">من نحن</a></li>
+            <li class="sub-menu__item"><a href="{{route('contact')}}" class="menu-link menu-link_us-s">اتصل بنا</a></li>
+            <li class="sub-menu__item"><a href="{{route('faq')}}" class="menu-link menu-link_us-s">الأسئلة الشائعة</a></li>
+            <li class="sub-menu__item"><a href="{{route('shipping')}}" class="menu-link menu-link_us-s">معلومات الشحن</a></li>
+            <li class="sub-menu__item"><a href="{{route('returns')}}" class="menu-link menu-link_us-s">سياسة الإرجاع</a></li>
           </ul>
         </div>
 
         <div class="footer-column footer-menu mb-4 mb-lg-0">
-          <h6 class="sub-menu__title text-uppercase">Company</h6>
+          <h6 class="sub-menu__title text-uppercase">المتجر</h6>
           <ul class="sub-menu__list list-unstyled">
-            <li class="sub-menu__item"><a href="about-2.html" class="menu-link menu-link_us-s">About Us</a></li>
-            <li class="sub-menu__item"><a href="#" class="menu-link menu-link_us-s">Careers</a></li>
-            <li class="sub-menu__item"><a href="#" class="menu-link menu-link_us-s">Affiliates</a></li>
-            <li class="sub-menu__item"><a href="blog_list1.html" class="menu-link menu-link_us-s">Blog</a></li>
-            <li class="sub-menu__item"><a href="contact-2.html" class="menu-link menu-link_us-s">Contact Us</a></li>
+            <li class="sub-menu__item"><a href="{{route('shop.index')}}" class="menu-link menu-link_us-s">جميع المنتجات</a></li>
+            <li class="sub-menu__item"><a href="{{route('shop.index', ['sort' => 'latest'])}}" class="menu-link menu-link_us-s">وصل حديثاً</a></li>
+            <li class="sub-menu__item"><a href="{{route('shop.index', ['sort' => 'featured'])}}" class="menu-link menu-link_us-s">المنتجات المميزة</a></li>
+            <li class="sub-menu__item"><a href="{{route('cart.index')}}" class="menu-link menu-link_us-s">سلة التسوق</a></li>
+            <li class="sub-menu__item"><a href="{{route('wishlist.index')}}" class="menu-link menu-link_us-s">قائمة الأمنيات</a></li>
           </ul>
         </div>
 
         <div class="footer-column footer-menu mb-4 mb-lg-0">
-          <h6 class="sub-menu__title text-uppercase">Shop</h6>
+          <h6 class="sub-menu__title text-uppercase">المساعدة</h6>
           <ul class="sub-menu__list list-unstyled">
-            <li class="sub-menu__item"><a href="shop2.html" class="menu-link menu-link_us-s">New Arrivals</a></li>
-            <li class="sub-menu__item"><a href="shop3.html" class="menu-link menu-link_us-s">Accessories</a></li>
-            <li class="sub-menu__item"><a href="shop4.html" class="menu-link menu-link_us-s">Men</a></li>
-            <li class="sub-menu__item"><a href="shop5.html" class="menu-link menu-link_us-s">Women</a></li>
-            <li class="sub-menu__item"><a href="shop1.html" class="menu-link menu-link_us-s">Shop All</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-column footer-menu mb-4 mb-lg-0">
-          <h6 class="sub-menu__title text-uppercase">Help</h6>
-          <ul class="sub-menu__list list-unstyled">
-            <li class="sub-menu__item"><a href="#" class="menu-link menu-link_us-s">Customer Service</a></li>
-            <li class="sub-menu__item"><a href="account_dashboard.html" class="menu-link menu-link_us-s">My Account</a>
+            <li class="sub-menu__item"><a href="{{route('contact')}}" class="menu-link menu-link_us-s">خدمة العملاء</a></li>
+            <li class="sub-menu__item">
+              @auth
+                <a href="{{ Auth::user()->utype === 'ADM' ? route('admin.index') : route('user.index') }}" class="menu-link menu-link_us-s">حسابي</a>
+              @else
+                <a href="{{route('login')}}" class="menu-link menu-link_us-s">تسجيل الدخول</a>
+              @endauth
             </li>
-            <li class="sub-menu__item"><a href="store_location.html" class="menu-link menu-link_us-s">Find a Store</a>
-            </li>
-            <li class="sub-menu__item"><a href="#" class="menu-link menu-link_us-s">Legal & Privacy</a></li>
-            <li class="sub-menu__item"><a href="#" class="menu-link menu-link_us-s">Gift Card</a></li>
+            <li class="sub-menu__item"><a href="{{route('privacy')}}" class="menu-link menu-link_us-s">سياسة الخصوصية</a></li>
+            <li class="sub-menu__item"><a href="{{route('terms')}}" class="menu-link menu-link_us-s">الشروط والأحكام</a></li>
+            <li class="sub-menu__item"><a href="{{route('faq')}}" class="menu-link menu-link_us-s">الأسئلة الشائعة</a></li>
           </ul>
         </div>
 
         <div class="footer-column footer-menu mb-4 mb-lg-0">
-          <h6 class="sub-menu__title text-uppercase">Categories</h6>
+          <h6 class="sub-menu__title text-uppercase">فئات الأطفال</h6>
           <ul class="sub-menu__list list-unstyled">
-            <li class="sub-menu__item"><a href="#" class="menu-link menu-link_us-s">Shirts</a></li>
-            <li class="sub-menu__item"><a href="#" class="menu-link menu-link_us-s">Jeans</a></li>
-            <li class="sub-menu__item"><a href="#" class="menu-link menu-link_us-s">Shoes</a></li>
-            <li class="sub-menu__item"><a href="#" class="menu-link menu-link_us-s">Bags</a></li>
-            <li class="sub-menu__item"><a href="#" class="menu-link menu-link_us-s">Shop All</a></li>
+            <li class="sub-menu__item"><a href="{{route('shop.index', ['category' => 'ملابس-اطفال'])}}" class="menu-link menu-link_us-s">ملابس أطفال</a></li>
+            <li class="sub-menu__item"><a href="{{route('shop.index', ['category' => 'العاب-اطفال'])}}" class="menu-link menu-link_us-s">ألعاب أطفال</a></li>
+            <li class="sub-menu__item"><a href="{{route('shop.index', ['category' => 'احذية-اطفال'])}}" class="menu-link menu-link_us-s">أحذية أطفال</a></li>
+            <li class="sub-menu__item"><a href="{{route('shop.index', ['category' => 'اكسسوارات-اطفال'])}}" class="menu-link menu-link_us-s">إكسسوارات أطفال</a></li>
+            <li class="sub-menu__item"><a href="{{route('shop.index', ['category' => 'مستلزمات-اطفال'])}}" class="menu-link menu-link_us-s">مستلزمات أطفال</a></li>
           </ul>
         </div>
       </div>
@@ -621,8 +728,7 @@
       <div class="container d-md-flex align-items-center">
         <span class="footer-copyright me-auto">©2024 حذيفة الحذيفي - جميع الحقوق محفوظة</span>
         <div class="footer-settings d-md-flex align-items-center">
-          <a href="privacy-policy.html">Privacy Policy</a> &nbsp;|&nbsp; <a href="terms-conditions.html">Terms &amp;
-            Conditions</a>
+          <a href="{{ route('privacy') }}">سياسة الخصوصية</a> &nbsp;|&nbsp; <a href="{{ route('terms') }}">الشروط والأحكام</a>
         </div>
       </div>
     </div>
@@ -637,30 +743,32 @@
             xmlns="http://www.w3.org/2000/svg">
             <use href="#icon_home" />
           </svg>
-          <span>Home</span>
+          <span>الرئيسية</span>
         </a>
       </div>
 
       <div class="col-4">
-        <a href="{{route('home.index')}}" class="footer-mobile__link d-flex flex-column align-items-center">
+        <a href="{{route('shop.index')}}" class="footer-mobile__link d-flex flex-column align-items-center">
           <svg class="d-block" width="18" height="18" viewBox="0 0 18 18" fill="none"
             xmlns="http://www.w3.org/2000/svg">
             <use href="#icon_hanger" />
           </svg>
-          <span>Shop</span>
+          <span>المتجر</span>
         </a>
       </div>
 
       <div class="col-4">
-        <a href="{{route('home.index')}}" class="footer-mobile__link d-flex flex-column align-items-center">
+        <a href="{{route('wishlist.index')}}" class="footer-mobile__link d-flex flex-column align-items-center">
           <div class="position-relative">
             <svg class="d-block" width="18" height="18" viewBox="0 0 20 20" fill="none"
               xmlns="http://www.w3.org/2000/svg">
               <use href="#icon_heart" />
             </svg>
-            <span class="wishlist-amount d-block position-absolute js-wishlist-count">3</span>
+            @if(Cart::instance('wishlist')->content()->count()>0)
+            <span class="wishlist-amount d-block position-absolute js-wishlist-count">{{Cart::instance('wishlist')->content()->count()}}</span>
+            @endif
           </div>
-          <span>Wishlist</span>
+          <span>المفضلة</span>
         </a>
       </div>
     </div>
@@ -675,6 +783,132 @@
   <script src="{{ asset('assets/js/plugins/swiper.min.js') }}"></script>
   <script src="{{ asset('assets/js/plugins/countdown.js') }}"></script>
   <script src="{{ asset('assets/js/theme.js') }}"></script>
+
+  <!-- البحث السريع والذكي -->
+  <script>
+    $(document).ready(function() {
+        let searchTimeout;
+        const searchInput = $('#main-search-input');
+        const searchResults = $('#quick-search-results');
+
+        // البحث السريع أثناء الكتابة
+        searchInput.on('input', function() {
+            const query = $(this).val().trim();
+
+            clearTimeout(searchTimeout);
+
+            if (query.length >= 2) {
+                searchTimeout = setTimeout(function() {
+                    performQuickSearch(query);
+                }, 300);
+            } else {
+                searchResults.hide().empty();
+            }
+        });
+
+        // إخفاء النتائج عند النقر خارجها
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('.search-popup').length) {
+                searchResults.hide();
+            }
+        });
+
+        function performQuickSearch(query) {
+            $.ajax({
+                url: '/shop/quick-search',
+                method: 'GET',
+                data: { q: query },
+                beforeSend: function() {
+                    searchResults.html('<div class="p-3 text-center"><div class="spinner-border spinner-border-sm" role="status"></div> جاري البحث...</div>').show();
+                },
+                success: function(response) {
+                    if (response.success && response.data) {
+                        displayQuickResults(response.data);
+                    } else {
+                        searchResults.html('<div class="p-3 text-center text-muted">لا توجد نتائج</div>');
+                    }
+                },
+                error: function() {
+                    searchResults.html('<div class="p-3 text-center text-danger">حدث خطأ في البحث</div>');
+                }
+            });
+        }
+
+        function displayQuickResults(data) {
+            let html = '';
+
+            // عرض المنتجات
+            if (data.products && data.products.length > 0) {
+                html += '<div class="p-3"><h6 class="fw-bold mb-2">المنتجات</h6>';
+                data.products.forEach(function(product) {
+                    const price = product.sale_price || product.regular_price;
+                    const imageUrl = product.image ? '/uploads/products/' + product.image : '/assets/images/no-image.png';
+
+                    html += `
+                        <div class="d-flex align-items-center mb-2 p-2 rounded hover-bg-light">
+                            <img src="${imageUrl}" alt="${product.name}" class="me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                            <div class="flex-grow-1">
+                                <a href="/shop/${product.slug}" class="text-decoration-none">
+                                    <div class="fw-medium text-dark">${product.name}</div>
+                                    <div class="text-primary small">${price} ريال</div>
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            }
+
+            // عرض الفئات
+            if (data.categories && data.categories.length > 0) {
+                html += '<div class="p-3 border-top"><h6 class="fw-bold mb-2">الفئات</h6>';
+                data.categories.forEach(function(category) {
+                    const imageUrl = category.image ? '/uploads/categories/' + category.image : '/assets/images/no-image.png';
+
+                    html += `
+                        <div class="d-flex align-items-center mb-2 p-2 rounded hover-bg-light">
+                            <img src="${imageUrl}" alt="${category.name}" class="me-2" style="width: 30px; height: 30px; object-fit: cover;">
+                            <a href="{{ route('shop.search') }}?category=${category.slug}" class="text-decoration-none text-dark">${category.name}</a>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            }
+
+            // عرض العلامات التجارية
+            if (data.brands && data.brands.length > 0) {
+                html += '<div class="p-3 border-top"><h6 class="fw-bold mb-2">العلامات التجارية</h6>';
+                data.brands.forEach(function(brand) {
+                    const imageUrl = brand.image ? '/uploads/brands/' + brand.image : '/assets/images/no-image.png';
+
+                    html += `
+                        <div class="d-flex align-items-center mb-2 p-2 rounded hover-bg-light">
+                            <img src="${imageUrl}" alt="${brand.name}" class="me-2" style="width: 30px; height: 30px; object-fit: cover;">
+                            <a href="{{ route('shop.search') }}?brand=${brand.slug}" class="text-decoration-none text-dark">${brand.name}</a>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            }
+
+            if (html === '') {
+                html = '<div class="p-3 text-center text-muted">لا توجد نتائج للبحث</div>';
+            }
+
+            searchResults.html(html).show();
+        }
+    });
+  </script>
+
+  <!-- Initialize Lucide Icons -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+      }
+    });
+  </script>
+
   @stack("scripts")
 </body>
 </html>

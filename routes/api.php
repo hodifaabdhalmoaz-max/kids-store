@@ -2,13 +2,11 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\ApiProductController;
 use App\Http\Controllers\Api\CartController;
-use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\BrandController;
-use App\Http\Controllers\Api\OrderController;
-use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,22 +19,25 @@ use App\Http\Controllers\Api\UserController;
 |
 */
 
-// Public routes
-Route::prefix('v1')->middleware('cache.response:300')->group(function () {
-    // Authentication
-    Route::post('/login', [AuthController::class, 'login']);
-    Route::post('/register', [AuthController::class, 'register']);
+// Public routes with rate limiting and security
+Route::prefix('v1')->middleware(['security.headers', 'throttle:api', 'cache.response:300'])->group(function () {
+    // Authentication - strict rate limiting for auth endpoints
+    Route::middleware('rate.limit.strict:5,1')->group(function () {
+        Route::post('/login', [AuthController::class, 'login']);
+        Route::post('/register', [AuthController::class, 'register']);
+    });
 
     // Products
-    Route::get('/products', [ProductController::class, 'index']);
-    Route::get('/products/featured', [ProductController::class, 'featured']);
-    Route::get('/products/new-arrivals', [ProductController::class, 'newArrivals']);
-    Route::get('/products/{slug}', [ProductController::class, 'show']);
+    Route::get('/products', [ApiProductController::class, 'index']);
+    Route::get('/products/featured', [ApiProductController::class, 'featured']);
+    Route::get('/products/latest', [ApiProductController::class, 'latest']);
+    Route::get('/products/search', [ApiProductController::class, 'search']);
+    Route::get('/products/{slug}', [ApiProductController::class, 'show']);
 
     // Categories
     Route::get('/categories', [CategoryController::class, 'index']);
     Route::get('/categories/{slug}', [CategoryController::class, 'show']);
-    Route::get('/categories/{slug}/products', [ProductController::class, 'byCategory']);
+    Route::get('/categories/{slug}/products', [ApiProductController::class, 'byCategory']);
 
     // Brands
     Route::get('/brands', [BrandController::class, 'index']);
@@ -52,38 +53,8 @@ Route::prefix('v1')->middleware('cache.response:300')->group(function () {
     Route::post('/cart/coupon', [CartController::class, 'applyCoupon']);
 });
 
-// Protected routes
-Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
-    // User profile
-    Route::get('/user', [UserController::class, 'profile']);
-    Route::put('/user', [UserController::class, 'updateProfile']);
-    Route::put('/user/password', [UserController::class, 'updatePassword']);
-
-    // User addresses
-    Route::get('/user/addresses', [UserController::class, 'addresses']);
-    Route::post('/user/addresses', [UserController::class, 'storeAddress']);
-    Route::put('/user/addresses/{id}', [UserController::class, 'updateAddress']);
-    Route::delete('/user/addresses/{id}', [UserController::class, 'deleteAddress']);
-
-    // Orders
-    Route::get('/orders', [OrderController::class, 'index']);
-    Route::post('/orders', [OrderController::class, 'store']);
-    Route::get('/orders/{id}', [OrderController::class, 'show']);
-
-    // Wishlist
-    Route::get('/wishlist', [UserController::class, 'wishlist']);
-    Route::post('/wishlist/{productId}', [UserController::class, 'addToWishlist']);
-    Route::delete('/wishlist/{id}', [UserController::class, 'removeFromWishlist']);
-
-    // Reviews
-    Route::post('/products/{productId}/reviews', [ProductController::class, 'storeReview']);
-    Route::get('/user/reviews', [UserController::class, 'reviews']);
-
-    // Logout
-    Route::post('/logout', [AuthController::class, 'logout']);
-});
-
-// Webhook routes
-Route::prefix('v1/webhooks')->group(function () {
-    Route::post('/payment-callback', [OrderController::class, 'paymentCallback']);
-});
+// Protected routes - Currently disabled, will be implemented when needed
+// Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
+//     // User profile, orders, wishlist, reviews, etc.
+//     // Will be implemented in future versions
+// });

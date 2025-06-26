@@ -16,23 +16,661 @@
     {
         color: orange;
     }
+
+    /* ضبط الهوامش الاحترافي */
+    .shop-main {
+        gap: 2rem;
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+    }
+
+    .shop-sidebar {
+        padding-left: 1rem;
+        margin-left: 0;
+    }
+
+    .shop-list {
+        padding-right: 1rem;
+        margin-right: 0;
+    }
+
+    @media (max-width: 991.98px) {
+        .shop-main {
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .shop-sidebar {
+            width: 100%;
+            padding-left: 0;
+        }
+
+        .shop-list {
+            padding-right: 0;
+        }
+    }
+
+    @media (min-width: 992px) {
+        .shop-main {
+            padding-top: 2.5rem;
+            padding-bottom: 2.5rem;
+        }
+    }
+
+    @media (min-width: 1200px) {
+        .shop-main {
+            gap: 2.5rem;
+        }
+    }
+
+    /* تحسين هوامش العناصر الداخلية */
+    .accordion-item {
+        margin-bottom: 1.5rem !important;
+        padding-bottom: 1rem !important;
+    }
+
+    .accordion-body {
+        padding-top: 1rem !important;
+        padding-bottom: 0.5rem !important;
+    }
+
+    .product-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .product-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .wgp-pagination {
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .divider {
+        margin: 2rem 0;
+        height: 1px;
+        background-color: #e4e4e4;
+        border: none;
+    }
+
+    /* تحسين المسافات للشاشات الصغيرة */
+    @media (max-width: 575.98px) {
+        .products-grid {
+            margin: 0 -0.5rem;
+        }
+
+        .product-card-wrapper {
+            padding: 0 0.5rem;
+        }
+    }
+
+    /* ضبط الهوامش للمناطق المحددة */
+    .shop-sidebar {
+        padding-right: 1.5rem !important;
+        margin-right: 1rem;
+    }
+
+    @media (min-width: 992px) {
+        .shop-sidebar {
+            padding-right: 2rem !important;
+            margin-right: 1.5rem;
+        }
+    }
+
+    /* تحريك زر المفضلة إلى اليسار */
+    .pc__btn-wl {
+        top: 0.75rem !important;
+        left: 0.75rem !important;
+        right: auto !important;
+        z-index: 10;
+        width: 2rem;
+        height: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(255, 255, 255, 0.9) !important;
+        border-radius: 50%;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+
+    .pc__btn-wl:hover {
+        background-color: rgba(255, 255, 255, 1) !important;
+        transform: scale(1.1);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    /* ضبط موضع النص والعناصر */
+    .pc__info {
+        padding-left: 3rem;
+        padding-right: 0.5rem;
+    }
+
+    .pc__title {
+        margin-right: 0;
+        padding-right: 0;
+    }
+
+    /* تحسين المسافات في الشريط الجانبي */
+    .shop-sidebar .accordion-item {
+        margin-left: 0.5rem;
+        padding-left: 0.5rem;
+    }
+
+    .category-list, .brand-list {
+        padding-right: 1rem;
+    }
+
+    /* ضبط عرض النص في المنتجات */
+    .pc__category, .pc__title a {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: calc(100% - 1rem);
+    }
+
+    /* ضبط الهوامش في منطقة عرض النتائج */
+    .shop-main .container {
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+
+    @media (max-width: 991.98px) {
+        .shop-main .container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+    }
+
+    /* تحسين المسافات في الشريط الجانبي */
+    .shop-sidebar {
+        margin-left: 1rem;
+    }
+
+    @media (max-width: 991.98px) {
+        .shop-sidebar {
+            margin-left: 0;
+            margin-bottom: 2rem;
+        }
+    }
+
+    /* ضبط المسافات في منطقة المنتجات */
+    .shop-list {
+        margin-right: 1rem;
+    }
+
+    @media (max-width: 991.98px) {
+        .shop-list {
+            margin-right: 0;
+        }
+    }
+
+    /* تحسين عرض النتائج */
+    .breadcrumb {
+        margin-bottom: 1rem;
+        padding-left: 0.5rem;
+    }
+
+    .shop-acs {
+        margin-bottom: 1.5rem;
+        padding-right: 0.5rem;
+    }
+
+    /* تحسين المسافات النهائية */
+    @media (min-width: 992px) {
+        .shop-main {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .shop-sidebar {
+            flex: 0 0 280px;
+            max-width: 280px;
+        }
+
+        .shop-list {
+            flex: 1;
+            min-width: 0;
+        }
+    }
+
+    /* ضبط المسافات للشاشات الكبيرة */
+    @media (min-width: 1200px) {
+        .shop-sidebar {
+            flex: 0 0 320px;
+            max-width: 320px;
+        }
+    }
+
+    /* تحسين عرض المنتجات */
+    .product-card-wrapper {
+        margin-bottom: 1.5rem;
+    }
+
+    .pc__info {
+        position: relative;
+        z-index: 1;
+    }
+
+    /* تحسين أزرار العرض */
+    .view-options {
+        background: rgba(248, 249, 250, 0.8);
+        padding: 8px 12px;
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+    }
+
+    .view-options span {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #6c757d;
+        margin-left: 8px;
+    }
+
+    .view-buttons {
+        gap: 6px;
+    }
+
+    .view-buttons .btn {
+        min-width: 40px;
+        height: 32px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .view-buttons .btn:hover {
+        background-color: #007bff;
+        border-color: #007bff;
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0,123,255,0.3);
+    }
+
+    .view-buttons .btn.active,
+    .view-buttons .btn:active {
+        background-color: #0056b3;
+        border-color: #0056b3;
+        color: white;
+        box-shadow: 0 2px 4px rgba(0,86,179,0.4);
+    }
+
+    /* تحسين المسافات */
+    .col-size {
+        margin-right: 1rem;
+    }
+
+    @media (max-width: 991.98px) {
+        .view-options {
+            padding: 6px 10px;
+        }
+
+        .view-buttons .btn {
+            min-width: 35px;
+            height: 28px;
+            font-size: 0.8rem;
+        }
+    }
+
+    /* تحسين مظهر الفلاتر */
+    .filter-item {
+        transition: all 0.3s ease;
+    }
+
+    .filter-item:hover {
+        background-color: rgba(0, 123, 255, 0.05);
+        border-radius: 6px;
+        padding: 4px 8px;
+        margin: -4px -8px;
+    }
+
+    .form-check-input {
+        width: 18px;
+        height: 18px;
+        border: 2px solid #dee2e6;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+    }
+
+    .form-check-input:checked {
+        background-color: #007bff;
+        border-color: #007bff;
+        box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+    }
+
+    .form-check-label {
+        font-weight: 500;
+        color: #495057;
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+
+    .form-check-input:checked + .form-check-label {
+        color: #007bff;
+        font-weight: 600;
+    }
+
+    .list-item {
+        transition: all 0.3s ease;
+        border-radius: 8px;
+        margin-bottom: 4px;
+        padding: 8px 12px;
+    }
+
+    .list-item:hover {
+        background-color: rgba(248, 249, 250, 0.8);
+        transform: translateX(4px);
+    }
+
+    .badge {
+        font-size: 0.75rem;
+        font-weight: 600;
+        min-width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .border-bottom {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .category-list ul, .brand-list {
+        padding: 0;
+        margin: 0;
+    }
+
+    .accordion-body {
+        padding-top: 1rem !important;
+    }
+
+    /* تحسين الألوان */
+    .bg-secondary {
+        background-color: #6c757d !important;
+    }
+
+    .list-item:last-child {
+        border-bottom: none !important;
+    }
+
+    /* حالة الفلتر المحدد */
+    .list-item.selected {
+        background-color: rgba(0, 123, 255, 0.1);
+        border-left: 3px solid #007bff;
+        transform: translateX(2px);
+    }
+
+    .list-item.selected .form-check-label {
+        color: #007bff;
+        font-weight: 600;
+    }
+
+    .bg-primary {
+        background-color: #007bff !important;
+    }
+
+    /* تحسين المسافات */
+    .accordion-item {
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .accordion-button {
+        background-color: rgba(248, 249, 250, 0.8);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        font-weight: 600;
+        color: #495057;
+    }
+
+    .accordion-button:not(.collapsed) {
+        background-color: rgba(0, 123, 255, 0.1);
+        color: #007bff;
+        border-bottom-color: #007bff;
+    }
+
+    /* تحسين الأيقونات */
+    .accordion-button__icon {
+        width: 12px;
+        height: 12px;
+        fill: currentColor;
+        transition: transform 0.3s ease;
+    }
+
+    .accordion-button:not(.collapsed) .accordion-button__icon {
+        transform: rotate(180deg);
+    }
+
+    /* تحسين فلتر السعر */
+    .price-filter-container {
+        background: rgba(248, 249, 250, 0.5);
+        border-radius: 12px;
+        margin: 0.5rem 0;
+    }
+
+    .price-slider-wrapper {
+        position: relative;
+        padding: 1rem 0;
+    }
+
+
+
+    .selected-range {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        border: 2px solid #004085;
+        box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .selected-range::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+        animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
+
+    .range-header {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        padding-bottom: 8px;
+    }
+
+    .range-header small {
+        color: #ffffff;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .range-values {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 8px;
+    }
+
+    .price-badge {
+        background: rgba(255, 255, 255, 0.9);
+        color: #007bff;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: bold;
+        font-size: 0.9rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    .range-separator {
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    /* تحسين شريط السعر */
+    .price-range-slider {
+        width: 100%;
+        margin: 1rem 0;
+    }
+
+    /* تحسين الألوان */
+    .bg-light {
+        background-color: rgba(248, 249, 250, 0.8) !important;
+    }
+
+    .text-primary {
+        color: #007bff !important;
+    }
+
+    .bg-primary {
+        background-color: #007bff !important;
+    }
+
+    /* تأثيرات متحركة */
+    @keyframes priceUpdate {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+
+    .price-value.updating {
+        animation: priceUpdate 0.3s ease;
+    }
+
+    /* تحسين المسافات */
+    .price-range__info .row {
+        margin: 0;
+    }
+
+    .price-range__info .col-6 {
+        padding: 0 0.5rem;
+    }
+
+    /* تأثيرات إضافية للنطاق المحدد */
+    .selected-range.updating {
+        animation: priceUpdate 0.3s ease;
+        transform: scale(1.02);
+        box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+    }
+
+    .selected-range:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+    }
+
+    .price-badge:hover {
+        transform: scale(1.05);
+        background: #ffffff;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .price-badge.updating {
+        animation: badgeUpdate 0.3s ease;
+    }
+
+    .price-badge.highlight {
+        background: #ffc107;
+        color: #000;
+        transform: scale(1.1);
+        box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
+    }
+
+    @keyframes badgeUpdate {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); background: #ffc107; }
+        100% { transform: scale(1); }
+    }
+
+    /* تحسين شريط التمرير */
+    .slider-track {
+        background: linear-gradient(90deg, #e9ecef, #007bff, #e9ecef);
+        height: 6px;
+        border-radius: 3px;
+    }
+
+    .slider-handle {
+        background: #007bff;
+        border: 3px solid white;
+        box-shadow: 0 2px 6px rgba(0, 123, 255, 0.3);
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+    }
+
+    .slider-handle:hover {
+        transform: scale(1.2);
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+    }
+
+    /* تحسين النصوص */
+    .price-filter-container small {
+        font-weight: 600;
+        color: #6c757d;
+    }
+
+    .price-filter-container .fw-bold {
+        font-size: 1rem;
+        letter-spacing: 0.5px;
+    }
+
+    /* تأثيرات الحدود */
+    .price-info-card {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .price-info-card::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        width: 0;
+        height: 2px;
+        background: #007bff;
+        transition: all 0.3s ease;
+        transform: translateX(-50%);
+    }
+
+    .price-info-card:hover::after {
+        width: 80%;
+    }
     </style>
 <main class="pt-90">
-    <section class="shop-main container d-flex pt-4 pt-xl-5">
-      <div class="shop-sidebar side-sticky bg-body" id="shopFilter">
-        <div class="aside-header d-flex d-lg-none align-items-center">
-          <h3 class="text-uppercase fs-6 mb-0">Filter By</h3>
+    <section class="shop-main container-fluid px-3 px-md-4 px-lg-5 d-flex pt-4 pt-xl-5">
+      <div class="shop-sidebar side-sticky bg-body pe-3 pe-lg-4" id="shopFilter">
+        <div class="aside-header d-flex d-lg-none align-items-center mb-3">
+          <h3 class="text-uppercase fs-6 mb-0">تصفية حسب</h3>
           <button class="btn-close-lg js-close-aside btn-close-aside ms-auto"></button>
         </div>
 
-        <div class="pt-4 pt-lg-0"></div>
+        <div class="pt-3 pt-lg-0"></div>
 
         <div class="accordion" id="categories-list">
           <div class="accordion-item mb-4 pb-3">
             <h5 class="accordion-header" id="accordion-heading-1">
               <button class="accordion-button p-0 border-0 fs-5 text-uppercase" type="button" data-bs-toggle="collapse"
                 data-bs-target="#accordion-filter-1" aria-expanded="true" aria-controls="accordion-filter-1">
-                Product Categories
+                فئات المنتجات
                 <svg class="accordion-button__icon type2" viewBox="0 0 10 6" xmlns="http://www.w3.org/2000/svg">
                   <g aria-hidden="true" stroke="none" fill-rule="evenodd">
                     <path
@@ -46,16 +684,15 @@
               <div class="accordion-body px-0 pb-0 pt-3 category-list">
                 <ul class="list list-inline mb-0">
                     @foreach($categories as $category)
-                    <li class="list-item">
-                        <span class="menu-link py-1">
-                            <input type="checkbox" class="chk-category" name ="categories" value="{{$category->id }}"
+                    <li class="list-item d-flex justify-content-between align-items-center py-2 border-bottom border-light">
+                        <div class="filter-item d-flex align-items-center flex-grow-1">
+                            <input type="checkbox" class="chk-category form-check-input me-3" name="categories" value="{{$category->id}}"
                             @if(in_array($category->id, explode(',', $f_categories))) checked="checked" @endif/>
-                            {{ $category->name }}
-                        </span>
-                        <span class="text-right float-end">{{ $category->products->count() }}</span>
-
+                            <label class="form-check-label flex-grow-1 cursor-pointer">{{ $category->name }}</label>
+                        </div>
+                        <span class="badge bg-secondary rounded-pill ms-2">{{ $category->products->count() }}</span>
                     </li>
-                  @endforeach
+                    @endforeach
                 </ul>
               </div>
             </div>
@@ -63,12 +700,13 @@
         </div>
 
 
+        @if(isset($colors) && $colors->count() > 0)
         <div class="accordion" id="color-filters">
           <div class="accordion-item mb-4 pb-3">
-            <h5 class="accordion-header" id="accordion-heading-1">
+            <h5 class="accordion-header" id="accordion-heading-color">
               <button class="accordion-button p-0 border-0 fs-5 text-uppercase" type="button" data-bs-toggle="collapse"
-                data-bs-target="#accordion-filter-2" aria-expanded="true" aria-controls="accordion-filter-2">
-                Color
+                data-bs-target="#accordion-filter-color" aria-expanded="true" aria-controls="accordion-filter-color">
+                الألوان
                 <svg class="accordion-button__icon type2" viewBox="0 0 10 6" xmlns="http://www.w3.org/2000/svg">
                   <g aria-hidden="true" stroke="none" fill-rule="evenodd">
                     <path
@@ -77,33 +715,32 @@
                 </svg>
               </button>
             </h5>
-            <div id="accordion-filter-2" class="accordion-collapse collapse show border-0"
-              aria-labelledby="accordion-heading-1" data-bs-parent="#color-filters">
+            <div id="accordion-filter-color" class="accordion-collapse collapse show border-0"
+              aria-labelledby="accordion-heading-color" data-bs-parent="#color-filters">
               <div class="accordion-body px-0 pb-0">
                 <div class="d-flex flex-wrap">
-                  <a href="#" class="swatch-color js-filter" style="color: #0a2472"></a>
-                  <a href="#" class="swatch-color js-filter" style="color: #d7bb4f"></a>
-                  <a href="#" class="swatch-color js-filter" style="color: #282828"></a>
-                  <a href="#" class="swatch-color js-filter" style="color: #b1d6e8"></a>
-                  <a href="#" class="swatch-color js-filter" style="color: #9c7539"></a>
-                  <a href="#" class="swatch-color js-filter" style="color: #d29b48"></a>
-                  <a href="#" class="swatch-color js-filter" style="color: #e6ae95"></a>
-                  <a href="#" class="swatch-color js-filter" style="color: #d76b67"></a>
-                  <a href="#" class="swatch-color swatch_active js-filter" style="color: #bababa"></a>
-                  <a href="#" class="swatch-color js-filter" style="color: #bfdcc4"></a>
+                  @foreach($colors as $color)
+                    <label class="swatch-color-wrapper me-2 mb-2" title="{{ $color->name }}">
+                      <input type="checkbox" name="colors" value="{{ $color->id }}" class="chk-color d-none"
+                        @if(request('colors') && in_array($color->id, explode(',', request('colors')))) checked @endif>
+                      <span class="swatch-color js-filter" style="background-color: {{ $color->hex_code ?? '#ccc' }}"></span>
+                    </label>
+                  @endforeach
                 </div>
               </div>
             </div>
           </div>
         </div>
+        @endif
 
 
+        @if(isset($sizes) && $sizes->count() > 0)
         <div class="accordion" id="size-filters">
           <div class="accordion-item mb-4 pb-3">
             <h5 class="accordion-header" id="accordion-heading-size">
               <button class="accordion-button p-0 border-0 fs-5 text-uppercase" type="button" data-bs-toggle="collapse"
                 data-bs-target="#accordion-filter-size" aria-expanded="true" aria-controls="accordion-filter-size">
-                Sizes
+                المقاسات
                 <svg class="accordion-button__icon type2" viewBox="0 0 10 6" xmlns="http://www.w3.org/2000/svg">
                   <g aria-hidden="true" stroke="none" fill-rule="evenodd">
                     <path
@@ -116,17 +753,19 @@
               aria-labelledby="accordion-heading-size" data-bs-parent="#size-filters">
               <div class="accordion-body px-0 pb-0">
                 <div class="d-flex flex-wrap">
-                  <a href="#" class="swatch-size btn btn-sm btn-outline-light mb-3 me-3 js-filter">XS</a>
-                  <a href="#" class="swatch-size btn btn-sm btn-outline-light mb-3 me-3 js-filter">S</a>
-                  <a href="#" class="swatch-size btn btn-sm btn-outline-light mb-3 me-3 js-filter">M</a>
-                  <a href="#" class="swatch-size btn btn-sm btn-outline-light mb-3 me-3 js-filter">L</a>
-                  <a href="#" class="swatch-size btn btn-sm btn-outline-light mb-3 me-3 js-filter">XL</a>
-                  <a href="#" class="swatch-size btn btn-sm btn-outline-light mb-3 me-3 js-filter">XXL</a>
+                  @foreach($sizes as $size)
+                    <label class="swatch-size-wrapper">
+                      <input type="checkbox" name="sizes" value="{{ $size->id }}" class="chk-size d-none"
+                        @if(request('sizes') && in_array($size->id, explode(',', request('sizes')))) checked @endif>
+                      <span class="swatch-size btn btn-sm btn-outline-light mb-3 me-3 js-filter">{{ $size->name }}</span>
+                    </label>
+                  @endforeach
                 </div>
               </div>
             </div>
           </div>
         </div>
+        @endif
 
 
         <div class="accordion" id="brand-filters">
@@ -134,7 +773,7 @@
             <h5 class="accordion-header" id="accordion-heading-brand">
               <button class="accordion-button p-0 border-0 fs-5 text-uppercase" type="button" data-bs-toggle="collapse"
                 data-bs-target="#accordion-filter-brand" aria-expanded="true" aria-controls="accordion-filter-brand">
-                Brands
+                العلامات التجارية
                 <svg class="accordion-button__icon type2" viewBox="0 0 10 6" xmlns="http://www.w3.org/2000/svg">
                   <g aria-hidden="true" stroke="none" fill-rule="evenodd">
                     <path
@@ -148,17 +787,14 @@
               <div class="search-field multi-select accordion-body px-0 pb-0">
                 <ul class="list list-inline mb-0 brand-list">
                     @foreach($brands as $brand)
-                    <li class="list-item">
-                        <span class ="menu-link py-1">
-                            <input type="checkbox" name="brands" value="{{ $brand->id }}" class="chk-brand"
-                            @if(in_array($brand->id, explode(',',$f_brands))) checked= "checked" @endif>
-                            {{ $brand->name }}
-                        </span>
-                        <span class="text-right float-end">
-                            {{ $brand->products->count()}}
-                        </span>
+                    <li class="list-item d-flex justify-content-between align-items-center py-2 border-bottom border-light">
+                        <div class="filter-item d-flex align-items-center flex-grow-1">
+                            <input type="checkbox" name="brands" value="{{ $brand->id }}" class="chk-brand form-check-input me-3"
+                            @if(in_array($brand->id, explode(',',$f_brands))) checked="checked" @endif>
+                            <label class="form-check-label flex-grow-1 cursor-pointer">{{ $brand->name }}</label>
+                        </div>
+                        <span class="badge bg-secondary rounded-pill ms-2">{{ $brand->products->count() }}</span>
                     </li>
-
                     @endforeach
                 </ul>
               </div>
@@ -172,7 +808,7 @@
             <h5 class="accordion-header mb-2" id="accordion-heading-price">
               <button class="accordion-button p-0 border-0 fs-5 text-uppercase" type="button" data-bs-toggle="collapse"
                 data-bs-target="#accordion-filter-price" aria-expanded="true" aria-controls="accordion-filter-price">
-                Price
+                السعر
                 <svg class="accordion-button__icon type2" viewBox="0 0 10 6" xmlns="http://www.w3.org/2000/svg">
                   <g aria-hidden="true" stroke="none" fill-rule="evenodd">
                     <path
@@ -183,16 +819,26 @@
             </h5>
             <div id="accordion-filter-price" class="accordion-collapse collapse show border-0"
               aria-labelledby="accordion-heading-price" data-bs-parent="#price-filters">
-              <input class="price-range-slider" type="text" name="price_range" value="" data-slider-min="1"
-                data-slider-max="500" data-slider-step="5" data-slider-value="[{{ $min_price}},{{$max_price }}]" data-currency="$" />
-              <div class="price-range__info d-flex align-items-center mt-2">
-                <div class="me-auto">
-                  <span class="text-secondary">Min Price: </span>
-                  <span class="price-range__min">$1</span>
+              <div class="price-filter-container p-3">
+                <!-- شريط السعر -->
+                <div class="price-slider-wrapper mb-4">
+                  <input class="price-range-slider" type="text" name="price_range" value="" data-slider-min="1"
+                    data-slider-max="500" data-slider-step="5" data-slider-value="[{{ $min_price}},{{$max_price }}]" data-currency="$" />
                 </div>
-                <div>
-                  <span class="text-secondary">Max Price: </span>
-                  <span class="price-range__max">$500</span>
+
+                <!-- معلومات السعر -->
+                <div class="price-range__info d-flex justify-content-between mt-2">
+                  <div>
+                    <span class="text-secondary">أقل سعر: </span>
+                    <span class="price-range__min">$1</span>
+                  </div>
+                  <div>
+                    <span class="text-secondary">أعلى سعر: </span>
+                    <span class="price-range__max">$500</span>
+                  </div>
+                </div>
+
+
                 </div>
               </div>
             </div>
@@ -200,7 +846,7 @@
         </div>
       </div>
 
-      <div class="shop-list flex-grow-1">
+      <div class="shop-list flex-grow-1 ps-3 ps-lg-4">
         <div class="swiper-container js-swiper-slider slideshow slideshow_small slideshow_split" data-settings='{
             "autoplay": {
               "delay": 5000
@@ -222,15 +868,14 @@
                   <div class="slideshow-text container p-3 p-xl-5">
                     <h2
                       class="text-uppercase section-title fw-normal mb-3 animate animate_fade animate_btt animate_delay-2">
-                      Women's <br /><strong>ACCESSORIES</strong></h2>
-                    <p class="mb-0 animate animate_fade animate_btt animate_delay-5">Accessories are the best way to
-                      update your look. Add a title edge with new styles and new colors, or go for timeless pieces.</h6>
+                      إكسسوارات <br /><strong>الأطفال</strong></h2>
+                    <p class="mb-0 animate animate_fade animate_btt animate_delay-5">الإكسسوارات هي أفضل طريقة لتحديث إطلالة طفلك. أضف لمسة عصرية بألوان وأنماط جديدة، أو اختر القطع الكلاسيكية الخالدة.</h6>
                   </div>
                 </div>
                 <div class="slide-split_media position-relative">
                   <div class="slideshow-bg" style="background-color: #f5e6e0;">
                     <img loading="lazy" src="assets/images/shop/shop_banner3.jpg" width="630" height="450"
-                      alt="Women's accessories" class="slideshow-bg__img object-fit-cover" />
+                      alt="إكسسوارات الأطفال" class="slideshow-bg__img object-fit-cover" />
                   </div>
                 </div>
               </div>
@@ -243,15 +888,14 @@
                   <div class="slideshow-text container p-3 p-xl-5">
                     <h2
                       class="text-uppercase section-title fw-normal mb-3 animate animate_fade animate_btt animate_delay-2">
-                      Women's <br /><strong>ACCESSORIES</strong></h2>
-                    <p class="mb-0 animate animate_fade animate_btt animate_delay-5">Accessories are the best way to
-                      update your look. Add a title edge with new styles and new colors, or go for timeless pieces.</h6>
+                      إكسسوارات <br /><strong>الأطفال</strong></h2>
+                    <p class="mb-0 animate animate_fade animate_btt animate_delay-5">الإكسسوارات هي أفضل طريقة لتحديث إطلالة طفلك. أضف لمسة عصرية بألوان وأنماط جديدة، أو اختر القطع الكلاسيكية الخالدة.</h6>
                   </div>
                 </div>
                 <div class="slide-split_media position-relative">
                   <div class="slideshow-bg" style="background-color: #f5e6e0;">
                     <img loading="lazy" src="assets/images/shop/shop_banner3.jpg" width="630" height="450"
-                      alt="Women's accessories" class="slideshow-bg__img object-fit-cover" />
+                      alt="إكسسوارات الأطفال" class="slideshow-bg__img object-fit-cover" />
                   </div>
                 </div>
               </div>
@@ -264,15 +908,14 @@
                   <div class="slideshow-text container p-3 p-xl-5">
                     <h2
                       class="text-uppercase section-title fw-normal mb-3 animate animate_fade animate_btt animate_delay-2">
-                      Women's <br /><strong>ACCESSORIES</strong></h2>
-                    <p class="mb-0 animate animate_fade animate_btt animate_delay-5">Accessories are the best way to
-                      update your look. Add a title edge with new styles and new colors, or go for timeless pieces.</h6>
+                      إكسسوارات <br /><strong>الأطفال</strong></h2>
+                    <p class="mb-0 animate animate_fade animate_btt animate_delay-5">الإكسسوارات هي أفضل طريقة لتحديث إطلالة طفلك. أضف لمسة عصرية بألوان وأنماط جديدة، أو اختر القطع الكلاسيكية الخالدة.</h6>
                   </div>
                 </div>
                 <div class="slide-split_media position-relative">
                   <div class="slideshow-bg" style="background-color: #f5e6e0;">
                     <img loading="lazy" src="assets/images/shop/shop_banner3.jpg" width="630" height="450"
-                      alt="Women's accessories" class="slideshow-bg__img object-fit-cover" />
+                      alt="إكسسوارات الأطفال" class="slideshow-bg__img object-fit-cover" />
                   </div>
                 </div>
               </div>
@@ -285,41 +928,54 @@
           </div>
         </div>
 
-        <div class="mb-3 pb-2 pb-xl-3"></div>
+        <div class="mb-4 pb-2 pb-xl-3"></div>
+
+        <!-- شريط البحث المتقدم -->
+        @if(request('search'))
+        <div class="search-info mb-4 p-3 bg-light rounded shadow-sm">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h6 class="mb-1">نتائج البحث عن: <strong>"{{ request('search') }}"</strong></h6>
+              <small class="text-muted">{{ $products->total() }} منتج</small>
+            </div>
+            <a href="{{ route('shop.index') }}" class="btn btn-sm btn-outline-secondary">مسح البحث</a>
+          </div>
+        </div>
+        @endif
 
         <div class="d-flex justify-content-between mb-4 pb-md-2">
           <div class="breadcrumb mb-0 d-none d-md-block flex-grow-1">
-            <a href="{{route('home.index')}}" class="menu-link menu-link_us-s text-uppercase fw-medium">Home</a>
+            <a href="{{route('home.index')}}" class="menu-link menu-link_us-s text-uppercase fw-medium">الرئيسية</a>
             <span class="breadcrumb-separator menu-link fw-medium ps-1 pe-1">/</span>
-            <a href="#" class="menu-link menu-link_us-s text-uppercase fw-medium">The Shop</a>
+            <a href="#" class="menu-link menu-link_us-s text-uppercase fw-medium">المتجر</a>
           </div>
 
           <div class="shop-acs d-flex align-items-center justify-content-between justify-content-md-end flex-grow-1">
-            <select class="shop-acs__select form-select w-auto border-0 py-0 order-1 order-md-0" aria-label="Page size" id="pagesize"
-              name="pagesize" style="margin-right:20px">
-              <option  value =" 12" {{$size==12 ?'selected' :''}}>Show</option>
-              <option  value ="24" {{$size==24 ?'selected' :''}}>24</option>
-              <option  value ="48" {{$size==48 ?'selected' :''}}>48</option>
-              <option  value ="102" {{$size==102 ?'selected' :''}}>102</option>
-            </select>
+
 
             <select class="shop-acs__select form-select w-auto border-0 py-0 order-1 order-md-0" aria-label="Sort Items"
-              name="orderby" id="orderby">
-              <option value="-1" {{ $order== -1 ? 'selected':'' }}>Default</option>
-              <option value="1"{{ $order== 1 ? 'selected':'' }}>Date,New To Old</option>
-              <option value="2"{{ $order== 2 ? 'selected':'' }}>Date,Old To New</option>
-              <option value="3"{{ $order==3 ? 'selected':'' }}>Price, Low To High</option>
-              <option value="4" {{ $order==4 ? 'selected':'' }}>Price, High To Low</option>
-
+              name="sort_by" id="sort_by">
+              <option value="relevance" {{ request('sort_by', 'relevance') == 'relevance' ? 'selected':'' }}>الأكثر صلة</option>
+              <option value="newest" {{ request('sort_by') == 'newest' ? 'selected':'' }}>الأحدث</option>
+              <option value="oldest" {{ request('sort_by') == 'oldest' ? 'selected':'' }}>الأقدم</option>
+              <option value="price_low_high" {{ request('sort_by') == 'price_low_high' ? 'selected':'' }}>السعر: من الأقل للأعلى</option>
+              <option value="price_high_low" {{ request('sort_by') == 'price_high_low' ? 'selected':'' }}>السعر: من الأعلى للأقل</option>
+              <option value="name_a_z" {{ request('sort_by') == 'name_a_z' ? 'selected':'' }}>الاسم: أ - ي</option>
+              <option value="name_z_a" {{ request('sort_by') == 'name_z_a' ? 'selected':'' }}>الاسم: ي - أ</option>
+              <option value="stock" {{ request('sort_by') == 'stock' ? 'selected':'' }}>الأكثر توفراً</option>
             </select>
 
             <div class="shop-asc__seprator mx-3 bg-light d-none d-md-block order-md-0"></div>
 
             <div class="col-size align-items-center order-1 d-none d-lg-flex">
-              <span class="text-uppercase fw-medium me-2">View</span>
-              <button class="btn-link fw-medium me-2 js-cols-size" data-target="products-grid" data-cols="2">2</button>
-              <button class="btn-link fw-medium me-2 js-cols-size" data-target="products-grid" data-cols="3">3</button>
-              <button class="btn-link fw-medium js-cols-size" data-target="products-grid" data-cols="4">4</button>
+              <div class="view-options d-flex align-items-center gap-2">
+                <span class="text-uppercase fw-medium text-muted">عرض</span>
+                <div class="view-buttons d-flex align-items-center">
+                  <button class="btn btn-outline-secondary btn-sm px-3 py-1 me-2 js-cols-size" data-target="products-grid" data-cols="2">2</button>
+                  <button class="btn btn-outline-secondary btn-sm px-3 py-1 me-2 js-cols-size" data-target="products-grid" data-cols="3">3</button>
+                  <button class="btn btn-outline-secondary btn-sm px-3 py-1 js-cols-size" data-target="products-grid" data-cols="4">4</button>
+                </div>
+              </div>
             </div>
 
             <div class="shop-filter d-flex align-items-center order-0 order-md-3 d-lg-none">
@@ -328,16 +984,16 @@
                   xmlns="http://www.w3.org/2000/svg">
                   <use href="#icon_filter" />
                 </svg>
-                <span class="text-uppercase fw-medium d-inline-block align-middle">Filter</span>
+                <span class="text-uppercase fw-medium d-inline-block align-middle">تصفية</span>
               </button>
             </div>
           </div>
         </div>
 
-        <div class="products-grid row row-cols-2 row-cols-md-3" id="products-grid">
+        <div class="products-grid row row-cols-2 row-cols-md-3 row-cols-lg-3 g-3 g-md-4" id="products-grid">
             @foreach( $products as $product )
-          <div class="product-card-wrapper">
-            <div class="product-card mb-3 mb-md-4 mb-xxl-5">
+          <div class="product-card-wrapper col">
+            <div class="product-card mb-2 mb-md-3 mb-xxl-4 h-100">
               <div class="pc__img-wrapper">
                 <div class="swiper-container background-img js-swiper-slider" data-settings='{"resizeObserver": true}'>
                   <div class="swiper-wrapper">
@@ -360,7 +1016,7 @@
                     </svg></span>
                 </div>
                 @if(Cart::instance('cart')->content()->where('id', $product->id)->count()>0)
-                  <a href="{{route('cart.index')}}" class="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium btn-warning mb-3">Go to Cart</a>
+                  <a href="{{route('cart.index')}}" class="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium btn-warning mb-3">الذهاب للسلة</a>
                 @else
                 <form name="addtocart-form" method="post" action="{{route('cart.add')}}">
                   @csrf
@@ -368,7 +1024,7 @@
                   <input type="hidden" name="quantity" value="1" />
                   <input type="hidden" name="name" value="{{$product->name}}" />
                   <input type="hidden" name="price" value="{{$product->sale_price == '' ? $product->regular_price : $product->sale_price}}" />
-                  <button type="submit" class="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium" data-aside="cartDrawer" title="Add To Cart">Add To Cart</button>
+                  <button type="submit" class="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium" data-aside="cartDrawer" title="إضافة للسلة">إضافة للسلة</button>
                 </form>
                   @endif
               </div>
@@ -403,13 +1059,13 @@
                       <use href="#icon_star" />
                     </svg>
                   </div>
-                  <span class="reviews-note text-lowercase text-secondary ms-1">8k+ reviews</span>
+                  <span class="reviews-note text-lowercase text-secondary ms-1">أكثر من 8 آلاف تقييم</span>
                 </div>
                 @if(Cart::instance('wishlist')->content()->where('id',$product->id)->count()>0)
                 <form method="POST" action="{{ route('wishlist.item.remove',['rowId'=>Cart::instance('wishlist')->content()->where('id',$product->id)->first()->rowId])}}">
                     @csrf
                     @method('DELETE')
-                <button type="submit" class="pc__btn-wl position-absolute top-0 end-0 bg-transparent border-0 js-add-wishlist filled-heart" title="Remove From Wishlist">
+                <button type="submit" class="pc__btn-wl position-absolute top-0 start-0 bg-transparent border-0 js-add-wishlist filled-heart" title="إزالة من المفضلة">
 
                     <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <use href="#icon_heart" />
@@ -423,7 +1079,7 @@
                     <input type="hidden" name="name" value="{{ $product->name }}"/>
                     <input type="hidden" name="price" value="{{ $product->sale_price=='' ? $product->regular_price : $product->sale_price }}"/>
                     <input type="hidden" name="quantity" value="1"/>
-                <button type="submit" class="pc__btn-wl position-absolute top-0 end-0 bg-transparent border-0 js-add-wishlist" title="Add To Wishlist">
+                <button type="submit" class="pc__btn-wl position-absolute top-0 start-0 bg-transparent border-0 js-add-wishlist" title="إضافة للمفضلة">
 
                   <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <use href="#icon_heart" />
@@ -438,23 +1094,26 @@
 
         </div>
 
-        <div class="divider"></div>
-        <div class="flex items-center justify-between flex-wrap gap10 wgp-pagination">
+        <div class="divider my-4"></div>
+        <div class="d-flex align-items-center justify-content-center flex-wrap gap-2 wgp-pagination py-3">
             {{$products->withQueryString()->links('pagination::bootstrap-5')}}
         </div>
       </div>
     </section>
   </main>
-  <form id="frmfilter" method="GET" action="{{ route('shop.index') }}">
-    <input type="hidden" name="page" value="{{ $products->currentPage()}}">
-    <input type="hidden" name="size" id="size" value="{{ $size}}"/>
-    <input type="hidden" name="order" id="order" value="{{ $order}}"/>
-    <input type="hidden" name="brands" id="hdnBrands"/>
-    <input type="hidden" name="categories" id="hdnCategories"/>
-    <input type="hidden" name="min" id="hdnMinPrice" value="{{$min_price}}"/>
-    <input type="hidden" name="max" id="hdnMaxPrice" value="{{$max_price}}"/>
-
-
+  <form id="frmfilter" method="GET" action="{{ route('shop.search') }}">
+    <input type="hidden" name="search" value="{{ request('search') }}"/>
+    <input type="hidden" name="page" value="{{ $products->currentPage() }}">
+    <input type="hidden" name="per_page" id="per_page" value="{{ request('per_page', 12) }}"/>
+    <input type="hidden" name="sort_by" id="sort_by_hidden" value="{{ request('sort_by', 'relevance') }}"/>
+    <input type="hidden" name="brands" id="hdnBrands" value="{{ request('brand') }}"/>
+    <input type="hidden" name="categories" id="hdnCategories" value="{{ request('category') }}"/>
+    <input type="hidden" name="colors" id="hdnColors" value="{{ request('colors') }}"/>
+    <input type="hidden" name="sizes" id="hdnSizes" value="{{ request('sizes') }}"/>
+    <input type="hidden" name="min_price" id="hdnMinPrice" value="{{ request('min_price') }}"/>
+    <input type="hidden" name="max_price" id="hdnMaxPrice" value="{{ request('max_price') }}"/>
+    <input type="hidden" name="stock_status" id="hdnStockStatus" value="{{ request('stock_status') }}"/>
+    <input type="hidden" name="featured" id="hdnFeatured" value="{{ request('featured') }}"/>
   </form>
 @endsection
 
@@ -462,13 +1121,12 @@
     <script>
         $(function(){
             $("#pagesize").on("change", function(){
-                $("#size").val($("#pagesize option:selected").val());
+                $("#per_page").val($("#pagesize option:selected").val());
                 $("#frmfilter").submit();
-
             });
 
-            $("#orderby").on("change", function(){
-                $("#order").val($("#orderby option:selected").val());
+            $("#sort_by").on("change", function(){
+                $("#sort_by_hidden").val($("#sort_by option:selected").val());
                 $("#frmfilter").submit();
             });
 
@@ -520,6 +1178,170 @@
 
 
             });
+
+            // فلترة الألوان
+            $("input[name='colors']").on("change", function(){
+                var colors = "";
+                $("input[name='colors']:checked").each(function(){
+                    if(colors == "") {
+                        colors += $(this).val();
+                    } else {
+                        colors += "," + $(this).val();
+                    }
+                });
+                $("#hdnColors").val(colors);
+                $("#frmfilter").submit();
+            });
+
+            // فلترة الأحجام
+            $("input[name='sizes']").on("change", function(){
+                var sizes = "";
+                $("input[name='sizes']:checked").each(function(){
+                    if(sizes == "") {
+                        sizes += $(this).val();
+                    } else {
+                        sizes += "," + $(this).val();
+                    }
+                });
+                $("#hdnSizes").val(sizes);
+                $("#frmfilter").submit();
+            });
+
+            // تحسين تفاعل الألوان والأحجام
+            $('.swatch-color').on('click', function(e) {
+                e.preventDefault();
+                $(this).siblings('input[type="checkbox"]').trigger('click');
+            });
+
+            $('.swatch-size').on('click', function(e) {
+                e.preventDefault();
+                $(this).siblings('input[type="checkbox"]').trigger('click');
+            });
+
+            // تحديث مظهر الفلاتر المحددة
+            $('input[type="checkbox"]').on('change', function() {
+                if($(this).is(':checked')) {
+                    $(this).siblings('.swatch-color, .swatch-size').addClass('active');
+                } else {
+                    $(this).siblings('.swatch-color, .swatch-size').removeClass('active');
+                }
+            });
+
+            // تطبيق الحالة الأولية للفلاتر
+            $('input[type="checkbox"]:checked').each(function() {
+                $(this).siblings('.swatch-color, .swatch-size').addClass('active');
+            });
+
+            // تحسين أزرار العرض
+            $('.js-cols-size').on('click', function(e) {
+                e.preventDefault();
+
+                // إزالة الحالة النشطة من جميع الأزرار
+                $('.js-cols-size').removeClass('active');
+
+                // إضافة الحالة النشطة للزر المضغوط
+                $(this).addClass('active');
+
+                // الحصول على عدد الأعمدة
+                var cols = $(this).data('cols');
+                var target = $(this).data('target');
+
+                // تطبيق التغيير على الشبكة
+                if (target && $('#' + target).length) {
+                    $('#' + target).removeClass('row-cols-2 row-cols-3 row-cols-4 row-cols-lg-2 row-cols-lg-3 row-cols-lg-4')
+                                   .addClass('row-cols-lg-' + cols);
+                }
+
+                // حفظ الإعداد في localStorage
+                localStorage.setItem('shop-grid-cols', cols);
+            });
+
+            // استعادة الإعداد المحفوظ عند تحميل الصفحة
+            var savedCols = localStorage.getItem('shop-grid-cols') || '3';
+            $('.js-cols-size[data-cols="' + savedCols + '"]').addClass('active');
+
+            // تطبيق الإعداد المحفوظ
+            $('#products-grid').removeClass('row-cols-2 row-cols-3 row-cols-4 row-cols-lg-2 row-cols-lg-3 row-cols-lg-4')
+                              .addClass('row-cols-lg-' + savedCols);
+
+            // تحسين تفاعل الفلاتر
+            $('.form-check-label').on('click', function(e) {
+                e.preventDefault();
+                var checkbox = $(this).siblings('.form-check-input');
+                checkbox.prop('checked', !checkbox.prop('checked')).trigger('change');
+            });
+
+            // تحديث العدادات عند تغيير الفلاتر
+            $('.chk-category, .chk-brand').on('change', function() {
+                var $listItem = $(this).closest('.list-item');
+                var $badge = $listItem.find('.badge');
+
+                if ($(this).is(':checked')) {
+                    $listItem.addClass('selected');
+                    $badge.removeClass('bg-secondary').addClass('bg-primary');
+                } else {
+                    $listItem.removeClass('selected');
+                    $badge.removeClass('bg-primary').addClass('bg-secondary');
+                }
+            });
+
+            // تطبيق الحالة الأولية للفلاتر المحددة
+            $('.chk-category:checked, .chk-brand:checked').each(function() {
+                var $listItem = $(this).closest('.list-item');
+                var $badge = $listItem.find('.badge');
+                $listItem.addClass('selected');
+                $badge.removeClass('bg-secondary').addClass('bg-primary');
+            });
+
+            // تحسين فلتر السعر
+            $('.price-range-slider').on('slide', function(slideEvt) {
+                var values = slideEvt.value;
+                var minPrice = values[0];
+                var maxPrice = values[1];
+
+                // تحديث القيم
+                $('.price-range__min').text('$' + minPrice);
+                $('.price-range__max').text('$' + maxPrice);
+            });
+
+
         });
     </script>
+
+    <style>
+        .swatch-color.active {
+            border: 2px solid #007bff !important;
+            transform: scale(1.1);
+            box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+        }
+
+        .swatch-size.active {
+            background-color: #007bff !important;
+            color: white !important;
+            border-color: #007bff !important;
+        }
+
+        .swatch-color-wrapper, .swatch-size-wrapper {
+            cursor: pointer;
+        }
+
+        .search-info {
+            border-left: 4px solid #007bff;
+        }
+
+        .swatch-color {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-block;
+            border: 2px solid #ddd;
+            margin: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .swatch-color:hover {
+            transform: scale(1.05);
+        }
+    </style>
 @endpush

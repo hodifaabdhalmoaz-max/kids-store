@@ -236,7 +236,7 @@ button,
 input,
 select,
 textarea {
-  font-family: "Inter", sans-serif;
+  font-family: "Cairo", sans-serif !important;
   font-weight: 400;
   color: var(--Body-Text);
   -webkit-font-smoothing: antialiased;
@@ -244,6 +244,8 @@ textarea {
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
   overflow-y: auto;
+  direction: rtl;
+  text-align: right;
 }
 
 img {
@@ -254,7 +256,7 @@ img {
 }
 
 p {
-  font-family: "Inter", sans-serif;
+  font-family: "Cairo", sans-serif !important;
   font-weight: 400;
   font-size: 14px;
   line-height: 20px;
@@ -571,7 +573,7 @@ h3, .h3,
 h4, .h4,
 h5, .h5,
 h6, .h6 {
-  font-family: "Inter", sans-serif;
+  font-family: "Cairo", sans-serif !important;
   color: var(--Heading);
   margin: 0;
   font-weight: 700;
@@ -3320,78 +3322,7 @@ select.h40 {
   cursor: pointer;
 }
 
-.jvectormap-label {
-  position: absolute;
-  display: none;
-  border: solid 1px #CDCDCD;
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
-  border-radius: 3px;
-  background: #292929;
-  color: white;
-  font-family: sans-serif, Verdana;
-  font-size: smaller;
-  padding: 3px;
-}
 
-.jvectormap-zoomin,
-.jvectormap-zoomout {
-  position: absolute;
-  bottom: 10px;
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
-  background: transparent;
-  padding: 2px;
-  color: white;
-  width: 40px;
-  height: 40px;
-  cursor: pointer;
-  line-height: 10px;
-  text-align: center;
-  overflow: hidden;
-  border-radius: 8px;
-}
-.jvectormap-zoomin::before,
-.jvectormap-zoomout::before {
-  position: absolute;
-  display: -webkit-box;
-  display: -moz-box;
-  display: -ms-flexbox;
-  display: -webkit-flex;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  top: 0;
-  left: 0;
-  border-radius: 8px;
-  font-family: "icomoon";
-  border: 1px solid rgba(35, 119, 252, 0.1);
-  background: #E9F2FF;
-  font-size: 20px;
-  color: var(--Main);
-}
-
-.jvectormap-zoomin {
-  left: 10px;
-}
-.jvectormap-zoomin::before {
-  content: "\ea35";
-}
-
-.jvectormap-zoomout {
-  left: 55px;
-}
-.jvectormap-zoomout::before {
-  content: "\ea36";
-}
-
-#usa-vectormap {
-  height: 268px;
-  border-radius: 14px;
-  overflow: hidden;
-}
 
 .wrap-login-page {
   width: 100%;
@@ -5193,9 +5124,7 @@ select.h40 {
 .dark-theme .apexcharts-tooltip .apexcharts-tooltip-title {
   background: #94A3B8 !important;
 }
-.dark-theme #morris-donut-1 svg text tspan {
-  fill: #fff;
-}
+
 .dark-theme .dropdown-menu {
   box-shadow: 0px 4px 24px 2px rgba(20, 25, 38, 0.8) !important;
 }

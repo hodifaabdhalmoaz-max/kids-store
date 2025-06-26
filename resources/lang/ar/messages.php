@@ -395,4 +395,21 @@ return [
     'footer_payment_options' => 'خيارات الدفع',
     'footer_order_status' => 'حالة الطلب',
     'footer_international_shipping' => 'الشحن الدولي',
+
+    // Terms and Conditions
+    'terms_user_title' => 'شروط الاستخدام',
+    'terms_user_content' => 'مرحباً بك في متجر الأطفال. باستخدام موقعنا، فإنك توافق على الشروط والأحكام التالية.',
+    'terms_user_point_1' => 'يجب أن تكون أكبر من 18 عاماً أو تحت إشراف ولي أمر لاستخدام الموقع.',
+    'terms_user_point_2' => 'يحق لك تصفح المنتجات وإجراء عمليات الشراء وفقاً للشروط المحددة.',
+    'terms_user_point_3' => 'يجب عليك تقديم معلومات صحيحة ودقيقة عند التسجيل أو الشراء.',
+
+    'terms_privacy_title' => 'سياسة الخصوصية',
+    'terms_privacy_content' => 'نحن نحترم خصوصيتك ونلتزم بحماية بياناتك الشخصية.',
+    'read_privacy_policy' => 'اقرأ سياسة الخصوصية كاملة',
+
+    'terms_liability_title' => 'إخلاء المسؤولية',
+    'terms_liability_content' => 'نحن نبذل قصارى جهدنا لضمان دقة المعلومات المعروضة على الموقع.',
+
+    'terms_changes_title' => 'التغييرات على الشروط',
+    'terms_changes_content' => 'نحتفظ بالحق في تعديل هذه الشروط في أي وقت دون إشعار مسبق.',
 ];

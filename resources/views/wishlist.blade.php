@@ -3,7 +3,7 @@
 <main class="pt-90">
     <div class="mb-4 pb-4"></div>
     <section class="shop-checkout container">
-      <h2 class="page-title">Wishlist</h2>
+      <h2 class="page-title">المفضلة</h2>
 
       <div class="shopping-cart">
         @if(Cart::instance('wishlist')->content()->count()>0)
@@ -13,11 +13,11 @@
           <table class="cart-table">
             <thead>
               <tr>
-                <th>Product</th>
+                <th>المنتج</th>
                 <th></th>
-                <th>Price</th>
-                <th>Quantity</th>
-                <th>Action</th>
+                <th>السعر</th>
+                <th>الكمية</th>
+                <th>الإجراء</th>
                 <th></th>
               </tr>
             </thead>
@@ -50,7 +50,7 @@
 
                     <form method="POST" action="{{ route('wishlist.move-to-cart',['rowId'=>$item->rowId])}}">
                         @csrf
-                        <button type="submit" class="btn btn-sm btn-warning">Move to Cart</button>
+                        <button type="submit" class="btn btn-sm btn-warning">نقل للسلة</button>
                     </form>
                 </div>
                 <div class="col-6">
@@ -75,15 +75,15 @@
             <form method="POST" action="{{ route('wishlist.items.clear') }}">
             @csrf
             @method('DELETE')
-                <button type="submit" class="btn btn-light">CLEAR WISHLIST </button>
+                <button type="submit" class="btn btn-light">إفراغ المفضلة</button>
             </form>
           </div>
         </div>
             @else
             <div class="row">
                 <div class="col-md-12">
-                    <p>No item found in your wishlist</p>
-                    <a href="{{ route('shop.index')}}" class="btn btn-info">Wishlist Now</a>
+                    <p>لا توجد عناصر في قائمة المفضلة</p>
+                    <a href="{{ route('shop.index')}}" class="btn btn-info">تسوق الآن</a>
                 </div>
             </div>
             @endif

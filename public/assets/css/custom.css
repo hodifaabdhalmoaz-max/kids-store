@@ -17,3 +17,616 @@
 .form-floating>.form-select {
     height: 48px;
 }
+
+/* ===================================
+   تصميم العناوين مع الخط التحتي الأزرق
+   =================================== */
+
+.section-title {
+    position: relative;
+    display: block !important;
+    width: 100%;
+    margin-bottom: 2rem !important;
+    padding-bottom: 1rem;
+    text-align: center;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(90deg, #007bff, #0056b3);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+    z-index: 1;
+    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
+}
+
+.section-title:hover::after {
+    width: 80px;
+    background: linear-gradient(90deg, #0056b3, #004085);
+}
+
+/* تصميم العناوين للصفحات المختلفة */
+.section-title.text-center::after {
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.section-title.text-start::after,
+.section-title.text-right::after {
+    left: 0;
+    transform: translateX(0);
+}
+
+.section-title.text-end::after,
+.section-title.text-left::after {
+    left: auto;
+    right: 0;
+    transform: translateX(0);
+}
+
+/* تصميم متجاوب للعناوين */
+@media (max-width: 768px) {
+    .section-title::after {
+        width: 40px;
+        height: 2px;
+    }
+
+    .section-title:hover::after {
+        width: 50px;
+    }
+}
+
+/* تصميم خاص للعناوين الكبيرة */
+.section-title.large::after {
+    width: 80px;
+    height: 4px;
+}
+
+.section-title.large:hover::after {
+    width: 100px;
+}
+
+/* تصميم خاص للعناوين الصغيرة */
+.section-title.small::after {
+    width: 40px;
+    height: 2px;
+}
+
+.section-title.small:hover::after {
+    width: 50px;
+}
+
+/* ألوان مختلفة للخط التحتي */
+.section-title.blue::after {
+    background: linear-gradient(90deg, #007bff, #0056b3);
+}
+
+.section-title.green::after {
+    background: linear-gradient(90deg, #28a745, #1e7e34);
+}
+
+.section-title.red::after {
+    background: linear-gradient(90deg, #dc3545, #c82333);
+}
+
+.section-title.purple::after {
+    background: linear-gradient(90deg, #6f42c1, #5a32a3);
+}
+
+.section-title.orange::after {
+    background: linear-gradient(90deg, #fd7e14, #e55a00);
+}
+
+/* ===================================
+   تحسينات إضافية للتوازن والتصميم
+   =================================== */
+
+/* تحسين المسافات حول العناوين */
+.section-title {
+    margin-top: 1.5rem;
+    margin-bottom: 2.5rem !important;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* تحسين التوازن للعناوين المتوسطة */
+.section-title.text-center {
+    width: 100%;
+    text-align: center;
+}
+
+/* تأثير الظل للعناوين */
+.section-title {
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* تحسين الخط التحتي للعناوين الطويلة */
+.section-title.long-title::after {
+    width: 80px;
+}
+
+.section-title.long-title:hover::after {
+    width: 120px;
+}
+
+/* تحسين الخط التحتي للعناوين القصيرة */
+.section-title.short-title::after {
+    width: 40px;
+}
+
+.section-title.short-title:hover::after {
+    width: 60px;
+}
+
+/* تحسين التباعد للأقسام */
+section {
+    margin-bottom: 3rem;
+}
+
+section:last-child {
+    margin-bottom: 2rem;
+}
+
+/* تحسين التوازن للحاويات */
+.container {
+    position: relative;
+}
+
+/* تحسين الخط التحتي مع الحركة */
+.section-title::after {
+    animation: slideIn 0.8s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        width: 0;
+        opacity: 0;
+    }
+    to {
+        width: 60px;
+        opacity: 1;
+    }
+}
+
+/* تحسين الخط التحتي للعناوين الفرعية */
+.sub-title {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+.sub-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 30px;
+    height: 2px;
+    background: linear-gradient(90deg, #007bff, #0056b3);
+    border-radius: 1px;
+    transition: all 0.3s ease;
+}
+
+.sub-title:hover::after {
+    width: 40px;
+}
+
+/* تحسين التوازن للنصوص */
+.text-balance {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* تحسين المسافات العمودية */
+.section-spacing {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+}
+
+@media (max-width: 768px) {
+    .section-spacing {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+    }
+}
+
+/* ===================================
+   إصلاحات خاصة للخط التحتي
+   =================================== */
+
+/* التأكد من ظهور الخط التحتي في جميع العناوين */
+h2.section-title::after,
+h1.section-title::after,
+h3.section-title::after {
+    content: '' !important;
+    display: block !important;
+    position: absolute !important;
+    bottom: 0 !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 60px !important;
+    height: 4px !important;
+    background: linear-gradient(90deg, #007bff, #0056b3) !important;
+    border-radius: 2px !important;
+    transition: all 0.3s ease !important;
+    z-index: 1 !important;
+    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3) !important;
+}
+
+/* تحسين الخط التحتي للعناوين المختلفة */
+.section-title.text-center::after {
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+}
+
+/* إضافة مسافة إضافية للعناوين */
+.section-title {
+    padding-bottom: 1.5rem !important;
+    margin-bottom: 2.5rem !important;
+}
+
+/* تحسين الخط التحتي عند التمرير */
+.section-title:hover::after {
+    width: 80px !important;
+    background: linear-gradient(90deg, #0056b3, #004085) !important;
+    box-shadow: 0 3px 6px rgba(0, 123, 255, 0.4) !important;
+}
+
+/* تحسين خاص للعناوين في الصفحة الرئيسية */
+.category-carousel .section-title::after,
+.hot-deals .section-title::after,
+.products-grid .section-title::after,
+.brands-carousel .section-title::after {
+    content: '' !important;
+    display: block !important;
+    position: absolute !important;
+    bottom: 0 !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 60px !important;
+    height: 4px !important;
+    background: linear-gradient(90deg, #007bff, #0056b3) !important;
+    border-radius: 2px !important;
+    transition: all 0.3s ease !important;
+    z-index: 1 !important;
+    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3) !important;
+}
+
+/* تحسين العناوين للأجهزة المحمولة */
+@media (max-width: 768px) {
+    .section-title::after {
+        width: 40px !important;
+        height: 3px !important;
+    }
+
+    .section-title:hover::after {
+        width: 50px !important;
+    }
+}
+
+/* ===================================
+   تحسينات خط Cairo للموقع
+   =================================== */
+
+/* تطبيق خط Cairo على جميع العناصر */
+* {
+    font-family: "Cairo", sans-serif !important;
+    font-display: swap;
+}
+
+/* تحسين خط Cairo للعناوين */
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+    font-family: "Cairo", sans-serif !important;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+/* تحسين خط Cairo للنصوص العادية */
+p, span, div, a, button, input, textarea, select, label {
+    font-family: "Cairo", sans-serif !important;
+    font-weight: 400;
+}
+
+/* تحسين خط Cairo للروابط */
+a {
+    font-family: "Cairo", sans-serif !important;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+/* تحسين خط Cairo للأزرار */
+.btn {
+    font-family: "Cairo", sans-serif !important;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+/* تحسين خط Cairo للقوائم */
+.nav-link, .navbar-nav .nav-link {
+    font-family: "Cairo", sans-serif !important;
+    font-weight: 500;
+}
+
+/* تحسين خط Cairo للعناوين الرئيسية */
+.section-title {
+    font-family: "Cairo", sans-serif !important;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+}
+
+/* تحسين خط Cairo للأسعار */
+.price, .money {
+    font-family: "Cairo", sans-serif !important;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+/* تحسين خط Cairo للمنتجات */
+.product-card .pc__title {
+    font-family: "Cairo", sans-serif !important;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+/* تحسين خط Cairo للنماذج */
+.form-control, .form-select, .form-check-label {
+    font-family: "Cairo", sans-serif !important;
+    font-weight: 400;
+}
+
+/* تحسين خط Cairo للتنبيهات */
+.alert {
+    font-family: "Cairo", sans-serif !important;
+    font-weight: 500;
+}
+
+/* تحسين خط Cairo للبطاقات */
+.card-title {
+    font-family: "Cairo", sans-serif !important;
+    font-weight: 600;
+}
+
+.card-text {
+    font-family: "Cairo", sans-serif !important;
+    font-weight: 400;
+}
+
+/* تحسين خط Cairo للفوتر */
+.footer * {
+    font-family: "Cairo", sans-serif !important;
+}
+
+/* تحسين خط Cairo للهيدر */
+.header * {
+    font-family: "Cairo", sans-serif !important;
+}
+
+/* تحسين خط Cairo للقوائم المنسدلة */
+.dropdown-menu, .dropdown-item {
+    font-family: "Cairo", sans-serif !important;
+    font-weight: 400;
+}
+
+/* تحسين خط Cairo للجداول */
+table, th, td {
+    font-family: "Cairo", sans-serif !important;
+}
+
+/* تحسين خط Cairo للشارات */
+.badge {
+    font-family: "Cairo", sans-serif !important;
+    font-weight: 600;
+}
+
+/* تحسين خط Cairo للتبويبات */
+.nav-tabs .nav-link {
+    font-family: "Cairo", sans-serif !important;
+    font-weight: 500;
+}
+
+/* تحسين خط Cairo للمودال */
+.modal-title {
+    font-family: "Cairo", sans-serif !important;
+    font-weight: 700;
+}
+
+.modal-body, .modal-footer {
+    font-family: "Cairo", sans-serif !important;
+    font-weight: 400;
+}
+
+/* تحسين خط Cairo للبحث */
+.search-field {
+    font-family: "Cairo", sans-serif !important;
+    font-weight: 400;
+}
+
+/* تحسين خط Cairo للعدادات */
+.qty-control {
+    font-family: "Cairo", sans-serif !important;
+    font-weight: 500;
+}
+
+/* تحسين خط Cairo للتوست */
+.toast-header, .toast-body {
+    font-family: "Cairo", sans-serif !important;
+}
+
+/* تحسين الخط للنصوص العربية */
+.arabic-text {
+    font-family: "Cairo", sans-serif !important;
+    letter-spacing: 0.02em;
+    word-spacing: 0.1em;
+    line-height: 1.6;
+}
+
+/* تحسين أوزان الخط */
+.font-light { font-weight: 300 !important; }
+.font-normal { font-weight: 400 !important; }
+.font-medium { font-weight: 500 !important; }
+.font-semibold { font-weight: 600 !important; }
+.font-bold { font-weight: 700 !important; }
+.font-extrabold { font-weight: 800 !important; }
+.font-black { font-weight: 900 !important; }
+
+/* تحسين الخط للشاشات الصغيرة */
+@media (max-width: 768px) {
+    * {
+        font-size: 0.9rem;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-size: 1.2rem;
+    }
+
+    .section-title {
+        font-size: 1.4rem;
+    }
+}
+
+/* تحسين الخط للشاشات الكبيرة */
+@media (min-width: 1200px) {
+    .section-title {
+        font-size: 2rem;
+    }
+
+    .product-card .pc__title {
+        font-size: 1.1rem;
+    }
+}
+
+/* ===================================
+   تحسينات إضافية لخط Cairo
+   =================================== */
+
+/* تحسين خط Cairo للعناصر الخاصة */
+.logo, .brand-name {
+    font-family: "Cairo", sans-serif !important;
+    font-weight: 800;
+}
+
+/* تحسين خط Cairo للقوائم الجانبية */
+.sidebar-menu, .sidebar-menu * {
+    font-family: "Cairo", sans-serif !important;
+}
+
+/* تحسين خط Cairo للإشعارات */
+.notification, .alert-message {
+    font-family: "Cairo", sans-serif !important;
+    font-weight: 500;
+}
+
+/* تحسين خط Cairo للأرقام */
+.number, .count, .quantity {
+    font-family: "Cairo", sans-serif !important;
+    font-weight: 700;
+}
+
+/* تحسين خط Cairo للتواريخ */
+.date, .time {
+    font-family: "Cairo", sans-serif !important;
+    font-weight: 400;
+}
+
+/* تحسين خط Cairo للعناوين الفرعية */
+.subtitle, .sub-heading {
+    font-family: "Cairo", sans-serif !important;
+    font-weight: 600;
+}
+
+/* تحسين خط Cairo للنصوص التوضيحية */
+.description, .caption {
+    font-family: "Cairo", sans-serif !important;
+    font-weight: 400;
+    line-height: 1.6;
+}
+
+/* تحسين خط Cairo للروابط الخاصة */
+.special-link, .cta-link {
+    font-family: "Cairo", sans-serif !important;
+    font-weight: 600;
+}
+
+/* تحسين خط Cairo للعناصر التفاعلية */
+.interactive-element {
+    font-family: "Cairo", sans-serif !important;
+    font-weight: 500;
+}
+
+/* تحسين خط Cairo للنصوص المميزة */
+.highlight-text, .featured-text {
+    font-family: "Cairo", sans-serif !important;
+    font-weight: 700;
+}
+
+/* تحسين خط Cairo للقوائم */
+ul, ol, li {
+    font-family: "Cairo", sans-serif !important;
+}
+
+/* تحسين خط Cairo للعناصر المخفية */
+.hidden-text, .sr-only {
+    font-family: "Cairo", sans-serif !important;
+}
+
+/* تحسين خط Cairo للعناصر المطبوعة */
+@media print {
+    * {
+        font-family: "Cairo", sans-serif !important;
+    }
+}
+
+/* تحسين خط Cairo للعناصر المتحركة */
+.animated-text {
+    font-family: "Cairo", sans-serif !important;
+    font-weight: 500;
+}
+
+/* تحسين خط Cairo للعناصر المرنة */
+.flexible-text {
+    font-family: "Cairo", sans-serif !important;
+    font-weight: 400;
+}
+
+/* إزالة أي خطوط أخرى قد تتداخل */
+.font-jost, .font-allura, .font-sofia {
+    font-family: "Cairo", sans-serif !important;
+}
+
+/* تحسين خط Cairo للعناصر المخصصة */
+.custom-font {
+    font-family: "Cairo", sans-serif !important;
+}
+
+/* تأكيد تطبيق خط Cairo على جميع العناصر */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+    font-family: "Cairo", sans-serif !important;
+}
+
+/* تحسين خط Cairo للعناصر الحديثة */
+input, textarea, select, button {
+    font-family: "Cairo", sans-serif !important;
+}
