@@ -66,42 +66,31 @@ class SearchService
         }
 
         // فلترة حسب الفئة
-        if (isset($params['category']) && !empty($params['category'])) {
-            if (is_numeric($params['category'])) {
-                $query->where('category_id', $params['category']);
-            } else {
-                $category = Category::where('slug', $params['category'])->first();
-                if ($category) {
-                    $query->where('category_id', $category->id);
-                }
-            }
+        $categories = $params['categories'] ?? $params['category'] ?? null;
+        if (!empty($categories)) {
+            $categoryIds = is_array($categories) ? $categories : explode(',', $categories);
+            $query->whereIn('category_id', $categoryIds);
         }
 
         // فلترة حسب العلامة التجارية
-        if (isset($params['brand']) && !empty($params['brand'])) {
-            if (is_numeric($params['brand'])) {
-                $query->where('brand_id', $params['brand']);
-            } else {
-                $brand = Brand::where('slug', $params['brand'])->first();
-                if ($brand) {
-                    $query->where('brand_id', $brand->id);
-                }
-            }
+        $brands = $params['brands'] ?? $params['brand'] ?? null;
+        if (!empty($brands)) {
+            $brandIds = is_array($brands) ? $brands : explode(',', $brands);
+            $query->whereIn('brand_id', $brandIds);
         }
 
         // فلترة حسب نطاق الأسعار المحسن
         if (isset($params['min_price']) || isset($params['max_price'])) {
             $minPrice = isset($params['min_price']) ? (float) $params['min_price'] : 0;
-            $maxPrice = isset($params['max_price']) ? (float) $params['max_price'] : 999999;
+            $maxPrice = isset($params['max_price']) ? (float) $params['max_price'] : 1000000;
 
             $query->where(function($q) use ($minPrice, $maxPrice) {
-                // البحث في السعر العادي أو سعر التخفيض
-                $q->where(function($priceQuery) use ($minPrice, $maxPrice) {
-                    $priceQuery->whereBetween('regular_price', [$minPrice, $maxPrice])
-                               ->orWhere(function($saleQuery) use ($minPrice, $maxPrice) {
-                                   $saleQuery->whereNotNull('sale_price')
-                                            ->whereBetween('sale_price', [$minPrice, $maxPrice]);
-                               });
+                $q->where(function($sq) use ($minPrice, $maxPrice) {
+                    $sq->whereNull('sale_price')
+                       ->whereBetween('regular_price', [$minPrice, $maxPrice]);
+                })->orWhere(function($sq) use ($minPrice, $maxPrice) {
+                    $sq->whereNotNull('sale_price')
+                       ->whereBetween('sale_price', [$minPrice, $maxPrice]);
                 });
             });
         }

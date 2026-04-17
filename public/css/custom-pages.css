@@ -2,34 +2,69 @@
    Custom Styles for Information Pages
    =================================== */
 
+:root {
+    --page-brand-start: #667eea;
+    --page-brand-end: #764ba2;
+    --page-accent: #ffc107;
+    --page-text-muted: #4a5568;
+    --page-card-shadow: rgba(0,0,0,0.08);
+}
+
 /* Common Hero Sections */
-.hero-section {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+.info-hero {
+    background: linear-gradient(135deg, var(--page-brand-start) 0%, var(--page-brand-end) 100%);
     color: white;
-    padding: 100px 0;
+    padding: 140px 0 80px; /* Increased top padding to clear the transparent header */
     position: relative;
     overflow: hidden;
 }
 
-.hero-section::before {
+.info-hero::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="hero-pattern" width="40" height="40" patternUnits="userSpaceOnUse"><circle cx="20" cy="20" r="2" fill="white" opacity="0.1"/><circle cx="10" cy="10" r="1" fill="white" opacity="0.05"/><circle cx="30" cy="30" r="1" fill="white" opacity="0.05"/></pattern></defs><rect width="100" height="100" fill="url(%23hero-pattern)"/></svg>');
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="1" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="1" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+}
+
+/* Common Breadcrumb Styles */
+.breadcrumb-modern {
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(15px);
+    border-radius: 50px;
+    padding: 10px 22px;
+    margin-bottom: 35px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    border: 1px solid rgba(255,255,255,0.3);
+    position: relative;
+    z-index: 2;
+}
+
+.breadcrumb-modern a {
+    color: var(--page-brand-start);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.breadcrumb-modern a:hover {
+    color: var(--page-brand-end);
 }
 
 /* Common Card Styles */
 .info-card {
     background: white;
-    border-radius: 25px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+    border-radius: 20px;
+    box-shadow: 0 15px 35px var(--page-card-shadow);
     padding: 40px;
     margin-bottom: 30px;
-    border: 1px solid #f0f4f8;
-    transition: all 0.4s ease;
+    border: 1px solid #f0f0f0;
+    transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
 }
@@ -39,171 +74,92 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: 5px;
+    width: 4px;
     height: 100%;
-    background: linear-gradient(to bottom, #667eea, #764ba2);
-    border-radius: 0 25px 25px 0;
+    background: linear-gradient(to bottom, var(--page-brand-start), var(--page-brand-end));
 }
 
 .info-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+    transform: translateY(-5px);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.12);
 }
 
 /* Common Icon Styles */
 .info-icon {
-    width: 70px;
-    height: 70px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    border-radius: 18px;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--page-brand-start), var(--page-brand-end));
+    border-radius: 15px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
     color: white;
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
 }
 
 /* Common Section Titles */
-.section-title {
-    color: #1a202c;
+.info-section-title {
+    color: #2d3748;
     font-weight: 700;
-    margin-bottom: 25px;
-    font-size: 1.8rem;
-    position: relative;
-}
-
-.section-title::after {
-    content: '';
-    position: absolute;
-    bottom: -10px;
-    left: 0;
-    width: 60px;
-    height: 3px;
-    background: linear-gradient(90deg, #667eea, #764ba2);
-    border-radius: 2px;
-}
-
-/* Common Content Styles */
-.info-content {
-    color: #4a5568;
-    line-height: 1.9;
-    font-size: 16px;
-}
-
-/* Common List Styles */
-.info-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.info-list li {
-    padding: 15px 0;
-    border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 15px;
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 15px;
-    transition: all 0.3s ease;
 }
 
-.info-list li:last-child {
-    border-bottom: none;
-}
-
-.info-list li:hover {
-    background: rgba(102, 126, 234, 0.05);
-    padding-left: 10px;
-    border-radius: 8px;
-}
-
-.info-list .list-icon {
-    margin-top: 3px;
-    flex-shrink: 0;
-}
-
-/* Common Breadcrumb Styles */
-.breadcrumb-modern {
-    background: rgba(255,255,255,0.95);
-    backdrop-filter: blur(15px);
-    border-radius: 50px;
-    padding: 15px 30px;
-    margin-bottom: 50px;
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-    border: 1px solid rgba(255,255,255,0.2);
-}
-
-.breadcrumb-modern a {
-    color: #667eea;
-    text-decoration: none;
-    font-weight: 600;
-    transition: color 0.3s ease;
-}
-
-.breadcrumb-modern a:hover {
-    color: #764ba2;
-}
-
-/* Common Button Styles */
-.btn-modern {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
+/* Modern Accordion */
+.accordion-modern .accordion-item {
     border: none;
-    padding: 15px 40px;
-    border-radius: 50px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-}
-
-.btn-modern:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
-    color: white;
-}
-
-.btn-outline-modern {
     background: white;
-    color: #667eea;
-    border: 2px solid #667eea;
-    padding: 12px 30px;
-    border-radius: 50px;
-    font-weight: 600;
+    border-radius: 15px !important;
+    margin-bottom: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px var(--page-card-shadow);
     transition: all 0.3s ease;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    margin: 8px;
 }
 
-.btn-outline-modern:hover {
-    background: #667eea;
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+.accordion-modern .accordion-item:hover {
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
 }
 
-/* Common Highlight Sections */
-.highlight-section {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 25px;
-    padding: 60px 40px;
+.accordion-modern .accordion-button {
+    padding: 20px 25px;
+    font-weight: 600;
+    color: #2d3748;
+    background: white;
+    box-shadow: none;
+    text-align: right;
+}
+
+.accordion-modern .accordion-button:not(.collapsed) {
+    color: var(--page-brand-start);
+    background: rgba(var(--page-brand-start-rgb), 0.05); /* Optional: dynamic bg */
+}
+
+.accordion-modern .accordion-button::after {
+    margin-right: auto;
+    margin-left: 0;
+}
+
+.accordion-modern .accordion-body {
+    padding: 0 25px 25px;
+    color: var(--page-text-muted);
+    line-height: 1.8;
+}
+
+/* Call to Action Section */
+.info-cta {
+    background: linear-gradient(135deg, var(--page-brand-start) 0%, var(--page-brand-end) 100%);
+    border-radius: 20px;
+    padding: 40px;
     text-align: center;
     color: white;
-    margin: 60px 0;
+    margin-top: 50px;
     position: relative;
     overflow: hidden;
 }
 
-.highlight-section::before {
+.info-cta::before {
     content: '';
     position: absolute;
     top: -50%;
@@ -214,130 +170,53 @@
     animation: pulse 8s ease-in-out infinite;
 }
 
+.btn-modern-white {
+    background: white;
+    color: var(--page-brand-start);
+    border: none;
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-modern-white:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    color: var(--page-brand-end);
+}
+
 @keyframes pulse {
     0%, 100% { transform: scale(1); opacity: 0.5; }
     50% { transform: scale(1.05); opacity: 0.8; }
 }
 
-/* Common Form Styles */
-.form-modern {
-    background: white;
-    border-radius: 20px;
-    padding: 40px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
-}
-
-.form-group-modern {
-    margin-bottom: 25px;
-}
-
-.form-control-modern {
-    border: 2px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 15px 20px;
-    font-size: 16px;
-    transition: all 0.3s ease;
-    background: #f8fafc;
-    width: 100%;
-}
-
-.form-control-modern:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    background: white;
-    outline: none;
-}
-
-.form-label-modern {
-    font-weight: 600;
-    color: #2d3748;
-    margin-bottom: 8px;
-    display: block;
-}
-
-/* Common Animation Classes */
-.fade-in {
-    animation: fadeIn 0.6s ease-in-out;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.slide-up {
-    animation: slideUp 0.8s ease-out;
-}
-
-@keyframes slideUp {
-    from { opacity: 0; transform: translateY(40px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* Common Responsive Styles */
 @media (max-width: 768px) {
-    .hero-section {
-        padding: 80px 0;
-    }
-    
-    .info-card {
-        padding: 25px;
-        margin-bottom: 20px;
-    }
-    
-    .info-icon {
-        width: 60px;
-        height: 60px;
-    }
-    
-    .section-title {
-        font-size: 1.4rem;
-    }
-    
-    .highlight-section {
-        padding: 40px 20px;
-        margin: 40px 0;
-    }
-    
-    .btn-modern {
-        padding: 12px 25px;
-        font-size: 14px;
-    }
+    .info-hero { padding: 120px 0 60px; }
+    .info-card { padding: 25px; }
+    .info-icon { width: 50px; height: 50px; }
 }
 
-@media (max-width: 576px) {
-    .breadcrumb-modern {
-        padding: 12px 20px;
-        font-size: 14px;
-    }
-    
-    .info-card {
-        padding: 20px;
-    }
-    
-    .form-modern {
-        padding: 25px;
-    }
+/* Header Contrast Fix for Informational Pages */
+.info-hero ~ #header, 
+body:has(.info-hero) #header {
+    background: rgba(0, 0, 0, 0.05) !important;
+    backdrop-filter: blur(5px);
 }
 
-/* Common Utility Classes */
-.text-gradient {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+body:has(.info-hero) .navigation__link,
+body:has(.info-hero) .header-tools__item {
+    color: white !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
 
-.shadow-modern {
-    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-}
-
-.shadow-modern-hover:hover {
-    box-shadow: 0 30px 60px rgba(0,0,0,0.15);
-}
-
-.border-gradient {
-    border: 2px solid transparent;
-    background: linear-gradient(white, white) padding-box,
-                linear-gradient(135deg, #667eea, #764ba2) border-box;
+/* Specific fix for the Amber/FAQ page where white text might be hard to read */
+body:has(.info-hero[style*="--page-brand-start: #f59e0b"]) .navigation__link,
+body:has(.info-hero[style*="--page-brand-start: #f59e0b"]) .header-tools__item {
+    color: #2d3748 !important;
+    text-shadow: none;
 }

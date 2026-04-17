@@ -21,6 +21,8 @@ yarn-error.log
 .env.local
 .env.testing
 .env.staging
+.env.hostinger
+*.rar
 
 # ===== IDE Files =====
 /.fleet
