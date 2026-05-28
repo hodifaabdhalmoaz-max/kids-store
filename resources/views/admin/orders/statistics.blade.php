@@ -63,7 +63,7 @@
                                 </div>
                                 <div>
                                     <div class="body-text mb-2">إجمالي المبيعات</div>
-                                    <h4>${{ number_format($totalSales, 2) }}</h4>
+                                    <h4>{{ format_price($totalSales) }}</h4>
                                 </div>
                             </div>
                         </div>
@@ -125,7 +125,7 @@
                             <tr>
                                 <td>{{ $sale->date }}</td>
                                 <td>{{ $sale->order_count }}</td>
-                                <td>${{ number_format($sale->total_sales, 2) }}</td>
+                                <td>{{ format_price($sale->total_sales) }}</td>
                             </tr>
                             @empty
                             <tr>
@@ -154,7 +154,7 @@
                             <tr>
                                 <td>{{ $customer['user']->name ?? 'عميل محذوف' }}</td>
                                 <td>{{ $customer['order_count'] }}</td>
-                                <td>${{ number_format($customer['total_spent'], 2) }}</td>
+                                <td>{{ format_price($customer['total_spent']) }}</td>
                             </tr>
                             @empty
                             <tr>

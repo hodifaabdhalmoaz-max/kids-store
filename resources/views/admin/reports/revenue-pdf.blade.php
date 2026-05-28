@@ -171,7 +171,7 @@
     <!-- Main Statistics -->
     <div class="stats-grid">
         <div class="stat-card">
-            <div class="stat-value">${{ number_format($analytics['current']['revenue'], 2) }}</div>
+            <div class="stat-value">{{ format_price($analytics['current']['revenue']) }}</div>
             <div class="stat-label">إجمالي الإيرادات</div>
             @if($analytics['changes']['revenue'] != 0)
             <div class="change-indicator {{ $analytics['changes']['revenue'] >= 0 ? 'positive' : 'negative' }}">
@@ -191,7 +191,7 @@
         </div>
 
         <div class="stat-card">
-            <div class="stat-value">${{ number_format($analytics['current']['average_order_value'], 2) }}</div>
+            <div class="stat-value">{{ format_price($analytics['current']['average_order_value']) }}</div>
             <div class="stat-label">متوسط قيمة الطلب</div>
         </div>
 
@@ -207,12 +207,12 @@
         
         <div class="comparison-item">
             <span>الإيرادات الحالية:</span>
-            <span>${{ number_format($analytics['current']['revenue'], 2) }}</span>
+            <span>{{ format_price($analytics['current']['revenue']) }}</span>
         </div>
         
         <div class="comparison-item">
             <span>الإيرادات السابقة:</span>
-            <span>${{ number_format($analytics['previous']['revenue'], 2) }}</span>
+            <span>{{ format_price($analytics['previous']['revenue']) }}</span>
         </div>
         
         <div class="comparison-item">
@@ -232,7 +232,7 @@
         
         <div class="summary-item">
             <span>إجمالي الإيرادات:</span>
-            <span>${{ number_format($overall_summary['total_revenue'], 2) }}</span>
+            <span>{{ format_price($overall_summary['total_revenue']) }}</span>
         </div>
         
         <div class="summary-item">

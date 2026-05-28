@@ -23,6 +23,7 @@ class User extends Authenticatable
         'mobile',
         'password',
         'utype',
+        'profile_photo',
         'email_verified_at',
         'two_factor_secret',
         'two_factor_recovery_codes',

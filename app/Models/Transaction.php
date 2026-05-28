@@ -14,7 +14,8 @@ class Transaction extends Model
         'order_id',
         'payment_method_id',
         'mode',
-        'status'
+        'status',
+        'attachment'
     ];
 
     public function order()

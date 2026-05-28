@@ -171,7 +171,49 @@
                         <input class="mb-10" type="text" placeholder="أدخل الكمية" name="quantity" tabindex="0" value="{{$product->quantity}}" aria-required="true"
                             required="">
                     </fieldset>
-                    @error('quantity') <span class="alret alert-denger text-center">{{$message}} @enderror
+                    @error('quantity') <span class="alert alert-danger text-center">{{$message}}</span> @enderror
+                </div>
+
+                <div class="cols gap22">
+                    <fieldset class="name">
+                        <div class="body-title mb-10">الألوان المتاحة للمنتج</div>
+                        <div class="d-flex flex-wrap gap-3" style="gap: 12px; margin-top: 10px; flex-wrap: wrap;">
+                            @foreach($colors as $color)
+                            <label class="d-inline-flex align-items-center gap-2 px-3 py-2 border rounded cursor-pointer" style="cursor: pointer; background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 6px 12px;">
+                                <input type="checkbox" name="colors[]" value="{{$color->id}}" @if(in_array($color->id, old('colors', $product->colors->pluck('id')->toArray()))) checked @endif style="width: 16px; height: 16px; margin: 0 5px;">
+                                <span style="display: inline-block; width: 16px; height: 16px; border-radius: 50%; background-color: {{$color->hex_code ?? '#ccc'}}; border: 1px solid #bbb; margin: 0 5px;"></span>
+                                <span class="text-sm font-medium">{{$color->name}}</span>
+                            </label>
+                            @endforeach
+                        </div>
+                        @error('colors') <span class="alert alert-danger text-center mt-2 d-block">{{$message}}</span> @enderror
+                    </fieldset>
+
+                    <fieldset class="name">
+                        <div class="body-title mb-10">المقاسات المتاحة للمنتج</div>
+                        <div class="d-flex flex-wrap gap-3" style="gap: 12px; margin-top: 10px; flex-wrap: wrap;">
+                            @foreach($sizes as $size)
+                            <label class="d-inline-flex align-items-center gap-2 px-3 py-2 border rounded cursor-pointer" style="cursor: pointer; background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 6px 12px;">
+                                <input type="checkbox" name="sizes[]" value="{{$size->id}}" @if(in_array($size->id, old('sizes', $product->sizes->pluck('id')->toArray()))) checked @endif style="width: 16px; height: 16px; margin: 0 5px;">
+                                <span class="text-sm font-medium">{{$size->name}} ({{$size->code}})</span>
+                            </label>
+                            @endforeach
+                        </div>
+                        @error('sizes') <span class="alert alert-danger text-center mt-2 d-block">{{$message}}</span> @enderror
+                    </fieldset>
+                </div>
+
+                <div class="cols gap22">
+                    <fieldset class="name">
+                        <div class="body-title mb-10">الأبعاد</div>
+                        <input class="mb-10" type="text" placeholder="أدخل أبعاد المنتج (اختياري)" name="dimensions" tabindex="0" value="{{$product->dimensions}}" aria-required="false">
+                    </fieldset>
+                    @error('dimensions') <span class="alert alert-danger text-center">{{$message}}</span> @enderror
+                    <fieldset class="name">
+                        <div class="body-title mb-10">الوزن</div>
+                        <input class="mb-10" type="text" placeholder="أدخل وزن المنتج (اختياري)" name="weight" tabindex="0" value="{{$product->weight}}" aria-required="false">
+                    </fieldset>
+                    @error('weight') <span class="alert alert-danger text-center">{{$message}}</span> @enderror
                 </div>
 
                 <div class="cols gap22">
@@ -195,6 +237,19 @@
                         </div>
                     </fieldset>
                     @error('featured') <span class="alret alert-denger text-center">{{$message}} @enderror
+                </div>
+                
+                <div class="cols gap22">
+                    <fieldset class="name">
+                        <div class="body-title mb-10">إضافة للعروض</div>
+                        <div class="select mb-10">
+                            <select class="" name="is_offer">
+                                <option value="0" {{$product->is_offer == "0" ? "selected":""}} >لا</option>
+                                <option value="1" {{$product->is_offer == "1" ? "selected":""}} >نعم</option>
+                            </select>
+                        </div>
+                    </fieldset>
+                    @error('is_offer') <span class="alret alert-denger text-center">{{$message}} @enderror
                 </div>
                 <div class="cols gap10">
                     <button class="tf-button w-full" type="submit">تحديث المنتج</button>

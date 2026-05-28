@@ -1,5 +1,10 @@
 <?php
 
+// app/Http/Middleware/StrictRateLimit.php
+// Improved version that returns proper HTML for web requests
+// and JSON for API requests. Kept for backward compatibility.
+// New routes should use SmartThrottle instead.
+
 namespace App\Http\Middleware;
 
 use Closure;
@@ -33,11 +38,27 @@ class StrictRateLimit
                 'max_attempts' => $maxAttempts,
             ]);
             
-            // Return 429 Too Many Requests
-            return response()->json([
-                'message' => 'Too many requests. Please try again later.',
-                'retry_after' => $decayMinutes * 60,
-            ], 429);
+            $retryAfter = $decayMinutes * 60;
+
+            // Return JSON for API/AJAX requests
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'تم تجاوز عدد الطلبات المسموح. حاول مرة أخرى لاحقاً.',
+                    'retry_after' => $retryAfter,
+                ], 429, [
+                    'Retry-After' => $retryAfter,
+                    'X-RateLimit-Limit' => $maxAttempts,
+                    'X-RateLimit-Remaining' => 0,
+                ]);
+            }
+
+            // Return the Blade 429 error page for web requests
+            return response()->view('errors.429', [
+                'retryAfter' => $retryAfter,
+            ], 429, [
+                'Retry-After' => $retryAfter,
+            ]);
         }
         
         // Increment attempts

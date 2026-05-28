@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 
 class UserActivity extends Model
 {
@@ -47,15 +49,30 @@ class UserActivity extends Model
     
     /**
      * Log a user activity.
+     *
+     * Fail-safe: audit logging should never crash core business operations.
+     * If the user_activities table is missing or a DB error occurs,
+     * the activity is recorded in the application log file instead.
      */
     public static function log($userId, $action, $details = null)
     {
-        return self::create([
-            'user_id' => $userId,
-            'action' => $action,
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
-            'details' => $details,
-        ]);
+        try {
+            return self::create([
+                'user_id' => $userId,
+                'action' => $action,
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+                'details' => $details,
+            ]);
+        } catch (\Illuminate\Database\QueryException $e) {
+            Log::warning('UserActivity::log failed — falling back to file log.', [
+                'error'   => $e->getMessage(),
+                'user_id' => $userId,
+                'action'  => $action,
+                'details' => $details,
+            ]);
+
+            return null;
+        }
     }
 }

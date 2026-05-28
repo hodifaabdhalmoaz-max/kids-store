@@ -3,15 +3,6 @@
 @section('title', 'سياسة الخصوصية - متجر الأطفال')
 @section('description', 'سياسة الخصوصية الخاصة بمتجر الأطفال - نحن نحترم خصوصيتك ونحمي بياناتك الشخصية')
 
-@push('styles')
-<style>
-:root {
-    --page-brand-start: #007bff;
-    --page-brand-end: #0056b3;
-}
-</style>
-@endpush
-
 @section('content')
 <!-- Hero Section -->
 <section class="info-hero">
@@ -115,10 +106,6 @@
 
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    if (typeof lucide !== 'undefined') {
-        lucide.createIcons();
-    }
-});
+    // Privacy policy scripts
 </script>
 @endpush

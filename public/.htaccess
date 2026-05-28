@@ -25,8 +25,8 @@
         Header unset Server
         Header unset X-Powered-By
 
-        # Content Security Policy (basic)
-        Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' https:; connect-src 'self' https:; frame-src 'self' https:; object-src 'none';"
+        # Content Security Policy is handled by Laravel SecurityHeaders middleware
+        # Do NOT set CSP here to avoid overriding the middleware's more detailed policy
     </IfModule>
 
     # ===== Block access to sensitive files =====
@@ -35,7 +35,7 @@
     </FilesMatch>
 
     # Block access to Laravel directories
-    RewriteRule ^(app|bootstrap|config|database|resources|storage|tests|vendor)/ - [F,L]
+    RewriteRule ^(app|bootstrap|config|database|resources|tests|vendor)/ - [F,L]
 
     # Block access to composer files
     <FilesMatch "(composer\.(json|lock)|package\.(json|lock)|yarn\.lock)$">
@@ -63,8 +63,10 @@
     RewriteCond %{QUERY_STRING} (eval\(|base64_decode|gzinflate|file_get_contents|fopen|readfile) [NC]
     RewriteRule .* - [F,L]
 
-    # Block requests with suspicious request methods
-    RewriteCond %{REQUEST_METHOD} ^(HEAD|TRACE|DELETE|TRACK|DEBUG) [NC]
+    # Block requests with dangerous request methods
+    # NOTE: HEAD is allowed — used by search engines and uptime monitors
+    # NOTE: DELETE is allowed — used by Laravel route definitions
+    RewriteCond %{REQUEST_METHOD} ^(TRACE|TRACK|DEBUG|CONNECT) [NC]
     RewriteRule .* - [F,L]
 
     # ===== Handle Authorization Header =====
@@ -84,28 +86,57 @@
     # ===== Cache Control =====
     <IfModule mod_expires.c>
         ExpiresActive On
+        ExpiresDefault "access plus 1 week"
 
-        # Images
-        ExpiresByType image/jpg "access plus 1 month"
-        ExpiresByType image/jpeg "access plus 1 month"
-        ExpiresByType image/gif "access plus 1 month"
-        ExpiresByType image/png "access plus 1 month"
-        ExpiresByType image/webp "access plus 1 month"
-        ExpiresByType image/svg+xml "access plus 1 month"
+        # Images — long cache, rarely change
+        ExpiresByType image/jpg "access plus 1 year"
+        ExpiresByType image/jpeg "access plus 1 year"
+        ExpiresByType image/gif "access plus 1 year"
+        ExpiresByType image/png "access plus 1 year"
+        ExpiresByType image/webp "access plus 1 year"
+        ExpiresByType image/svg+xml "access plus 1 year"
+        ExpiresByType image/x-icon "access plus 1 year"
 
-        # CSS and JavaScript
-        ExpiresByType text/css "access plus 1 month"
-        ExpiresByType application/javascript "access plus 1 month"
-        ExpiresByType text/javascript "access plus 1 month"
+        # CSS and JavaScript — versioned via Vite
+        ExpiresByType text/css "access plus 1 year"
+        ExpiresByType application/javascript "access plus 1 year"
+        ExpiresByType text/javascript "access plus 1 year"
 
-        # Fonts
+        # Fonts — rarely change
         ExpiresByType font/woff "access plus 1 year"
         ExpiresByType font/woff2 "access plus 1 year"
         ExpiresByType application/font-woff "access plus 1 year"
         ExpiresByType application/font-woff2 "access plus 1 year"
+        ExpiresByType font/ttf "access plus 1 year"
+        ExpiresByType font/otf "access plus 1 year"
+        ExpiresByType application/vnd.ms-fontobject "access plus 1 year"
 
-        # HTML
-        ExpiresByType text/html "access plus 1 hour"
+        # HTML — short cache for dynamic content
+        ExpiresByType text/html "access plus 5 minutes"
+    </IfModule>
+
+    # ===== Cache-Control Headers =====
+    <IfModule mod_headers.c>
+        # Versioned assets (Vite hashed filenames) — immutable
+        <FilesMatch "\.[0-9a-f]{8,}\.(css|js|woff2?|ttf|otf|eot)$">
+            Header set Cache-Control "public, max-age=31536000, immutable"
+        </FilesMatch>
+
+        # Images
+        <FilesMatch "\.(jpg|jpeg|png|gif|webp|svg|ico)$">
+            Header set Cache-Control "public, max-age=31536000"
+        </FilesMatch>
+
+        # HTML — must revalidate
+        <FilesMatch "\.(html|htm)$">
+            Header set Cache-Control "public, max-age=300, must-revalidate"
+        </FilesMatch>
+    </IfModule>
+
+    # ===== ETags =====
+    <IfModule mod_headers.c>
+        # Enable ETags for static assets
+        FileETag MTime Size
     </IfModule>
 
     # ===== Compression =====
@@ -121,6 +152,14 @@
         AddOutputFilterByType DEFLATE application/x-javascript
         AddOutputFilterByType DEFLATE text/javascript
         AddOutputFilterByType DEFLATE application/json
+        AddOutputFilterByType DEFLATE application/ld+json
+        AddOutputFilterByType DEFLATE image/svg+xml
+        AddOutputFilterByType DEFLATE font/woff
+        AddOutputFilterByType DEFLATE font/woff2
+        AddOutputFilterByType DEFLATE application/font-woff
+        AddOutputFilterByType DEFLATE application/font-woff2
+        AddOutputFilterByType DEFLATE font/ttf
+        AddOutputFilterByType DEFLATE application/vnd.ms-fontobject
     </IfModule>
 
 </IfModule>
@@ -136,3 +175,4 @@
 <FilesMatch "\.(git|svn|hg|bzr)">
     Require all denied
 </FilesMatch>
+

@@ -326,7 +326,7 @@ Repository → Settings → Branches
 في حالة وجود مشاكل في إعداد Branch Protection:
 - **GitHub Issues**: أنشئ issue جديد
 - **البريد الإلكتروني**: hodifaabdhalmoaz@gmail.com
-- **WhatsApp**: +967 777548421
+- **WhatsApp**: 777548421 967+
 
 ---
 

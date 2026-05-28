@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -34,11 +35,18 @@
         }
 
         /* تحسين خط Cairo للوحة الإدارة */
-        .main-content, .sidebar, .header {
+        .main-content,
+        .sidebar,
+        .header {
             font-family: "Cairo", sans-serif !important;
         }
 
-        h1, h2, h3, h4, h5, h6 {
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
             font-family: "Cairo", sans-serif !important;
             font-weight: 700;
         }
@@ -48,7 +56,8 @@
             font-weight: 600;
         }
 
-        .form-control, .form-select {
+        .form-control,
+        .form-select {
             font-family: "Cairo", sans-serif !important;
         }
 
@@ -127,6 +136,16 @@
                                                 <div class="text">جميع المنتجات</div>
                                             </a>
                                         </li>
+                                        <li class="sub-menu-item">
+                                            <a href="{{route('admin.colors')}}" class="">
+                                                <div class="text">إدارة الألوان</div>
+                                            </a>
+                                        </li>
+                                        <li class="sub-menu-item">
+                                            <a href="{{route('admin.sizes')}}" class="">
+                                                <div class="text">إدارة المقاسات</div>
+                                            </a>
+                                        </li>
                                     </ul>
                                 </li>
                                 <li class="menu-item has-children">
@@ -186,13 +205,13 @@
                                 </li>
 
                                 <li class="menu-item">
-                                    <a href="{{route('admin.revenue.analytics')}}" class="">
+                                    <a href="{{route('admin.revenue.analytics')}}" class="{{ request()->routeIs('admin.revenue*') ? 'active' : '' }}">
                                         <div class="icon"><i class="icon-bar-chart"></i></div>
                                         <div class="text">تحليل الإيرادات</div>
                                     </a>
                                 </li>
                                 <li class="menu-item">
-                                    <a href="slider.html" class="">
+                                    <a href="{{ route('admin.slides') }}" class="{{ request()->routeIs('admin.slides*') || request()->routeIs('admin.slide*') ? 'active' : '' }}">
                                         <div class="icon"><i class="icon-image"></i></div>
                                         <div class="text">الشرائح المتحركة</div>
                                     </a>
@@ -221,10 +240,10 @@
                                 <li class="menu-item">
                                     <form method="POST" action="{{route('logout')}}" id="logout-form">
                                         @csrf
-                                    <a href="{{route('logout')}}" class="" onclick="event.preventDefault();document.getElementById('logout-form').submit();">
-                                        <div class="icon"><i class="icon-log-out"></i></div>
-                                        <div class="text">تسجيل الخروج</div>
-                                    </a>
+                                        <a href="{{route('logout')}}" class="" onclick="event.preventDefault();document.getElementById('logout-form').submit();">
+                                            <div class="icon"><i class="icon-log-out"></i></div>
+                                            <div class="text">تسجيل الخروج</div>
+                                        </a>
                                     </form>
                                 </li>
                             </ul>
@@ -444,16 +463,20 @@
                                         <button class="btn btn-secondary dropdown-toggle" type="button"
                                             id="dropdownMenuButton3" data-bs-toggle="dropdown" aria-expanded="false">
                                             <span class="header-user wg-user">
-                                                <span class="image">
-                                                    <img src="{{ asset('images/avatar/user-1.png') }}" alt="">
+                                                <span class="image" style="overflow: hidden; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #007bff, #00d2ff); color: white; font-weight: bold;">
+                                                    @if(Auth::user()->profile_photo)
+                                                    <img src="{{ asset('storage/profile_photos/' . Auth::user()->profile_photo) }}" alt="{{ Auth::user()->name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                                    @else
+                                                    {{ mb_substr(Auth::user()->name, 0, 1, 'UTF-8') }}
+                                                    @endif
                                                 </span>
                                                 <span class="flex flex-column">
                                                     <!-- <span class="body-title mb-2">Abubakr Mohammed</span> -->
-                                                     <span class="body-title mb-2">
+                                                    <span class="body-title mb-2">
                                                         <div class="header-tools__item hover-container">
                                                             <span class="pr-6px">{{Auth::user()->name}}</span>
                                                         </div>
-                                                     </span>
+                                                    </span>
                                                     <span class="text-tiny">مدير</span>
                                                 </span>
                                             </span>
@@ -495,7 +518,7 @@
                                             </li>
                                             <li>
                                                 <form method="POST" action="{{route('logout')}}" id="logout-form">
-                                                @csrf
+                                                    @csrf
                                                     <a href="{{route('logout')}}" class="user-item" onclick="event.preventDefault();document.getElementById('logout-form').submit();">
                                                         <div class="icon">
                                                             <i class="icon-log-out"></i>
@@ -529,27 +552,28 @@
     <script src="{{ asset('js/apexcharts/apexcharts.js') }}"></script>
     <script src="{{ asset('js/main.js') }}"></script>
     <script>
-        (function ($) {
+        (function($) {
 
-            var tfLineChart = (function () {
+            var tfLineChart = (function() {
 
-                var chartBar = function () {
+                var chartBar = function() {
 
                     var options = {
                         series: [{
-                            name: 'Total',
-                            data: [0.00, 0.00, 0.00, 0.00, 0.00, 273.22, 208.12, 0.00, 0.00, 0.00, 0.00, 0.00]
-                        }, {
-                            name: 'Pending',
-                            data: [0.00, 0.00, 0.00, 0.00, 0.00, 273.22, 208.12, 0.00, 0.00, 0.00, 0.00, 0.00]
-                        },
-                        {
-                            name: 'Delivered',
-                            data: [0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00]
-                        }, {
-                            name: 'Canceled',
-                            data: [0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00]
-                        }],
+                                name: 'Total',
+                                data: [0.00, 0.00, 0.00, 0.00, 0.00, 273.22, 208.12, 0.00, 0.00, 0.00, 0.00, 0.00]
+                            }, {
+                                name: 'Pending',
+                                data: [0.00, 0.00, 0.00, 0.00, 0.00, 273.22, 208.12, 0.00, 0.00, 0.00, 0.00, 0.00]
+                            },
+                            {
+                                name: 'Delivered',
+                                data: [0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00]
+                            }, {
+                                name: 'Canceled',
+                                data: [0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00]
+                            }
+                        ],
                         chart: {
                             type: 'bar',
                             height: 325,
@@ -590,7 +614,7 @@
                         },
                         tooltip: {
                             y: {
-                                formatter: function (val) {
+                                formatter: function(val) {
                                     return "$ " + val + ""
                                 }
                             }
@@ -608,22 +632,22 @@
 
                 /* Function ============ */
                 return {
-                    init: function () { },
+                    init: function() {},
 
-                    load: function () {
+                    load: function() {
                         chartBar();
                     },
-                    resize: function () { },
+                    resize: function() {},
                 };
             })();
 
-            jQuery(document).ready(function () { });
+            jQuery(document).ready(function() {});
 
-            jQuery(window).on("load", function () {
+            jQuery(window).on("load", function() {
                 tfLineChart.load();
             });
 
-            jQuery(window).on("resize", function () { });
+            jQuery(window).on("resize", function() {});
         })(jQuery);
     </script>
 
@@ -638,4 +662,5 @@
 
     @stack("scripts")
 </body>
+
 </html>

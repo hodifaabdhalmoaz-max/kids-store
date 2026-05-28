@@ -37,14 +37,14 @@
                     <input class="mb-10" type="text" placeholder="أدخل اسم المنتج" name="name" tabindex="0" value="{{old('name')}}" aria-required="true" required="">
                     <div class="text-tiny">لا تتجاوز 100 حرف عند إدخال اسم المنتج.</div>
                 </fieldset>
-                @error('name') <span class="alret alert-denger text-center">{{$message}} @enderror
+                @error('name') <span class="alert alert-danger text-center">{{$message}}</span> @enderror
 
                 <fieldset class="name">
                     <div class="body-title mb-10">الرابط <span class="tf-color-1">*</span></div>
                     <input class="mb-10" type="text" placeholder="أدخل رابط المنتج" name="slug" tabindex="0" value="{{old('slug')}}" aria-required="true" required="">
                     <div class="text-tiny">لا تتجاوز 100 حرف عند إدخال رابط المنتج.</div>
                 </fieldset>
-                @error('slug') <span class="alret alert-denger text-center">{{$message}} @enderror
+                @error('slug') <span class="alert alert-danger text-center">{{$message}}</span> @enderror
 
                 <div class="gap22 cols">
                     <fieldset class="category">
@@ -81,7 +81,7 @@
                     <textarea class="mb-10 ht-150" name="short_description" placeholder="الوصف المختصر" tabindex="0" aria-required="true" required="">{{old('short_description')}}</textarea>
                     <div class="text-tiny">لا تتجاوز 100 حرف عند إدخال الوصف المختصر.</div>
                 </fieldset>
-                @error('short_description') <span class="alret alert-denger text-center">{{$message}} @enderror
+                @error('short_description') <span class="alert alert-danger text-center">{{$message}}</span> @enderror
 
                 <fieldset class="description">
                     <div class="body-title mb-10">الوصف <span class="tf-color-1">*</span>
@@ -89,7 +89,7 @@
                     <textarea class="mb-10" name="description" placeholder="الوصف" tabindex="0" aria-required="true" required="">{{old('description')}}</textarea>
                     <div class="text-tiny">لا تتجاوز 500 حرف عند إدخال الوصف.</div>
                 </fieldset>
-                @error('description') <span class="alret alert-denger text-center">{{$message}} @enderror
+                @error('description') <span class="alert alert-danger text-center">{{$message}}</span> @enderror
             </div>
             <div class="wg-box">
                 <fieldset>
@@ -110,7 +110,7 @@
                         </div>
                     </div>
                 </fieldset>
-                @error('image') <span class="alret alert-denger text-center">{{$message}} @enderror
+                @error('image') <span class="alert alert-danger text-center">{{$message}}</span> @enderror
 
                 <fieldset>
                     <div class="body-title mb-10">رفع صور المعرض</div>
@@ -130,7 +130,7 @@
                         </div>
                     </div>
                 </fieldset>
-                @error('images') <span class="alret alert-denger text-center">{{$message}} @enderror
+                @error('images') <span class="alert alert-danger text-center">{{$message}}</span> @enderror
 
                 <div class="cols gap22">
                     <fieldset class="name">
@@ -138,14 +138,14 @@
                                 class="tf-color-1">*</span></div>
                         <input class="mb-10" type="text" placeholder="أدخل السعر العادي" name="regular_price" tabindex="0" value="{{old('regular_price')}}" aria-required="true" required="">
                     </fieldset>
-                    @error('regular_price') <span class="alret alert-denger text-center">{{$message}} @enderror
+                    @error('regular_price') <span class="alert alert-danger text-center">{{$message}}</span> @enderror
 
                     <fieldset class="name">
                         <div class="body-title mb-10">سعر التخفيض <span
                                 class="tf-color-1">*</span></div>
                         <input class="mb-10" type="text" placeholder="أدخل سعر التخفيض" name="sale_price" tabindex="0" value="{{old('sale_price')}}" aria-required="true" required="">
                     </fieldset>
-                    @error('sale_price') <span class="alret alert-denger text-center">{{$message}} @enderror
+                    @error('sale_price') <span class="alert alert-danger text-center">{{$message}}</span> @enderror
 
                 </div>
 
@@ -156,14 +156,56 @@
                         </div>
                         <input class="mb-10" type="text" placeholder="أدخل رمز المنتج" name="SKU" tabindex="0" value="{{old('SKU')}}" aria-required="true" required="">
                     </fieldset>
-                    @error('SKU') <span class="alret alert-denger text-center">{{$message}} @enderror
+                    @error('SKU') <span class="alert alert-danger text-center">{{$message}}</span> @enderror
                     <fieldset class="name">
                         <div class="body-title mb-10">الكمية <span class="tf-color-1">*</span>
                         </div>
                         <input class="mb-10" type="text" placeholder="أدخل الكمية" name="quantity" tabindex="0" value="{{old('quantity')}}" aria-required="true"
                             required="">
                     </fieldset>
-                    @error('quantity') <span class="alret alert-denger text-center">{{$message}} @enderror
+                    @error('quantity') <span class="alert alert-danger text-center">{{$message}}</span> @enderror
+                </div>
+
+                <div class="cols gap22">
+                    <fieldset class="name">
+                        <div class="body-title mb-10">الألوان المتاحة للمنتج</div>
+                        <div class="d-flex flex-wrap gap-3" style="gap: 12px; margin-top: 10px; flex-wrap: wrap;">
+                            @foreach($colors as $color)
+                            <label class="d-inline-flex align-items-center gap-2 px-3 py-2 border rounded cursor-pointer" style="cursor: pointer; background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 6px 12px;">
+                                <input type="checkbox" name="colors[]" value="{{$color->id}}" @if(is_array(old('colors')) && in_array($color->id, old('colors'))) checked @endif style="width: 16px; height: 16px; margin: 0 5px;">
+                                <span style="display: inline-block; width: 16px; height: 16px; border-radius: 50%; background-color: {{$color->hex_code ?? '#ccc'}}; border: 1px solid #bbb; margin: 0 5px;"></span>
+                                <span class="text-sm font-medium">{{$color->name}}</span>
+                            </label>
+                            @endforeach
+                        </div>
+                        @error('colors') <span class="alert alert-danger text-center mt-2 d-block">{{$message}}</span> @enderror
+                    </fieldset>
+
+                    <fieldset class="name">
+                        <div class="body-title mb-10">المقاسات المتاحة للمنتج</div>
+                        <div class="d-flex flex-wrap gap-3" style="gap: 12px; margin-top: 10px; flex-wrap: wrap;">
+                            @foreach($sizes as $size)
+                            <label class="d-inline-flex align-items-center gap-2 px-3 py-2 border rounded cursor-pointer" style="cursor: pointer; background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 6px 12px;">
+                                <input type="checkbox" name="sizes[]" value="{{$size->id}}" @if(is_array(old('sizes')) && in_array($size->id, old('sizes'))) checked @endif style="width: 16px; height: 16px; margin: 0 5px;">
+                                <span class="text-sm font-medium">{{$size->name}} ({{$size->code}})</span>
+                            </label>
+                            @endforeach
+                        </div>
+                        @error('sizes') <span class="alert alert-danger text-center mt-2 d-block">{{$message}}</span> @enderror
+                    </fieldset>
+                </div>
+
+                <div class="cols gap22">
+                    <fieldset class="name">
+                        <div class="body-title mb-10">الأبعاد</div>
+                        <input class="mb-10" type="text" placeholder="أدخل أبعاد المنتج (اختياري)" name="dimensions" tabindex="0" value="{{old('dimensions')}}" aria-required="false">
+                    </fieldset>
+                    @error('dimensions') <span class="alert alert-danger text-center">{{$message}}</span> @enderror
+                    <fieldset class="name">
+                        <div class="body-title mb-10">الوزن</div>
+                        <input class="mb-10" type="text" placeholder="أدخل وزن المنتج (اختياري)" name="weight" tabindex="0" value="{{old('weight')}}" aria-required="false">
+                    </fieldset>
+                    @error('weight') <span class="alert alert-danger text-center">{{$message}}</span> @enderror
                 </div>
 
                 <div class="cols gap22">
@@ -176,7 +218,7 @@
                             </select>
                         </div>
                     </fieldset>
-                    @error('stock_status') <span class="alret alert-denger text-center">{{$message}} @enderror
+                    @error('stock_status') <span class="alert alert-danger text-center">{{$message}}</span> @enderror
                     <fieldset class="name">
                         <div class="body-title mb-10">مميز</div>
                         <div class="select mb-10">
@@ -186,7 +228,20 @@
                             </select>
                         </div>
                     </fieldset>
-                    @error('featured') <span class="alret alert-denger text-center">{{$message}} @enderror
+                    @error('featured') <span class="alert alert-danger text-center">{{$message}}</span> @enderror
+                </div>
+                
+                <div class="cols gap22">
+                    <fieldset class="name">
+                        <div class="body-title mb-10">إضافة للعروض</div>
+                        <div class="select mb-10">
+                            <select class="" name="is_offer">
+                                <option value="0">لا</option>
+                                <option value="1">نعم</option>
+                            </select>
+                        </div>
+                    </fieldset>
+                    @error('is_offer') <span class="alert alert-danger text-center">{{$message}}</span> @enderror
                 </div>
                 <div class="cols gap10">
                     <button class="tf-button w-full" type="submit">إضافة المنتج</button>

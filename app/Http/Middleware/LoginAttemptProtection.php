@@ -106,14 +106,28 @@ class LoginAttemptProtection
     }
 
     /**
-     * بناء استجابة الحظر
+     * بناء استجابة الحظر — HTML for web, JSON for API
      */
     protected function buildLockoutResponse(string $message): Response
     {
-        return response()->json([
-            'message' => $message,
-            'error' => 'too_many_attempts',
-            'retry_after' => 900, // 15 دقيقة
-        ], 429);
+        $retryAfter = 900; // 15 دقيقة
+
+        // Return JSON for AJAX/API requests
+        if (request()->expectsJson() || request()->is('api/*')) {
+            return response()->json([
+                'message' => $message,
+                'error' => 'too_many_attempts',
+                'retry_after' => $retryAfter,
+            ], 429, [
+                'Retry-After' => $retryAfter,
+            ]);
+        }
+
+        // Return the Blade 429 error page for web requests
+        return response()->view('errors.429', [
+            'retryAfter' => $retryAfter,
+        ], 429, [
+            'Retry-After' => $retryAfter,
+        ]);
     }
 }

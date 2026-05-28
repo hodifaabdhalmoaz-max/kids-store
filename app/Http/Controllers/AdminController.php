@@ -7,12 +7,16 @@ use App\Models\Category;
 use App\Models\Coupon;
 use App\Models\Product;
 use App\Models\Order;
+use App\Models\Color;
+use App\Models\Size;
+use App\Models\Slide;
 use App\Services\RevenueAnalyticsService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 use Intervention\Image\Laravel\Facades\Image;
 
 class AdminController extends Controller
@@ -89,7 +93,7 @@ class AdminController extends Controller
     //Brand
     public function brands()
     {
-        $brands = Brand::orderBy('id', 'DESC')->paginate(10);
+        $brands = Brand::withCount('products')->orderBy('id', 'DESC')->paginate(10);
         return view('admin.brands', compact('brands'));
     }
 
@@ -108,10 +112,9 @@ class AdminController extends Controller
 
         $brand = new Brand();
         $brand->name = $request->name;
-        $brand->slug = Str::slug($request->name);
+        $brand->slug = $request->slug;
         $image = $request->file('image');
-        $file_extention = $request->file('image')->extension();
-        $file_name = Carbon::now()->timestamp.'.'.$file_extention;
+        $file_name = Carbon::now()->timestamp.'.webp';
         $this->GenerateBrandThumbailsImage($image, $file_name);
         $brand->image = $file_name;
         $brand->save();
@@ -140,14 +143,13 @@ class AdminController extends Controller
 
         $brand = Brand::find($request->id);
         $brand->name = $request->name;
-        $brand->slug = Str::slug($request->name);
+        $brand->slug = $request->slug;
         if ($request->hasFile('image')) {
             if (File::exists(public_path('uploads/brands').'/'.$brand->image)) {
                 File::delete(public_path('uploads/brands').'/'.$brand->image);
             }
             $image = $request->file('image');
-            $file_extention = $request->file('image')->extension();
-            $file_name = Carbon::now()->timestamp.'.'.$file_extention;
+            $file_name = Carbon::now()->timestamp.'.webp';
             $this->GenerateBrandThumbailsImage($image, $file_name);
             $brand->image = $file_name;
         }
@@ -204,10 +206,9 @@ class AdminController extends Controller
 
         $category = new Category();
         $category->name = $request->name;
-        $category->slug = Str::slug($request->name);
+        $category->slug = $request->slug;
         $image = $request->file('image');
-        $file_extention = $request->file('image')->extension();
-        $file_name = Carbon::now()->timestamp.'.'.$file_extention;
+        $file_name = Carbon::now()->timestamp.'.webp';
         $this->GenerateCategoryThumbailsImage($image, $file_name);
         $category->image = $file_name;
         $category->save();
@@ -236,14 +237,13 @@ class AdminController extends Controller
 
         $category = Category::find($request->id);
         $category->name = $request->name;
-        $category->slug = Str::slug($request->name);
+        $category->slug = $request->slug;
         if ($request->hasFile('image')) {
             if (File::exists(public_path('uploads/categories').'/'.$category->image)) {
                 File::delete(public_path('uploads/categories').'/'.$category->image);
             }
             $image = $request->file('image');
-            $file_extention = $request->file('image')->extension();
-            $file_name = Carbon::now()->timestamp.'.'.$file_extention;
+            $file_name = Carbon::now()->timestamp.'.webp';
             $this->GenerateCategoryThumbailsImage($image, $file_name);
             $category->image = $file_name;
         }
@@ -289,7 +289,9 @@ class AdminController extends Controller
     {
         $categories = Category::select('id', 'name')->orderBy('name')->get();
         $brands = Brand::select('id', 'name')->orderBy('name')->get();
-        return view('admin.product-add', compact('categories', 'brands'));
+        $colors = Color::active()->ordered()->get();
+        $sizes = Size::active()->ordered()->get();
+        return view('admin.product-add', compact('categories', 'brands', 'colors', 'sizes'));
     }
 
     public function product_store(Request $request)
@@ -304,10 +306,17 @@ class AdminController extends Controller
             'SKU' => 'required|string|unique:products,SKU',
             'stock_status' => 'required|in:instock,outofstock',
             'featured' => 'required|boolean',
+            'is_offer' => 'required|boolean',
             'quantity' => 'required|integer|min:0',
-            'image' => 'required|mimes:png,jpg,jpeg|max:2048',
+            'image' => 'required|mimes:png,jpg,jpeg,webp|max:2048',
             'category_id' => 'required|integer|exists:categories,id',
-            'brand_id' => 'required|integer|exists:brands,id'
+            'brand_id' => 'required|integer|exists:brands,id',
+            'colors' => 'nullable|array',
+            'colors.*' => 'integer|exists:colors,id',
+            'sizes' => 'nullable|array',
+            'sizes.*' => 'integer|exists:sizes,id',
+            'dimensions' => 'nullable|string',
+            'weight' => 'nullable|string'
         ], [
             'category_id.required' => 'يجب اختيار فئة للمنتج',
             'category_id.integer' => 'يجب اختيار فئة صحيحة',
@@ -324,7 +333,7 @@ class AdminController extends Controller
 
         $product = new Product();
         $product->name = $request->name;
-        $product->slug = Str::slug($request->name);
+        $product->slug = $request->slug;
         $product->short_description = $request->short_description;
         $product->description = $request->description;
         $product->regular_price = $request->regular_price;
@@ -332,15 +341,18 @@ class AdminController extends Controller
         $product->SKU = $request->SKU;
         $product->stock_status = $request->stock_status;
         $product->featured = $request->featured;
+        $product->is_offer = $request->is_offer;
         $product->quantity = $request->quantity;
         $product->category_id = $request->category_id;
         $product->brand_id = $request->brand_id;
+        $product->dimensions = $request->dimensions;
+        $product->weight = $request->weight;
 
         $current_timestamp = Carbon::now()->timestamp;
 
         if ($request->hasFile('image')) {
             $image = $request->file('image');
-            $imageName = $current_timestamp.'.'.$image->extension();
+            $imageName = $current_timestamp.'.webp';
             $this->GenerateProductThumbailImage($image, $imageName);
             $product->image = $imageName;
         }
@@ -358,7 +370,7 @@ class AdminController extends Controller
                 $gcheck = in_array($gextension, $allowedfileExtion);
                 if ($gcheck)
                 {
-                    $gfileName = $current_timestamp."-".$counter.".".$gextension;
+                    $gfileName = $current_timestamp."-".$counter.".webp";
                     $this->GenerateProductThumbailImage($file, $gfileName);
                     array_push($gallery_arr, $gfileName);
                     $counter = $counter + 1;
@@ -369,16 +381,41 @@ class AdminController extends Controller
 
         $product->images = $gallery_images;
         $product->save();
-        return redirect()->route('admin.products')->with('status', 'تم إضافة المنتج بنجاح!');
 
+        if ($request->has('colors')) {
+            $product->colors()->sync($request->colors);
+            $colorNames = Color::whereIn('id', $request->colors)->pluck('name')->toArray();
+            $product->color = implode(', ', $colorNames);
+        } else {
+            $product->color = null;
+        }
+
+        if ($request->has('sizes')) {
+            $product->sizes()->sync($request->sizes);
+            $sizeNames = Size::whereIn('id', $request->sizes)->pluck('name')->toArray();
+            $product->size = implode(', ', $sizeNames);
+        } else {
+            $product->size = null;
+        }
+        $product->save();
+
+        // Clear filter caching and homepage caching
+        Cache::forget('search_filters');
+        Cache::forget('home_featured_products');
+        Cache::forget('home_latest_products');
+        Cache::forget('home_offer_products');
+
+        return redirect()->route('admin.products')->with('status', 'تم إضافة المنتج بنجاح!');
     }
 
     public function product_edit($id)
     {
-        $product = Product::find($id);
+        $product = Product::with(['colors', 'sizes'])->find($id);
         $categories = Category::select('id', 'name')->orderBy('name')->get();
         $brands = Brand::select('id', 'name')->orderBy('name')->get();
-        return view('admin.product-edit', compact('product', 'categories', 'brands'));
+        $colors = Color::active()->ordered()->get();
+        $sizes = Size::active()->ordered()->get();
+        return view('admin.product-edit', compact('product', 'categories', 'brands', 'colors', 'sizes'));
     }
 
     public function product_update(Request $request)
@@ -393,10 +430,17 @@ class AdminController extends Controller
             'SKU' => 'required|string|unique:products,SKU,'.$request->id,
             'stock_status' => 'required|in:instock,outofstock',
             'featured' => 'required|boolean',
+            'is_offer' => 'required|boolean',
             'quantity' => 'required|integer|min:0',
             'image' => 'nullable|mimes:png,jpg,jpeg|max:2048',
             'category_id' => 'required|integer|exists:categories,id',
-            'brand_id' => 'required|integer|exists:brands,id'
+            'brand_id' => 'required|integer|exists:brands,id',
+            'colors' => 'nullable|array',
+            'colors.*' => 'integer|exists:colors,id',
+            'sizes' => 'nullable|array',
+            'sizes.*' => 'integer|exists:sizes,id',
+            'dimensions' => 'nullable|string',
+            'weight' => 'nullable|string'
         ], [
             'category_id.required' => 'يجب اختيار فئة للمنتج',
             'category_id.integer' => 'يجب اختيار فئة صحيحة',
@@ -413,7 +457,7 @@ class AdminController extends Controller
 
         $product = Product::find($request->id);
         $product->name = $request->name;
-        $product->slug = Str::slug($request->name);
+        $product->slug = $request->slug;
         $product->short_description = $request->short_description;
         $product->description = $request->description;
         $product->regular_price = $request->regular_price;
@@ -421,9 +465,12 @@ class AdminController extends Controller
         $product->SKU = $request->SKU;
         $product->stock_status = $request->stock_status;
         $product->featured = $request->featured;
+        $product->is_offer = $request->is_offer;
         $product->quantity = $request->quantity;
         $product->category_id = $request->category_id;
         $product->brand_id = $request->brand_id;
+        $product->dimensions = $request->dimensions;
+        $product->weight = $request->weight;
 
         $current_timestamp = Carbon::now()->timestamp;
 
@@ -437,7 +484,7 @@ class AdminController extends Controller
                 File::delete(public_path('uploads/products/thumbnails').'/'.$product->image);
             }
             $image = $request->file('image');
-            $imageName = $current_timestamp.'.'.$image->extension();
+            $imageName = $current_timestamp.'.webp';
             $this->GenerateProductThumbailImage($image, $imageName);
             $product->image = $imageName;
         }
@@ -463,7 +510,7 @@ class AdminController extends Controller
                 $gextension = $file->getClientOriginalExtension();
                 $gcheck = in_array($gextension, $allowedfileExtion);
                 if ($gcheck) {
-                    $gfileName = $current_timestamp."-".$counter.".".$gextension;
+                    $gfileName = $current_timestamp."-".$counter.".webp";
                     $this->GenerateProductThumbailImage($file, $gfileName);
                     array_push($gallery_arr, $gfileName);
                     $counter = $counter + 1;
@@ -474,6 +521,32 @@ class AdminController extends Controller
         }
 
         $product->save();
+
+        if ($request->has('colors')) {
+            $product->colors()->sync($request->colors);
+            $colorNames = Color::whereIn('id', $request->colors)->pluck('name')->toArray();
+            $product->color = implode(', ', $colorNames);
+        } else {
+            $product->colors()->detach();
+            $product->color = null;
+        }
+
+        if ($request->has('sizes')) {
+            $product->sizes()->sync($request->sizes);
+            $sizeNames = Size::whereIn('id', $request->sizes)->pluck('name')->toArray();
+            $product->size = implode(', ', $sizeNames);
+        } else {
+            $product->sizes()->detach();
+            $product->size = null;
+        }
+        $product->save();
+
+        // Clear filter caching and homepage caching
+        Cache::forget('search_filters');
+        Cache::forget('home_featured_products');
+        Cache::forget('home_latest_products');
+        Cache::forget('home_offer_products');
+
         return redirect()->route('admin.products')->with('status', 'تم تحديث المنتج بنجاح!');
     }
 
@@ -742,4 +815,275 @@ class AdminController extends Controller
         }
     }
 
+    // Color Management
+    public function colors()
+    {
+        $colors = Color::withCount('products')->orderBy('id', 'DESC')->paginate(10);
+        return view('admin.colors', compact('colors'));
+    }
+
+    public function add_color()
+    {
+        return view('admin.color-add');
+    }
+
+    public function color_store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'code' => 'required|string|unique:colors,code',
+            'hex_code' => 'nullable|string|max:7',
+            'description' => 'nullable|string',
+            'order' => 'nullable|integer',
+            'is_active' => 'required|boolean'
+        ]);
+
+        $color = new Color();
+        $color->name = $request->name;
+        $color->code = $request->code;
+        $color->hex_code = $request->hex_code;
+        $color->description = $request->description;
+        $color->order = $request->order ?? 0;
+        $color->is_active = $request->is_active;
+        $color->save();
+
+        Cache::forget('search_filters');
+
+        return redirect()->route('admin.colors')->with('status', 'تم إضافة اللون بنجاح!');
+    }
+
+    public function color_edit($id)
+    {
+        $color = Color::find($id);
+        return view('admin.color-edit', compact('color'));
+    }
+
+    public function color_update(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'code' => 'required|string|unique:colors,code,' . $request->id,
+            'hex_code' => 'nullable|string|max:7',
+            'description' => 'nullable|string',
+            'order' => 'nullable|integer',
+            'is_active' => 'required|boolean'
+        ]);
+
+        $color = Color::find($request->id);
+        $color->name = $request->name;
+        $color->code = $request->code;
+        $color->hex_code = $request->hex_code;
+        $color->description = $request->description;
+        $color->order = $request->order ?? 0;
+        $color->is_active = $request->is_active;
+        $color->save();
+
+        Cache::forget('search_filters');
+
+        return redirect()->route('admin.colors')->with('status', 'تم تحديث اللون بنجاح!');
+    }
+
+    public function color_delete($id)
+    {
+        $color = Color::find($id);
+        $color->delete();
+        
+        Cache::forget('search_filters');
+        
+        return redirect()->route('admin.colors')->with('status', 'تم حذف اللون بنجاح!');
+    }
+
+    // Size Management
+    public function sizes()
+    {
+        $sizes = Size::withCount('products')->orderBy('id', 'DESC')->paginate(10);
+        return view('admin.sizes', compact('sizes'));
+    }
+
+    public function add_size()
+    {
+        return view('admin.size-add');
+    }
+
+    public function size_store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'code' => 'required|string|unique:sizes,code',
+            'description' => 'nullable|string',
+            'order' => 'nullable|integer',
+            'is_active' => 'required|boolean'
+        ]);
+
+        $size = new Size();
+        $size->name = $request->name;
+        $size->code = $request->code;
+        $size->description = $request->description;
+        $size->order = $request->order ?? 0;
+        $size->is_active = $request->is_active;
+        $size->save();
+
+        Cache::forget('search_filters');
+
+        return redirect()->route('admin.sizes')->with('status', 'تم إضافة المقاس بنجاح!');
+    }
+
+    public function size_edit($id)
+    {
+        $size = Size::find($id);
+        return view('admin.size-edit', compact('size'));
+    }
+
+    public function size_update(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'code' => 'required|string|unique:sizes,code,' . $request->id,
+            'description' => 'nullable|string',
+            'order' => 'nullable|integer',
+            'is_active' => 'required|boolean'
+        ]);
+
+        $size = Size::find($request->id);
+        $size->name = $request->name;
+        $size->code = $request->code;
+        $size->description = $request->description;
+        $size->order = $request->order ?? 0;
+        $size->is_active = $request->is_active;
+        $size->save();
+
+        Cache::forget('search_filters');
+
+        return redirect()->route('admin.sizes')->with('status', 'تم تحديث المقاس بنجاح!');
+    }
+
+    public function size_delete($id)
+    {
+        $size = Size::find($id);
+        $size->delete();
+
+        Cache::forget('search_filters');
+
+        return redirect()->route('admin.sizes')->with('status', 'تم حذف المقاس بنجاح!');
+    }
+
+    // Slideshow Management (الشرائح المتحركة)
+    public function slides()
+    {
+        $slides = Slide::ordered()->paginate(10);
+        return view('admin.slides', compact('slides'));
+    }
+
+    public function add_slide()
+    {
+        return view('admin.slide-add');
+    }
+
+    public function slide_store(Request $request)
+    {
+        $request->validate([
+            'tagline' => 'nullable|string|max:255',
+            'title' => 'nullable|string|max:255',
+            'subtitle' => 'nullable|string|max:255',
+            'link' => 'nullable|string|max:255',
+            'image' => 'required|mimes:png,jpg,jpeg,webp|max:2048',
+            'status' => 'required|boolean',
+            'order' => 'nullable|integer'
+        ]);
+
+        $slide = new Slide();
+        $slide->tagline = $request->tagline;
+        $slide->title = $request->title;
+        $slide->subtitle = $request->subtitle;
+        $slide->link = $request->link;
+        $slide->status = $request->status;
+        $slide->order = $request->order ?? 0;
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $file_name = Carbon::now()->timestamp . '.' . $image->getClientOriginalExtension();
+            
+            $this->GenerateSlideImage($image, $file_name);
+            $slide->image = $file_name;
+        }
+
+        $slide->save();
+
+        Cache::forget('home_slides');
+
+        return redirect()->route('admin.slides')->with('status', 'تم إضافة الشريحة بنجاح!');
+    }
+
+    public function slide_edit($id)
+    {
+        $slide = Slide::find($id);
+        return view('admin.slide-edit', compact('slide'));
+    }
+
+    public function slide_update(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|integer|exists:slides,id',
+            'tagline' => 'nullable|string|max:255',
+            'title' => 'nullable|string|max:255',
+            'subtitle' => 'nullable|string|max:255',
+            'link' => 'nullable|string|max:255',
+            'image' => 'nullable|mimes:png,jpg,jpeg,webp|max:2048',
+            'status' => 'required|boolean',
+            'order' => 'nullable|integer'
+        ]);
+
+        $slide = Slide::find($request->id);
+        $slide->tagline = $request->tagline;
+        $slide->title = $request->title;
+        $slide->subtitle = $request->subtitle;
+        $slide->link = $request->link;
+        $slide->status = $request->status;
+        $slide->order = $request->order ?? 0;
+
+        if ($request->hasFile('image')) {
+            if ($slide->image && File::exists(public_path('uploads/slides') . '/' . $slide->image)) {
+                File::delete(public_path('uploads/slides') . '/' . $slide->image);
+            }
+
+            $image = $request->file('image');
+            $file_name = Carbon::now()->timestamp . '.' . $image->getClientOriginalExtension();
+            
+            $this->GenerateSlideImage($image, $file_name);
+            $slide->image = $file_name;
+        }
+
+        $slide->save();
+
+        Cache::forget('home_slides');
+
+        return redirect()->route('admin.slides')->with('status', 'تم تحديث الشريحة بنجاح!');
+    }
+
+    public function slide_delete($id)
+    {
+        $slide = Slide::findOrFail($id);
+        if ($slide->image && File::exists(public_path('uploads/slides') . '/' . $slide->image)) {
+            File::delete(public_path('uploads/slides') . '/' . $slide->image);
+        }
+        $slide->delete();
+
+        Cache::forget('home_slides');
+
+        return redirect()->route('admin.slides')->with('status', 'تم حذف الشريحة بنجاح!');
+    }
+
+    private function GenerateSlideImage($image, $imageName)
+    {
+        $destinationPath = public_path('uploads/slides');
+        if (!File::exists($destinationPath)) {
+            File::makeDirectory($destinationPath, 0755, true, true);
+        }
+        
+        $img = Image::read($image->path());
+        $img->resize(600, 800, function ($constraint) {
+            $constraint->aspectRatio();
+            $constraint->upSize();
+        })->save($destinationPath . '/' . $imageName);
+    }
 }

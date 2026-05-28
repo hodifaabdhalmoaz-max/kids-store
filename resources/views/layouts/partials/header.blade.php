@@ -7,7 +7,7 @@
                     <div class="top-bar-contact d-flex align-items-center flex-wrap">
                         <div class="me-4 mb-1 mb-md-0">
                             <i data-lucide="phone" class="me-1" style="width: 14px; height: 14px;"></i>
-                            <a href="tel:+967777548421" class="text-white text-decoration-none">+967 777548421</a>
+                            <a href="tel:+967777548421" class="text-white text-decoration-none">777548421 967+</a>
                         </div>
                         <div class="me-4 mb-1 mb-md-0">
                             <i data-lucide="mail" class="me-1" style="width: 14px; height: 14px;"></i>
@@ -95,18 +95,25 @@
 
                         <!-- Wishlist -->
                         <div class="me-3">
-                            <a href="#" class="text-dark position-relative" onclick="alert('قائمة الأمنيات قيد التطوير')">
+                            <a href="{{ route('wishlist.index') }}" class="{{ Route::is('wishlist.index') ? 'text-gold' : 'text-dark' }} position-relative">
                                 <i data-lucide="heart" style="width: 20px; height: 20px;"></i>
+                                @if(Cart::instance('wishlist')->content()->count() > 0)
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                    {{ Cart::instance('wishlist')->content()->count() }}
+                                </span>
+                                @endif
                             </a>
                         </div>
 
                         <!-- Cart -->
                         <div class="me-3">
-                            <a href="#" class="text-dark position-relative" onclick="alert('سلة التسوق قيد التطوير')">
+                            <a href="{{ route('cart.index') }}" class="{{ Route::is('cart.index') ? 'text-gold' : 'text-dark' }} position-relative">
                                 <i data-lucide="shopping-cart" style="width: 20px; height: 20px;"></i>
+                                @if(Cart::instance('cart')->content()->count() > 0)
                                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                    0
+                                    {{ Cart::instance('cart')->content()->count() }}
                                 </span>
+                                @endif
                             </a>
                         </div>
 
@@ -117,24 +124,28 @@
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                 @auth
-                                    <li><a class="dropdown-item" href="#">{{ __('messages.dashboard') }}</a></li>
-                                    <li><a class="dropdown-item" href="#">{{ __('messages.user_orders') }}</a></li>
-                                    <li><a class="dropdown-item" href="#">{{ __('messages.user_wishlist') }}</a></li>
-                                    <li><a class="dropdown-item" href="#">{{ __('messages.user_profile') }}</a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    @if(auth()->check() && auth()->user()->utype === 'ADM')
-                                    <li><a class="dropdown-item" href="#">{{ __('messages.admin') }}</a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    @endif
-                                    <li>
-                                        <form method="POST" action="{{ route('logout') }}">
-                                            @csrf
-                                            <button type="submit" class="dropdown-item">{{ __('messages.logout') }}</button>
-                                        </form>
-                                    </li>
+                                <li><a class="dropdown-item" href="#">{{ __('messages.dashboard') }}</a></li>
+                                <li><a class="dropdown-item" href="#">{{ __('messages.user_orders') }}</a></li>
+                                <li><a class="dropdown-item" href="#">{{ __('messages.user_wishlist') }}</a></li>
+                                <li><a class="dropdown-item" href="#">{{ __('messages.user_profile') }}</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                @if(auth()->check() && auth()->user()->utype === 'ADM')
+                                <li><a class="dropdown-item" href="#">{{ __('messages.admin') }}</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                @endif
+                                <li>
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item">{{ __('messages.logout') }}</button>
+                                    </form>
+                                </li>
                                 @else
-                                    <li><a class="dropdown-item" href="{{ route('login') }}">{{ __('messages.login') }}</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('register') }}">{{ __('messages.register') }}</a></li>
+                                <li><a class="dropdown-item" href="{{ route('login') }}">{{ __('messages.login') }}</a></li>
+                                <li><a class="dropdown-item" href="{{ route('register') }}">{{ __('messages.register') }}</a></li>
                                 @endauth
                             </ul>
                         </div>
@@ -171,17 +182,10 @@
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('shop.index') ? 'active' : '' }}" href="{{ route('shop.index') }}">{{ __('messages.shop') }}</a>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            {{ __('messages.product_category') }}
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('categories.index') ? 'active' : '' }}" href="{{ route('categories.index') }}">
+                            {{ __('messages.product_category') ?? 'الفئات' }}
                         </a>
-                        <ul class="dropdown-menu" aria-labelledby="categoriesDropdown">
-                            @if(isset($categories))
-                                @foreach($categories as $category)
-                                <li><a class="dropdown-item" href="{{ route('shop.category', $category->slug) }}">{{ $category->name }}</a></li>
-                                @endforeach
-                            @endif
-                        </ul>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="brandsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -189,9 +193,9 @@
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="brandsDropdown">
                             @if(isset($brands))
-                                @foreach($brands as $brand)
-                                <li><a class="dropdown-item" href="{{ route('shop.brand', $brand->slug) }}">{{ $brand->name }}</a></li>
-                                @endforeach
+                            @foreach($brands as $brand)
+                            <li><a class="dropdown-item" href="{{ route('shop.brand', $brand->slug) }}">{{ $brand->name }}</a></li>
+                            @endforeach
                             @endif
                         </ul>
                     </li>

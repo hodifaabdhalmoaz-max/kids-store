@@ -61,7 +61,7 @@
                                 </div>
                                 <div>
                                     <div class="body-text mb-2">إجمالي الإيرادات</div>
-                                    <h4 id="total-revenue">${{ number_format($analytics['current']['revenue'], 2) }}</h4>
+                                    <h4 id="total-revenue">{{ format_price($analytics['current']['revenue']) }}</h4>
                                 </div>
                             </div>
                             <div class="box-icon-trending {{ $analytics['changes']['revenue'] >= 0 ? 'up' : 'down' }}" id="revenue-trend">
@@ -103,7 +103,7 @@
                                 </div>
                                 <div>
                                     <div class="body-text mb-2">متوسط قيمة الطلب</div>
-                                    <h4 id="avg-order-value">${{ number_format($analytics['current']['average_order_value'], 2) }}</h4>
+                                    <h4 id="avg-order-value">{{ format_price($analytics['current']['average_order_value']) }}</h4>
                                 </div>
                             </div>
                         </div>
@@ -131,19 +131,21 @@
             <!-- Chart Section -->
             <div class="wg-box mt-30">
                 <div class="flex items-center justify-between mb-20">
-                    <h5>مخطط الإيرادات</h5>
+                    <h5>مخطط الإيرادات والطلب</h5>
                     <div class="flex gap10">
                         <div class="block-legend">
-                            <div class="dot t1"></div>
-                            <div class="text-tiny">الإيرادات</div>
+                            <div class="dot t1" style="background-color: #2377FC;"></div>
+                            <div class="text-tiny">الإيرادات المحققة (ريال جديد)</div>
                         </div>
                         <div class="block-legend">
-                            <div class="dot t2"></div>
-                            <div class="text-tiny">إجمالي الطلبات</div>
+                            <div class="dot t2" style="background-color: #FFA500;"></div>
+                            <div class="text-tiny">عدد الطلبات (طلب)</div>
                         </div>
                     </div>
                 </div>
-                <div id="revenue-chart" style="height: 400px;"></div>
+                <div style="height: 400px; position: relative;">
+                    <canvas id="revenue-chart"></canvas>
+                </div>
             </div>
 
             <!-- Summary Section -->
@@ -158,7 +160,7 @@
                                 </div>
                                 <div>
                                     <div class="body-text mb-2">إجمالي الإيرادات (كل الأوقات)</div>
-                                    <h4>${{ number_format($overallSummary['total_revenue'], 2) }}</h4>
+                                    <h4>{{ format_price($overallSummary['total_revenue']) }}</h4>
                                 </div>
                             </div>
                         </div>
@@ -235,9 +237,9 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('current-period').textContent = getPeriodLabel(currentPeriod);
 
         // Update statistics
-        document.getElementById('total-revenue').textContent = '$' + formatNumber(analytics.current.revenue);
+        document.getElementById('total-revenue').textContent = formatNumber(analytics.current.revenue) + ' ريال جديد';
         document.getElementById('orders-count').textContent = analytics.current.orders_count;
-        document.getElementById('avg-order-value').textContent = '$' + formatNumber(analytics.current.average_order_value);
+        document.getElementById('avg-order-value').textContent = formatNumber(analytics.current.average_order_value) + ' ريال جديد';
         document.getElementById('delivered-count').textContent = analytics.current.delivered_count;
 
         // Update trends
@@ -264,17 +266,21 @@ document.addEventListener('DOMContentLoaded', function() {
             data: {
                 labels: chartData.labels,
                 datasets: [{
-                    label: 'الإيرادات',
+                    label: 'الإيرادات المحققة',
                     data: chartData.revenue,
                     borderColor: '#2377FC',
                     backgroundColor: 'rgba(35, 119, 252, 0.1)',
-                    tension: 0.4
+                    yAxisID: 'y',
+                    tension: 0.4,
+                    fill: true
                 }, {
-                    label: 'إجمالي الطلبات',
+                    label: 'عدد الطلبات',
                     data: chartData.orders,
                     borderColor: '#FFA500',
-                    backgroundColor: 'rgba(255, 165, 0, 0.1)',
-                    tension: 0.4
+                    backgroundColor: 'rgba(255, 165, 0, 0.05)',
+                    yAxisID: 'y1',
+                    tension: 0.4,
+                    fill: false
                 }]
             },
             options: {
@@ -283,15 +289,62 @@ document.addEventListener('DOMContentLoaded', function() {
                 plugins: {
                     legend: {
                         display: false
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.datasetIndex === 0) {
+                                    label += context.parsed.y.toLocaleString('ar-YE') + ' ريال جديد';
+                                } else {
+                                    label += context.parsed.y + ' طلب';
+                                }
+                                return label;
+                            }
+                        }
                     }
                 },
                 scales: {
                     y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
                         beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'الإيرادات (ريال جديد)',
+                            font: {
+                                size: 11
+                            }
+                        },
                         ticks: {
                             callback: function(value) {
-                                return '$' + value.toFixed(2);
+                                return value.toLocaleString('ar-YE') + ' ريال';
                             }
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        beginAtZero: true,
+                        grid: {
+                            drawOnChartArea: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'عدد الطلبات',
+                            font: {
+                                size: 11
+                            }
+                        },
+                        ticks: {
+                            precision: 0
                         }
                     }
                 }
@@ -324,8 +377,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function formatNumber(num) {
         return new Intl.NumberFormat('en-US', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
         }).format(num);
     }
 

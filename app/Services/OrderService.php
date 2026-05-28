@@ -195,6 +195,12 @@ class OrderService
             case 'card':
             case 'paypal':
                 return 'processing'; // Will be updated after payment gateway response
+            case 'bank_transfer':
+                return 'pending'; // Awaiting bank transfer confirmation
+            case 'e_wallet':
+                return 'pending'; // Awaiting e-wallet payment
+            case 'installments':
+                return 'pending'; // Awaiting installment setup
             default:
                 return 'pending';
         }

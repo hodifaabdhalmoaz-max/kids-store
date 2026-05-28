@@ -1,19 +1,44 @@
 @extends('layouts.admin')
 @section('content')
-<div class="main-content-wrap">
-    <div class="tf-section-2 mb-30">
+<div class="main-content-inner">
+    <div class="main-content-wrap">
+        <div class="flex items-center flex-wrap justify-between gap20 mb-27">
+            <h3>تفاصيل الطلب #{{ $order->id }}</h3>
+            <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
+                <li>
+                    <a href="{{route('admin.index')}}">
+                        <div class="text-tiny">لوحة التحكم</div>
+                    </a>
+                </li>
+                <li>
+                    <i class="icon-chevron-right"></i>
+                </li>
+                <li>
+                    <a href="{{route('admin.orders')}}">
+                        <div class="text-tiny">الطلبات</div>
+                    </a>
+                </li>
+                <li>
+                    <i class="icon-chevron-right"></i>
+                </li>
+                <li>
+                    <div class="text-tiny">تفاصيل الطلب</div>
+                </li>
+            </ul>
+        </div>
+
         <div class="wg-box">
             <div class="flex items-center justify-between gap10 flex-wrap">
                 <h5>تفاصيل الطلب #{{ $order->id }}</h5>
-                <a href="{{ route('admin.orders') }}" class="tf-button style-1">
-                    <i class="icon-arrow-left"></i> العودة للطلبات
+                <a href="{{ route('admin.orders') }}" class="tf-button style-1 w208">
+                    العودة للطلبات
                 </a>
             </div>
 
             @if(Session::has('status'))
-            <div class="alert alert-success mt-3">
+            <p class="alert alert-success mt-3">
                 {{Session::get('status')}}
-            </div>
+            </p>
             @endif
 
             <div class="row mt-4">
@@ -23,7 +48,8 @@
                             <h6 class="mb-0">معلومات الطلب</h6>
                         </div>
                         <div class="card-body">
-                            <table class="table table-borderless">
+                            <div class="table-responsive">
+                                <table class="table table-borderless table-striped">
                                 <tr>
                                     <th>رقم الطلب:</th>
                                     <td>#{{ $order->id }}</td>
@@ -66,7 +92,8 @@
                                         @endif
                                     </td>
                                 </tr>
-                            </table>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -77,7 +104,8 @@
                             <h6 class="mb-0">معلومات العميل</h6>
                         </div>
                         <div class="card-body">
-                            <table class="table table-borderless">
+                            <div class="table-responsive">
+                                <table class="table table-borderless table-striped">
                                 <tr>
                                     <th>الاسم:</th>
                                     <td>{{ $order->name }}</td>
@@ -98,7 +126,8 @@
                                     <th>الرمز البريدي:</th>
                                     <td>{{ $order->zip }}</td>
                                 </tr>
-                            </table>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -110,7 +139,7 @@
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-bordered">
+                        <table class="table table-bordered table-striped">
                             <thead>
                                 <tr>
                                     <th>المنتج</th>
@@ -138,30 +167,27 @@
                                             <span class="text-muted">المنتج غير متوفر</span>
                                         @endif
                                     </td>
-                                    <td>${{ $item->price }}</td>
+                                    <td>{{ format_price($item->price) }}</td>
                                     <td>{{ $item->quantity }}</td>
-                                    <td>${{ number_format($item->price * $item->quantity, 2) }}</td>
+                                    <td>{{ format_price($item->price * $item->quantity) }}</td>
                                 </tr>
                                 @endforeach
                             </tbody>
                             <tfoot>
                                 <tr>
                                     <td colspan="3" class="text-end"><strong>المجموع الفرعي:</strong></td>
-                                    <td>${{ $order->subtotal }}</td>
+                                    <td>{{ format_price($order->subtotal) }}</td>
                                 </tr>
                                 @if($order->discount > 0)
                                 <tr>
                                     <td colspan="3" class="text-end"><strong>الخصم:</strong></td>
-                                    <td>-${{ $order->discount }}</td>
+                                    <td>-{{ format_price($order->discount) }}</td>
                                 </tr>
                                 @endif
-                                <tr>
-                                    <td colspan="3" class="text-end"><strong>الضريبة:</strong></td>
-                                    <td>${{ $order->tax }}</td>
-                                </tr>
+
                                 <tr>
                                     <td colspan="3" class="text-end"><strong>الإجمالي:</strong></td>
-                                    <td>${{ $order->total }}</td>
+                                    <td>{{ format_price($order->total) }}</td>
                                 </tr>
                             </tfoot>
                         </table>
@@ -196,6 +222,10 @@
                         </div>
                     </form>
                 </div>
+            </div>
+            
+            <div class="divider"></div>
+            <div class="flex items-center justify-between flex-wrap gap10 wgp-pagination">
             </div>
         </div>
     </div>

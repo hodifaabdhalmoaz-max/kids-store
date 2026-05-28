@@ -20,13 +20,24 @@ class AuditService
     {
         $userId = $userId ?? (Auth::check() ? Auth::id() : null);
         
-        $activity = UserActivity::create([
-            'user_id' => $userId,
-            'action' => $action,
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
-            'details' => $details,
-        ]);
+        $activity = null;
+
+        try {
+            $activity = UserActivity::create([
+                'user_id' => $userId,
+                'action' => $action,
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+                'details' => $details,
+            ]);
+        } catch (\Illuminate\Database\QueryException $e) {
+            Log::warning('AuditService::log failed — falling back to file log.', [
+                'error'   => $e->getMessage(),
+                'user_id' => $userId,
+                'action'  => $action,
+                'details' => $details,
+            ]);
+        }
         
         // Also log to the application log for critical actions
         $criticalActions = [

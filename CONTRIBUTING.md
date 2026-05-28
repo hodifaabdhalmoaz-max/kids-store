@@ -204,7 +204,7 @@ php artisan test --coverage
 
 - **GitHub Issues** - للأخطاء والاقتراحات
 - **البريد الإلكتروني** - hodifaabdhalmoaz@gmail.com
-- **WhatsApp** - +967 777548421
+- **WhatsApp** - 777548421 967+
 
 ## 🙏 شكر وتقدير
 

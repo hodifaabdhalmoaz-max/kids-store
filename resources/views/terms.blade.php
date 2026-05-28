@@ -3,15 +3,6 @@
 @section('title', 'الشروط والأحكام - متجر الأطفال')
 @section('description', 'الشروط والأحكام الخاصة بمتجر الأطفال - اقرأ شروط الاستخدام والأحكام قبل التسوق')
 
-@push('styles')
-<style>
-:root {
-    --page-brand-start: #007bff;
-    --page-brand-end: #0056b3;
-}
-</style>
-@endpush
-
 @section('content')
 <!-- Hero Section -->
 <section class="info-hero">
@@ -111,10 +102,6 @@
 
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    if (typeof lucide !== 'undefined') {
-        lucide.createIcons();
-    }
-});
+    // Terms scripts
 </script>
 @endpush

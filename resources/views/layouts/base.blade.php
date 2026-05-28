@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -60,6 +61,7 @@
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="{{ asset('favicon.ico') }}">
 </head>
+
 <body class="{{ app()->getLocale() == 'ar' ? 'rtl arabic-font' : 'ltr' }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
     <!-- Header -->
     @include('layouts.partials.header')
@@ -84,7 +86,9 @@
                         <i data-lucide="message-circle" class="text-success me-2" style="width: 16px; height: 16px;"></i>تواصل معنا عبر واتساب
                     </h6>
                 </li>
-                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
                 <li>
                     <a class="dropdown-item" href="https://wa.me/message/R74CYLSGZQD7C1" target="_blank">
                         <i data-lucide="store" class="text-primary me-2" style="width: 16px; height: 16px;"></i>
@@ -103,13 +107,15 @@
                         </div>
                     </a>
                 </li>
-                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
                 <li>
                     <a class="dropdown-item" href="tel:+967777548421">
                         <i data-lucide="phone" class="text-success me-2" style="width: 16px; height: 16px;"></i>
                         <div>
                             <strong>اتصال مباشر</strong>
-                            <small class="d-block text-muted">+967 777548421</small>
+                            <small class="d-block text-muted">777548421 967+</small>
                         </div>
                     </a>
                 </li>
@@ -143,9 +149,11 @@
             0% {
                 box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
             }
+
             50% {
                 box-shadow: 0 4px 12px rgba(37, 211, 102, 0.8);
             }
+
             100% {
                 box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
             }
@@ -204,4 +212,5 @@
 
     @yield('scripts')
 </body>
+
 </html>

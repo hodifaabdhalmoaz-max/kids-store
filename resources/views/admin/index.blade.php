@@ -31,7 +31,7 @@
                                 </div>
                                 <div>
                                     <div class="body-text mb-2">إجمالي المبلغ</div>
-                                    <h4>${{ number_format($totalAmount, 2) }}</h4>
+                                    <h4>{{ format_price($totalAmount) }}</h4>
                                 </div>
                             </div>
                         </div>
@@ -61,7 +61,7 @@
                                 </div>
                                 <div>
                                     <div class="body-text mb-2">مبلغ الطلبات المعلقة</div>
-                                    <h4>${{ number_format($pendingAmount, 2) }}</h4>
+                                    <h4>{{ format_price($pendingAmount) }}</h4>
                                 </div>
                             </div>
                         </div>
@@ -94,7 +94,7 @@
                                 </div>
                                 <div>
                                     <div class="body-text mb-2">مبلغ الطلبات المسلمة</div>
-                                    <h4>${{ number_format($deliveredAmount, 2) }}</h4>
+                                    <h4>{{ format_price($deliveredAmount) }}</h4>
                                 </div>
                             </div>
                         </div>
@@ -124,7 +124,7 @@
                                 </div>
                                 <div>
                                     <div class="body-text mb-2">مبلغ الطلبات الملغاة</div>
-                                    <h4>${{ number_format($cancelledAmount, 2) }}</h4>
+                                    <h4>{{ format_price($cancelledAmount) }}</h4>
                                 </div>
                             </div>
                         </div>
@@ -194,7 +194,7 @@
                             </div>
                         </div>
                         <div class="flex items-center gap10">
-                            <h4>${{ number_format($revenueData['current_revenue'], 2) }}</h4>
+                            <h4>{{ format_price($revenueData['current_revenue']) }}</h4>
                             <div class="box-icon-trending {{ $revenueData['revenue_change'] >= 0 ? 'up' : 'down' }}">
                                 <i class="icon-trending-{{ $revenueData['revenue_change'] >= 0 ? 'up' : 'down' }}"></i>
                                 <div class="body-title number">{{ abs($revenueData['revenue_change']) }}%</div>
@@ -209,7 +209,7 @@
                             </div>
                         </div>
                         <div class="flex items-center gap10">
-                            <h4>${{ number_format($revenueData['current_orders'], 2) }}</h4>
+                            <h4>{{ format_price($revenueData['current_orders']) }}</h4>
                             <div class="box-icon-trending {{ $revenueData['orders_change'] >= 0 ? 'up' : 'down' }}">
                                 <i class="icon-trending-{{ $revenueData['orders_change'] >= 0 ? 'up' : 'down' }}"></i>
                                 <div class="body-title number">{{ abs($revenueData['orders_change']) }}%</div>
@@ -236,19 +236,17 @@
                     <div class="table-responsive">
                         <table class="table table-striped table-bordered">
                             <thead>
-                                <tr>
-                                    <th style="width: 80px">رقم الطلب</th>
-                                    <th>الاسم</th>
+                                    <th class="text-center" style="width: 80px">رقم الطلب</th>
+                                    <th class="text-center">الاسم</th>
                                     <th class="text-center">الهاتف</th>
                                     <th class="text-center">المجموع الفرعي</th>
-                                    <th class="text-center">الضريبة</th>
-                                    <th class="text-center">الإجمالي</th>
 
+                                    <th class="text-center">الإجمالي</th>
                                     <th class="text-center">الحالة</th>
                                     <th class="text-center">تاريخ الطلب</th>
                                     <th class="text-center">إجمالي العناصر</th>
                                     <th class="text-center">تاريخ التسليم</th>
-                                    <th></th>
+                                    <th class="text-center">الإجراءات</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -257,9 +255,9 @@
                                     <td class="text-center">{{ $order->id }}</td>
                                     <td class="text-center">{{ $order->name }}</td>
                                     <td class="text-center">{{ $order->phone }}</td>
-                                    <td class="text-center">${{ number_format($order->subtotal, 2) }}</td>
-                                    <td class="text-center">${{ number_format($order->tax, 2) }}</td>
-                                    <td class="text-center">${{ number_format($order->total, 2) }}</td>
+                                    <td class="text-center">{{ format_price($order->subtotal) }}</td>
+
+                                    <td class="text-center">{{ format_price($order->total) }}</td>
                                     <td class="text-center">
                                         <span class="badge
                                             @if($order->status == 'ordered') bg-warning text-dark
@@ -284,13 +282,18 @@
                                         @endif
                                     </td>
                                     <td class="text-center">
-                                        <a href="{{ route('admin.order.details', $order->id) }}">
-                                            <div class="list-icon-function view-icon">
+                                        <div class="list-icon-function justify-content-center">
+                                            <a href="{{ route('admin.order.details', $order->id) }}" title="التفاصيل">
                                                 <div class="item eye">
-                                                    <i class="icon-eye"></i>
+                                                    <i data-lucide="eye" style="width: 16px; height: 16px;"></i>
                                                 </div>
-                                            </div>
-                                        </a>
+                                            </a>
+                                            <a href="{{ route('admin.order.tracking', $order->id) }}" title="تتبع الطلب">
+                                                <div class="item edit">
+                                                    <i data-lucide="map-pin" style="width: 16px; height: 16px;"></i>
+                                                </div>
+                                            </a>
+                                        </div>
                                     </td>
                                 </tr>
                                 @empty

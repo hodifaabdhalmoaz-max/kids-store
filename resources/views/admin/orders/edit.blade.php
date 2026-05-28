@@ -33,7 +33,7 @@
                     <select class="mb-10" name="shipping_method_id" required>
                         @foreach($shippingMethods as $method)
                             <option value="{{ $method->id }}" {{ $order->shipping_method_id == $method->id ? 'selected' : '' }}>
-                                {{ $method->name }} - ${{ $method->cost }}
+                                {{ $method->name }} - {{ format_price($method->cost) }}
                             </option>
                         @endforeach
                     </select>

@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Validation\ValidationException;
 
 class PlaceOrderRequest extends FormRequest
 {
@@ -15,6 +17,17 @@ class PlaceOrderRequest extends FormRequest
     }
 
     /**
+     * Handle a failed validation attempt.
+     * Redirect to checkout page explicitly to avoid 404/419 errors.
+     */
+    protected function failedValidation(Validator $validator)
+    {
+        throw (new ValidationException($validator))
+            ->redirectTo(route('cart.checkout'))
+            ->errorBag($this->errorBag);
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
@@ -22,7 +35,8 @@ class PlaceOrderRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'mode' => 'required|in:card,paypal,cod'
+            'mode' => 'required|in:card,paypal,cod,bank_transfer,e_wallet,installments',
+            'bank_account' => 'required_if:mode,bank_transfer|in:kuraimi_yer,kuraimi_sar,kuraimi_usd'
         ];
 
         // If user doesn't have a default address, require address fields
@@ -52,6 +66,8 @@ class PlaceOrderRequest extends FormRequest
         return [
             'mode.required' => 'يرجى اختيار طريقة الدفع',
             'mode.in' => 'طريقة الدفع المختارة غير صحيحة',
+            'bank_account.required_if' => 'يرجى اختيار الحساب البنكي للإيداع عند اختيار الدفع بالتحويل البنكي',
+            'bank_account.in' => 'الحساب البنكي المختار غير صحيح',
             
             'name.required' => 'الاسم مطلوب',
             'name.string' => 'الاسم يجب أن يكون نصاً',
@@ -96,6 +112,7 @@ class PlaceOrderRequest extends FormRequest
     {
         return [
             'mode' => 'طريقة الدفع',
+            'bank_account' => 'الحساب البنكي',
             'name' => 'الاسم',
             'phone' => 'رقم الهاتف',
             'zip' => 'الرمز البريدي',
@@ -128,9 +145,9 @@ class PlaceOrderRequest extends FormRequest
     {
         $validated = $this->validated();
         
-        // If user has default address, we don't need address fields
+        // If user has default address, we only need payment info
         if ($this->hasDefaultAddress()) {
-            return ['mode' => $validated['mode']];
+            return array_intersect_key($validated, array_flip(['mode', 'bank_account']));
         }
 
         // Return all validated data including address fields

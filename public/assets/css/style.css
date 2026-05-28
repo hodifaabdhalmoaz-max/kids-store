@@ -1288,7 +1288,7 @@ progress {
     float: left;
     padding-right: 0.5rem;
     color: #6c757d;
-    content: var(--bs-breadcrumb-divider, "https://uomo-html.flexkitux.com/") /* rtl: var(--bs-breadcrumb-divider, "/") */; }
+    content: var(--bs-breadcrumb-divider, "/") /* rtl: var(--bs-breadcrumb-divider, "/") */; }
 .breadcrumb-item.active {
   color: #6c757d; }
 
@@ -8265,13 +8265,13 @@ img {
   height: 6.25rem; }
 
 .gradient-bg {
-  background-image: url(../../images/home/demo3/slider_bg.html);
+  background-image: none;
   background-position: top center;
   background-repeat: no-repeat;
   background-size: 100% auto; }
 
 .gradient-bg-10 {
-  background-image: url(../../images/home/demo10/slider_bg.html);
+  background-image: none;
   background-position: top center;
   background-repeat: no-repeat;
   background-size: auto 84rem; }

@@ -1,98 +1,167 @@
 <!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- CSRF Token -->
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+  <!-- CSRF Token -->
+  <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <!-- Security Meta Tags -->
-    <meta http-equiv="X-Content-Type-Options" content="nosniff">
-    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
-    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
-    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
-    <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(self), payment=(self)">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <meta name="author" content="Hudhaifa Al-Hudhaifi" />
-    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
-    <meta name="theme-color" content="#007bff">
-    <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}" type="image/x-icon">
-    <!-- تحميل خط Cairo من Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}" type="image/x-icon">
 
-    <!-- تطبيق خط Cairo مباشرة -->
-    <style>
-        * {
-            font-family: "Cairo", sans-serif !important;
-        }
+  <!-- تحميل خط Cairo من Google Fonts مع بدائل احتياطية -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-        body {
-            font-family: "Cairo", sans-serif !important;
-            direction: rtl;
-            text-align: right;
-        }
-    </style>
-    <link rel="stylesheet" href="{{ asset('assets/css/plugins/swiper.min.css') }}" type="text/css" />
-    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" type="text/css" />
-    <link rel="stylesheet" href="{{ asset('assets/css/custom.css') }}" type="text/css" />
-    <link rel="stylesheet" href="{{ asset('assets/css/advanced-search.css') }}" type="text/css" />
-    <link rel="stylesheet" href="{{ asset('css/custom-pages.css') }}" type="text/css" />
-    <!-- Lucide Icons CDN -->
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-    @stack("style")
-    @stack("styles")
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
-    <!-- تصميم الخط التحتي للعناوين -->
-    <style>
-        /* تصميم العناوين مع الخط التحتي الأزرق */
-        .section-title {
-            position: relative !important;
-            display: block !important;
-            width: 100% !important;
-            margin-bottom: 2rem !important;
-            padding-bottom: 1.5rem !important;
-            text-align: center !important;
-        }
+  <!-- Bootstrap Icons CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-        .section-title::after {
-            content: '' !important;
-            position: absolute !important;
-            bottom: 0 !important;
-            left: 50% !important;
-            transform: translateX(-50%) !important;
-            width: 60px !important;
-            height: 4px !important;
-            background: linear-gradient(90deg, #007bff, #0056b3) !important;
-            border-radius: 2px !important;
-            transition: all 0.3s ease !important;
-            z-index: 1 !important;
-            box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3) !important;
-        }
+  <title>{{ config('app.name', 'Laravel') }}</title>
+  <meta name="author" content="Hudhaifa Al-Hudhaifi" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+  <meta name="theme-color" content="#007bff">
 
-        .section-title:hover::after {
-            width: 80px !important;
-            background: linear-gradient(90deg, #0056b3, #004085) !important;
-            box-shadow: 0 3px 6px rgba(0, 123, 255, 0.4) !important;
-        }
+  <!-- تطبيق خط Cairo مباشرة -->
+  <style>
+    * {
+      font-family: "Cairo", "Tahoma", "Arial", sans-serif !important;
+    }
 
-        /* تحسين للأجهزة المحمولة */
-        @media (max-width: 768px) {
-            .section-title::after {
-                width: 40px !important;
-                height: 3px !important;
-            }
+    body {
+      font-family: "Cairo", "Tahoma", "Arial", sans-serif !important;
+      direction: rtl;
+      text-align: right;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+  </style>
+  <link rel="stylesheet" href="{{ asset('assets/css/plugins/swiper.min.css') }}" type="text/css" />
+  <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}?v={{ filemtime(public_path('assets/css/style.css')) }}" type="text/css" />
+  <link rel="stylesheet" href="{{ asset('assets/css/custom.css') }}?v={{ filemtime(public_path('assets/css/custom.css')) }}" type="text/css" />
+  <link rel="stylesheet" href="{{ asset('assets/css/advanced-search.css') }}" type="text/css" />
+  <link rel="stylesheet" href="{{ asset('css/custom-pages.css') }}?v={{ time() }}" type="text/css" />
+  @stack("style")
+  @stack("styles")
 
-            .section-title:hover::after {
-                width: 50px !important;
-            }
-        }
-    </style>
+  <!-- تصميم الخط التحتي للعناوين -->
+  <style>
+    /* تصميم العناوين مع الخط التحتي الأزرق */
+    .section-title {
+      position: relative !important;
+      display: block !important;
+      width: 100% !important;
+      margin-bottom: 2rem !important;
+      padding-bottom: 1.5rem !important;
+      text-align: center !important;
+    }
+
+    .section-title::after {
+      content: '' !important;
+      position: absolute !important;
+      bottom: 0 !important;
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      width: 60px !important;
+      height: 4px !important;
+      background: linear-gradient(90deg, #f0c14b, #d4a853) !important;
+      border-radius: 2px !important;
+      transition: all 0.3s ease !important;
+      z-index: 1 !important;
+      box-shadow: 0 2px 4px rgba(240, 193, 75, 0.3) !important;
+    }
+
+    .section-title:hover::after {
+      width: 80px !important;
+      background: linear-gradient(90deg, #d4a853, #b5852a) !important;
+      box-shadow: 0 3px 6px rgba(240, 193, 75, 0.4) !important;
+    }
+
+    /* تحسين للأجهزة المحمولة */
+    @media (max-width: 768px) {
+      .section-title::after {
+        width: 40px !important;
+        height: 3px !important;
+      }
+
+      .section-title:hover::after {
+        width: 50px !important;
+      }
+    }
+
+    /* Global Golden Theme Overrides for Buttons, Inputs, and Cards */
+    :root {
+      --gold-start: #f0c14b;
+      --gold-end: #d4a853;
+      --gold-light: rgba(240, 193, 75, 0.1);
+      --gold-gradient: linear-gradient(135deg, var(--gold-start) 0%, var(--gold-end) 100%);
+    }
+
+    .btn-dark, .btn-primary, .btn-addtocart {
+      background: var(--gold-gradient) !important;
+      border: none !important;
+      color: white !important;
+      transition: all 0.3s ease !important;
+    }
+    
+    .btn-dark:hover, .btn-primary:hover, .btn-addtocart:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 15px rgba(240, 193, 75, 0.3) !important;
+      color: white !important;
+    }
+
+    .btn-outline-dark, .btn-outline-primary {
+      color: var(--gold-end) !important;
+      border: 1px solid var(--gold-end) !important;
+      background: transparent !important;
+    }
+    
+    .btn-outline-dark:hover, .btn-outline-primary:hover {
+      background: var(--gold-gradient) !important;
+      color: white !important;
+      border-color: transparent !important;
+    }
+
+    .my-account__wishlist .bg-light.rounded-circle,
+    .my-account__orders .bg-light.rounded-circle {
+      background: var(--gold-light) !important;
+      color: var(--gold-end) !important;
+    }
+    
+    .my-account__wishlist .bi-heart.text-muted,
+    .my-account__orders .bi-bag.text-muted {
+      color: var(--gold-end) !important;
+    }
+
+    .form-control:focus, .form-select:focus, .search-field__input:focus {
+      border-color: var(--gold-end) !important;
+      box-shadow: 0 0 0 3px var(--gold-light) !important;
+    }
+
+    .form-check-input:checked {
+      background-color: var(--gold-end) !important;
+      border-color: var(--gold-end) !important;
+    }
+
+    .my-account__order-details .bg-light,
+    .order-item-card .bg-light {
+      background-color: #faf8f5 !important;
+      border: 1px solid rgba(240, 193, 75, 0.2) !important;
+    }
+    
+    .my-account__wishlist .product-card-wishlist:hover {
+        border-color: var(--gold-start) !important;
+        box-shadow: 0 10px 20px rgba(240, 193, 75, 0.15) !important;
+    }
+  </style>
 </head>
+
 <body class="gradient-bg">
   <svg class="d-none">
     <symbol id="icon_nav" viewBox="0 0 25 18">
@@ -326,6 +395,29 @@
     .logo__image {
       max-width: 220px;
     }
+
+    /* تحسين تجربة المستخدم على الهاتف - أيقونات الهيدر */
+    @media (max-width: 768px) {
+
+      .header-mobile .header-tools__item,
+      .header-mobile .mobile-nav-activator {
+        min-width: 44px;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+      }
+
+      .header-mobile .header-tools__cart {
+        position: relative;
+      }
+
+      .header-mobile .cart-amount {
+        top: 5px;
+        right: 5px;
+      }
+    }
   </style>
   <div class="header-mobile header_sticky">
     <div class="container d-flex align-items-center h-100">
@@ -342,34 +434,22 @@
         </a>
       </div>
 
-      <a href="#" class="header-tools__item header-tools__cart js-open-aside" data-aside="cartDrawer">
+      <a href="{{ route('wishlist.index') }}" class="header-tools__item header-tools__cart {{ Route::is('wishlist.index') ? 'active' : '' }}">
         <svg class="d-block" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <use href="#icon_cart" />
+          <use href="#icon_heart" />
         </svg>
-        <span class="cart-amount d-block position-absolute js-cart-items-count">3</span>
+        @if(Cart::instance('wishlist')->content()->count() > 0)
+        <span class="cart-amount d-block position-absolute js-wishlist-count">{{ Cart::instance('wishlist')->content()->count() }}</span>
+        @endif
       </a>
     </div>
 
     <nav
       class="header-mobile__navigation navigation d-flex flex-column w-100 position-absolute top-100 bg-body overflow-auto">
       <div class="container">
-        <form action="{{ route('shop.search') }}" method="GET" class="search-field position-relative mt-4 mb-3">
-          <div class="position-relative">
-            <input class="search-field__input w-100 border rounded-1" type="text" name="search"
-              placeholder="ابحث عن المنتجات..." value="{{ request('search') }}" autocomplete="off" />
-            <button class="btn-icon search-popup__submit pb-0 me-2" type="submit">
-              <svg class="d-block" width="20" height="20" viewBox="0 0 20 20" fill="none"
-                xmlns="http://www.w3.org/2000/svg">
-                <use href="#icon_search" />
-              </svg>
-            </button>
-            <button class="btn-icon btn-close-lg search-popup__reset pb-0 me-2" type="reset"></button>
-          </div>
-
-          <div class="position-absolute start-0 top-100 m-0 w-100 z-3">
-            <div class="search-result bg-white border rounded shadow-sm" style="display: none;"></div>
-          </div>
-        </form>
+        <div class="mt-4 mb-3 px-3">
+          <x-search-bar id="mobile-search-input" />
+        </div>
       </div>
 
       <div class="container">
@@ -379,7 +459,13 @@
               <a href="{{route('home.index')}}" class="navigation__link">الرئيسية</a>
             </li>
             <li class="navigation__item">
+              <a href="{{route('categories.index')}}" class="navigation__link">الفئات</a>
+            </li>
+            <li class="navigation__item">
               <a href="{{route('shop.index')}}" class="navigation__link">المتجر</a>
+            </li>
+            <li class="navigation__item">
+              <a href="{{route('shop.offers')}}" class="navigation__link" style="color: #d4a853; font-weight: bold;">العروض</a>
             </li>
             <li class="navigation__item">
               <a href="{{route('cart.index')}}" class="navigation__link">السلة</a>
@@ -394,62 +480,48 @@
         </div>
       </div>
 
-      <div class="border-top mt-auto pb-2">
-        <div class="customer-links container mt-4 mb-2 pb-1">
-          <svg class="d-inline-block align-middle" width="20" height="20" viewBox="0 0 20 20" fill="none"
+      <div class="mt-auto border-top pb-4 bg-light">
+        @guest
+        <a href="{{ route('login') }}" class="customer-links container d-flex align-items-center py-3 text-decoration-none">
+          <svg class="d-inline-block align-middle" width="24" height="24" viewBox="0 0 20 20" fill="none"
             xmlns="http://www.w3.org/2000/svg">
             <use href="#icon_user" />
           </svg>
-          <span class="d-inline-block ms-2 text-uppercase align-middle fw-medium">حسابي</span>
+          <span class="d-inline-block ms-3 text-uppercase align-middle fw-semibold">تسجيل الدخول / حسابي</span>
+        </a>
+        @else
+        <a href="{{ Auth::user()->utype === 'ADM' ? route('admin.index'): route('user.index') }}" class="customer-links container d-flex align-items-center py-3 text-decoration-none">
+          <div class="user-avatar-sm me-3 bg-primary text-white d-flex align-items-center justify-content-center rounded-circle overflow-hidden" style="width: 35px; height: 35px;">
+            @if(Auth::user()->profile_photo)
+            <img src="{{ asset('storage/profile_photos/' . Auth::user()->profile_photo) }}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover;">
+            @else
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <use href="#icon_user" />
+            </svg>
+            @endif
+          </div>
+          <div class="d-flex flex-column">
+            <span class="text-dark fw-bold">{{ Auth::user()->name }}</span>
+            <span class="text-muted small">مشاهدة الملف الشخصي</span>
+          </div>
+        </a>
+        <div class="container pb-2">
+          <form method="POST" action="{{ route('logout') }}" id="logout-form-mobile">
+            @csrf
+            <a href="{{ route('logout') }}" class="text-danger small fw-medium text-decoration-none d-flex align-items-center"
+              onclick="event.preventDefault(); document.getElementById('logout-form-mobile').submit();">
+              <i class="bi bi-box-arrow-right me-1" style="font-size: 14px;"></i>
+              تسجيل الخروج
+            </a>
+          </form>
         </div>
-
-
-
-        <ul class="container social-links list-unstyled d-flex flex-wrap mb-0">
-          <li>
-            <a href="#" class="footer__social-link d-block ps-0">
-              <svg class="svg-icon svg-icon_facebook" width="9" height="15" viewBox="0 0 9 15"
-                xmlns="http://www.w3.org/2000/svg">
-                <use href="#icon_facebook" />
-              </svg>
-            </a>
-          </li>
-          <li>
-            <a href="#" class="footer__social-link d-block">
-              <svg class="svg-icon svg-icon_twitter" width="14" height="13" viewBox="0 0 14 13"
-                xmlns="http://www.w3.org/2000/svg">
-                <use href="#icon_twitter" />
-              </svg>
-            </a>
-          </li>
-          <li>
-            <a href="#" class="footer__social-link d-block">
-              <svg class="svg-icon svg-icon_instagram" width="14" height="13" viewBox="0 0 14 13"
-                xmlns="http://www.w3.org/2000/svg">
-                <use href="#icon_instagram" />
-              </svg>
-            </a>
-          </li>
-          <li>
-            <a href="#" class="footer__social-link d-block">
-              <svg class="svg-icon svg-icon_youtube" width="16" height="11" viewBox="0 0 16 11"
-                xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M15.0117 1.8584C14.8477 1.20215 14.3281 0.682617 13.6992 0.518555C12.5234 0.19043 7.875 0.19043 7.875 0.19043C7.875 0.19043 3.19922 0.19043 2.02344 0.518555C1.39453 0.682617 0.875 1.20215 0.710938 1.8584C0.382812 3.00684 0.382812 5.46777 0.382812 5.46777C0.382812 5.46777 0.382812 7.90137 0.710938 9.07715C0.875 9.7334 1.39453 10.2256 2.02344 10.3896C3.19922 10.6904 7.875 10.6904 7.875 10.6904C7.875 10.6904 12.5234 10.6904 13.6992 10.3896C14.3281 10.2256 14.8477 9.7334 15.0117 9.07715C15.3398 7.90137 15.3398 5.46777 15.3398 5.46777C15.3398 5.46777 15.3398 3.00684 15.0117 1.8584ZM6.34375 7.68262V3.25293L10.2266 5.46777L6.34375 7.68262Z" />
-              </svg>
-            </a>
-          </li>
-          <li>
-            <a href="#" class="footer__social-link d-block">
-              <svg class="svg-icon svg-icon_pinterest" width="14" height="15" viewBox="0 0 14 15"
-                xmlns="http://www.w3.org/2000/svg">
-                <use href="#icon_pinterest" />
-              </svg>
-            </a>
-          </li>
-        </ul>
+        @endguest
       </div>
-    </nav>
+
+
+
+  </div>
+  </nav>
   </div>
 
 
@@ -458,17 +530,23 @@
       <div class="header-desk header-desk_type_1">
         <div class="logo">
           <a href="{{route('home.index')}}">
-            <img src="{{ asset('assets/images/logo.png') }}" alt="Uomo" class="logo__image d-block" width="90px" height="90px"/>
+            <img src="{{ asset('assets/images/logo.png') }}" alt="Uomo" class="logo__image d-block" width="90px" height="90px" />
           </a>
         </div>
 
         <nav class="navigation">
-          <ul class="navigation__list list-unstyled d-flex">
+                    <ul class="navigation__list list-unstyled d-flex">
             <li class="navigation__item">
               <a href="{{route('home.index')}}" class="navigation__link">الرئيسية</a>
             </li>
             <li class="navigation__item">
+              <a href="{{route('categories.index')}}" class="navigation__link">الفئات</a>
+            </li>
+            <li class="navigation__item">
               <a href="{{route('shop.index')}}" class="navigation__link">المتجر</a>
+            </li>
+            <li class="navigation__item">
+              <a href="{{route('shop.offers')}}" class="navigation__link" style="color: #d4a853; font-weight: bold;">العروض</a>
             </li>
             <li class="navigation__item">
               <a href="{{route('cart.index')}}" class="navigation__link">السلة</a>
@@ -495,22 +573,11 @@
             </div>
 
             <div class="search-popup js-hidden-content">
-              <form action="{{ route('shop.search') }}" method="GET" class="search-field container">
-                <p class="text-uppercase text-secondary fw-medium mb-4">عما تبحث؟</p>
-                <div class="position-relative">
-                  <input class="search-field__input search-popup__input w-100 fw-medium" type="text"
-                    name="search" placeholder="ابحث عن المنتجات..." value="{{ request('search') }}"
-                    autocomplete="off" id="main-search-input" />
-                  <button class="btn-icon search-popup__submit" type="submit">
-                    <svg class="d-block" width="20" height="20" viewBox="0 0 20 20" fill="none"
-                      xmlns="http://www.w3.org/2000/svg">
-                      <use href="#icon_search" />
-                    </svg>
-                  </button>
-                  <button class="btn-icon btn-close-lg search-popup__reset" type="reset"></button>
-                </div>
+              <div class="container pb-4">
+                <p class="text-uppercase text-secondary fw-medium mb-4 mt-4">عما تبحث؟</p>
+                <x-search-bar class="w-100 mb-4" id="desktop-search-input" />
 
-                <div class="search-popup__results">
+                <div class="search-popup__results mt-3">
                   <div class="sub-menu search-suggestion">
                     <h6 class="sub-menu__title fs-base">روابط سريعة</h6>
                     <ul class="sub-menu__list list-unstyled">
@@ -524,10 +591,8 @@
                       <li class="sub-menu__item"><a href="{{route('shop.search', ['featured' => '1'])}}" class="menu-link menu-link_us-s">المنتجات المميزة</a></li>
                     </ul>
                   </div>
-
-                  <div class="search-result row row-cols-5" id="quick-search-results"></div>
                 </div>
-              </form>
+              </div>
             </div>
           </div>
 
@@ -543,26 +608,32 @@
           <div class="header-tools__item hover-container">
             <a href="{{ Auth::user()->utype === 'ADM' ? route('admin.index'): route('user.index') }}" class="header-tools__item">
               <span class="pr-6px">{{Auth::user()->name}}</span>
+              @if(Auth::user()->profile_photo)
+              <div style="width: 20px; height: 20px; border-radius: 50%; overflow: hidden;">
+                <img src="{{ asset('storage/profile_photos/' . Auth::user()->profile_photo) }}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover;">
+              </div>
+              @else
               <svg class="d-block" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <use href="#icon_user" />
               </svg>
+              @endif
             </a>
           </div>
           @endguest
 
-          <a href="{{route('wishlist.index') }}" class="header-tools__item header-tools__cart">
+          <a href="{{route('wishlist.index') }}" class="header-tools__item header-tools__cart {{ Route::is('wishlist.index') ? 'active' : '' }}">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
               <use href="#icon_heart" />
             </svg>
             @if(Cart::instance('wishlist')->content()->count()>0)
             <span class="cart-amount d-block position-absolute js-cart-items-count">
-                {{Cart::instance('wishlist')->content()->count()}}
-              </span>
+              {{Cart::instance('wishlist')->content()->count()}}
+            </span>
 
             @endif
           </a>
 
-          <a href="{{route('cart.index')}}" class="header-tools__item header-tools__cart">
+          <a href="{{route('cart.index')}}" class="header-tools__item header-tools__cart {{ Route::is('cart.index') ? 'active' : '' }}">
             <svg class="d-block" width="20" height="20" viewBox="0 0 20 20" fill="none"
               xmlns="http://www.w3.org/2000/svg">
               <use href="#icon_cart" />
@@ -585,40 +656,71 @@
   @include('layouts.partials.footer')
 
 
-  <footer class="footer-mobile container w-100 px-5 d-md-none bg-body">
-    <div class="row text-center">
-      <div class="col-4">
-        <a href="{{route('home.index')}}" class="footer-mobile__link d-flex flex-column align-items-center">
-          <svg class="d-block" width="18" height="18" viewBox="0 0 18 18" fill="none"
+  <footer class="footer-mobile container w-100 px-3 d-md-none bg-body shadow-sm border-top">
+    <div class="row text-center g-0">
+      <div class="col">
+        <a href="{{route('home.index')}}" class="footer-mobile__link d-flex flex-column align-items-center py-2 {{ Route::is('home.index') ? 'active' : '' }}">
+          <svg class="d-block mb-1" width="18" height="18" viewBox="0 0 18 18" fill="none"
             xmlns="http://www.w3.org/2000/svg">
             <use href="#icon_home" />
           </svg>
-          <span>الرئيسية</span>
+          <span style="font-size: 10px;">الرئيسية</span>
         </a>
       </div>
 
-      <div class="col-4">
-        <a href="{{route('shop.index')}}" class="footer-mobile__link d-flex flex-column align-items-center">
-          <svg class="d-block" width="18" height="18" viewBox="0 0 18 18" fill="none"
+      <div class="col">
+        <a href="{{route('categories.index')}}" class="footer-mobile__link d-flex flex-column align-items-center py-2 {{ Route::is('categories.index') || Route::is('shop.category') ? 'active' : '' }}">
+          <i class="bi bi-grid-fill d-flex justify-content-center align-items-center mb-1" style="font-size: 18px; width: 18px; height: 18px; line-height: 1;"></i>
+          <span style="font-size: 10px;">الفئات</span>
+        </a>
+      </div>
+
+      <div class="col">
+        <a href="{{route('shop.offers')}}" class="footer-mobile__link d-flex flex-column align-items-center py-2 {{ Route::is('shop.offers') ? 'active' : '' }}">
+          <i class="bi bi-tags-fill d-flex justify-content-center align-items-center mb-1" style="font-size: 18px; width: 18px; height: 18px; line-height: 1;"></i>
+          <span style="font-size: 10px;">العروض</span>
+        </a>
+      </div>
+
+      <div class="col">
+        <a href="{{route('shop.index')}}" class="footer-mobile__link d-flex flex-column align-items-center py-2 {{ Route::is('shop.index') ? 'active' : '' }}">
+          <svg class="d-block mb-1" width="18" height="18" viewBox="0 0 18 18" fill="none"
             xmlns="http://www.w3.org/2000/svg">
             <use href="#icon_hanger" />
           </svg>
-          <span>المتجر</span>
+          <span style="font-size: 10px;">المتجر</span>
         </a>
       </div>
 
-      <div class="col-4">
-        <a href="{{route('wishlist.index')}}" class="footer-mobile__link d-flex flex-column align-items-center">
+      <div class="col">
+        <a href="{{route('cart.index')}}" class="footer-mobile__link d-flex flex-column align-items-center py-2 {{ Route::is('cart.index') ? 'active' : '' }}">
           <div class="position-relative">
-            <svg class="d-block" width="18" height="18" viewBox="0 0 20 20" fill="none"
+            <svg class="d-block mb-1" width="18" height="18" viewBox="0 0 20 20" fill="none"
               xmlns="http://www.w3.org/2000/svg">
-              <use href="#icon_heart" />
+              <use href="#icon_cart" />
             </svg>
-            @if(Cart::instance('wishlist')->content()->count()>0)
-            <span class="wishlist-amount d-block position-absolute js-wishlist-count">{{Cart::instance('wishlist')->content()->count()}}</span>
+            @if(Cart::instance('cart')->content()->count()>0)
+            <span class="wishlist-amount d-block position-absolute js-cart-items-count" style="top: -5px; right: -8px;">{{Cart::instance('cart')->content()->count()}}</span>
             @endif
           </div>
-          <span>المفضلة</span>
+          <span style="font-size: 10px;">السلة</span>
+        </a>
+      </div>
+
+
+      <div class="col">
+        <a href="{{ Auth::check() ? (Auth::user()->utype === 'ADM' ? route('admin.index') : route('user.index')) : route('login') }}" class="footer-mobile__link d-flex flex-column align-items-center py-2 {{ Route::is('user.index') || Route::is('user.dashboard') || Route::is('user.profile') || Route::is('user.addresses') ? 'active' : '' }}">
+          @if(Auth::check() && Auth::user()->profile_photo)
+          <div class="mb-1" style="width: 18px; height: 18px; border-radius: 50%; overflow: hidden;">
+            <img src="{{ asset('storage/profile_photos/' . Auth::user()->profile_photo) }}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover;">
+          </div>
+          @else
+          <svg class="d-block mb-1" width="18" height="18" viewBox="0 0 20 20" fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <use href="#icon_user" />
+          </svg>
+          @endif
+          <span style="font-size: 10px;">حسابي</span>
         </a>
       </div>
     </div>
@@ -627,74 +729,94 @@
   <div id="scrollTop" class="visually-hidden end-0"></div>
   <div class="page-overlay"></div>
 
+  <!-- Quick View Modal -->
+  <div class="modal fade" id="quickView" tabindex="-1" aria-labelledby="quickViewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+      <div class="modal-content">
+        <div class="modal-header border-0 pb-0">
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body pt-0">
+          <div class="text-center p-5">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">جاري التحميل...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="{{ asset('assets/js/plugins/jquery.min.js') }}"></script>
   <script src="{{ asset('assets/js/plugins/bootstrap.bundle.min.js') }}"></script>
   <script src="{{ asset('assets/js/plugins/bootstrap-slider.min.js') }}"></script>
   <script src="{{ asset('assets/js/plugins/swiper.min.js') }}"></script>
   <script src="{{ asset('assets/js/plugins/countdown.js') }}"></script>
-  <script src="{{ asset('assets/js/theme.js') }}"></script>
+  <script src="{{ asset('assets/js/theme.js') }}?v={{ filemtime(public_path('assets/js/theme.js')) }}"></script>
 
   <!-- البحث السريع والذكي -->
   <script>
     $(document).ready(function() {
-        let searchTimeout;
-        const searchInput = $('#main-search-input');
-        const searchResults = $('#quick-search-results');
+      let searchTimeout;
 
-        // البحث السريع أثناء الكتابة
-        searchInput.on('input', function() {
-            const query = $(this).val().trim();
+      // البحث السريع أثناء الكتابة في أي حقل بحث يستخدم الـ component
+      $('.js-quick-search-input').on('input', function() {
+        const query = $(this).val().trim();
+        const container = $(this).closest('form');
+        const searchResults = container.find('.js-quick-search-results');
 
-            clearTimeout(searchTimeout);
+        clearTimeout(searchTimeout);
 
-            if (query.length >= 2) {
-                searchTimeout = setTimeout(function() {
-                    performQuickSearch(query);
-                }, 300);
-            } else {
-                searchResults.hide().empty();
-            }
-        });
-
-        // إخفاء النتائج عند النقر خارجها
-        $(document).on('click', function(e) {
-            if (!$(e.target).closest('.search-popup').length) {
-                searchResults.hide();
-            }
-        });
-
-        function performQuickSearch(query) {
-            $.ajax({
-                url: '/shop/quick-search',
-                method: 'GET',
-                data: { q: query },
-                beforeSend: function() {
-                    searchResults.html('<div class="p-3 text-center"><div class="spinner-border spinner-border-sm" role="status"></div> جاري البحث...</div>').show();
-                },
-                success: function(response) {
-                    if (response.success && response.data) {
-                        displayQuickResults(response.data);
-                    } else {
-                        searchResults.html('<div class="p-3 text-center text-muted">لا توجد نتائج</div>');
-                    }
-                },
-                error: function() {
-                    searchResults.html('<div class="p-3 text-center text-danger">حدث خطأ في البحث</div>');
-                }
-            });
+        if (query.length >= 2) {
+          searchTimeout = setTimeout(function() {
+            performQuickSearch(query, searchResults);
+          }, 300);
+        } else {
+          searchResults.hide().empty();
         }
+      });
 
-        function displayQuickResults(data) {
-            let html = '';
+      // إخفاء النتائج عند النقر خارجها
+      $(document).on('click', function(e) {
+        if (!$(e.target).closest('form.search-field').length) {
+          $('.js-quick-search-results').hide();
+        }
+      });
 
-            // عرض المنتجات
-            if (data.products && data.products.length > 0) {
-                html += '<div class="p-3"><h6 class="fw-bold mb-2">المنتجات</h6>';
-                data.products.forEach(function(product) {
-                    const price = product.sale_price || product.regular_price;
-                    const imageUrl = product.image ? '/uploads/products/' + product.image : '/assets/images/no-image.png';
+      function performQuickSearch(query, searchResults) {
+        $.ajax({
+          url: '/shop/quick-search',
+          method: 'GET',
+          data: {
+            q: query
+          },
+          beforeSend: function() {
+            searchResults.html('<div class="p-3 text-center"><div class="spinner-border spinner-border-sm" role="status"></div> جاري البحث...</div>').show();
+          },
+          success: function(response) {
+            if (response.success && response.data) {
+              displayQuickResults(response.data, searchResults);
+            } else {
+              searchResults.html('<div class="p-3 text-center text-muted">لا توجد نتائج</div>');
+            }
+          },
+          error: function() {
+            searchResults.html('<div class="p-3 text-center text-danger">حدث خطأ في البحث</div>');
+          }
+        });
+      }
 
-                    html += `
+      function displayQuickResults(data, searchResults) {
+        let html = '';
+
+        // عرض المنتجات
+        if (data.products && data.products.length > 0) {
+          html += '<div class="p-3"><h6 class="fw-bold mb-2">المنتجات</h6>';
+          data.products.forEach(function(product) {
+            const price = product.sale_price || product.regular_price;
+            const imageUrl = product.image ? '/uploads/products/' + product.image : '/assets/images/no-image.png';
+
+            html += `
                         <div class="d-flex align-items-center mb-2 p-2 rounded hover-bg-light">
                             <img src="${imageUrl}" alt="${product.name}" class="me-2" style="width: 40px; height: 40px; object-fit: cover;">
                             <div class="flex-grow-1">
@@ -705,48 +827,48 @@
                             </div>
                         </div>
                     `;
-                });
-                html += '</div>';
-            }
+          });
+          html += '</div>';
+        }
 
-            // عرض الفئات
-            if (data.categories && data.categories.length > 0) {
-                html += '<div class="p-3 border-top"><h6 class="fw-bold mb-2">الفئات</h6>';
-                data.categories.forEach(function(category) {
-                    const imageUrl = category.image ? '/uploads/categories/' + category.image : '/assets/images/no-image.png';
+        // عرض الفئات
+        if (data.categories && data.categories.length > 0) {
+          html += '<div class="p-3 border-top"><h6 class="fw-bold mb-2">الفئات</h6>';
+          data.categories.forEach(function(category) {
+            const imageUrl = category.image ? '/uploads/categories/' + category.image : '/assets/images/no-image.png';
 
-                    html += `
+            html += `
                         <div class="d-flex align-items-center mb-2 p-2 rounded hover-bg-light">
                             <img src="${imageUrl}" alt="${category.name}" class="me-2" style="width: 30px; height: 30px; object-fit: cover;">
                             <a href="{{ route('shop.search') }}?category=${category.slug}" class="text-decoration-none text-dark">${category.name}</a>
                         </div>
                     `;
-                });
-                html += '</div>';
-            }
+          });
+          html += '</div>';
+        }
 
-            // عرض العلامات التجارية
-            if (data.brands && data.brands.length > 0) {
-                html += '<div class="p-3 border-top"><h6 class="fw-bold mb-2">العلامات التجارية</h6>';
-                data.brands.forEach(function(brand) {
-                    const imageUrl = brand.image ? '/uploads/brands/' + brand.image : '/assets/images/no-image.png';
+        // عرض العلامات التجارية
+        if (data.brands && data.brands.length > 0) {
+          html += '<div class="p-3 border-top"><h6 class="fw-bold mb-2">العلامات التجارية</h6>';
+          data.brands.forEach(function(brand) {
+            const imageUrl = brand.image ? '/uploads/brands/' + brand.image : '/assets/images/no-image.png';
 
-                    html += `
+            html += `
                         <div class="d-flex align-items-center mb-2 p-2 rounded hover-bg-light">
                             <img src="${imageUrl}" alt="${brand.name}" class="me-2" style="width: 30px; height: 30px; object-fit: cover;">
                             <a href="{{ route('shop.search') }}?brand=${brand.slug}" class="text-decoration-none text-dark">${brand.name}</a>
                         </div>
                     `;
-                });
-                html += '</div>';
-            }
-
-            if (html === '') {
-                html = '<div class="p-3 text-center text-muted">لا توجد نتائج للبحث</div>';
-            }
-
-            searchResults.html(html).show();
+          });
+          html += '</div>';
         }
+
+        if (html === '') {
+          html = '<div class="p-3 text-center text-muted">لا توجد نتائج للبحث</div>';
+        }
+
+        searchResults.html(html).show();
+      }
     });
   </script>
 
@@ -761,4 +883,5 @@
 
   @stack("scripts")
 </body>
+
 </html>

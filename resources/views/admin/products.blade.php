@@ -52,6 +52,7 @@
                             <th>مميز</th>
                             <th>المخزون</th>
                             <th>الكمية</th>
+                            <th>التفاصيل</th>
                             <th>الإجراءات</th>
                         </tr>
                     </thead>
@@ -71,28 +72,34 @@
                             <td>{{$product->regular_price}}</td>
                             <td>{{$product->sale_price}}</td>
                             <td>{{$product->SKU}}</td>
-                            <td>{{$product->category->name}}</td>
-                            <td>{{$product->brand->name}}</td>
+                            <td>{{$product->category?->name}}</td>
+                            <td>{{$product->brand?->name}}</td>
                             <td>{{$product->featured == 0 ? "لا":"نعم"}}</td>
                             <td>{{$product->stock_status}}</td>
                             <td>{{$product->quantity}}</td>
                             <td>
+                                @if($product->color) اللون: {{$product->color}} <br> @endif
+                                @if($product->size) المقاس: {{$product->size}} <br> @endif
+                                @if($product->dimensions) الأبعاد: {{$product->dimensions}} <br> @endif
+                                @if($product->weight) الوزن: {{$product->weight}} @endif
+                            </td>
+                            <td>
                                 <div class="list-icon-function">
                                     <a href="#" target="_blank">
                                         <div class="item eye">
-                                            <i class="icon-eye"></i>
+                                            <i data-lucide="eye" style="width: 16px; height: 16px;"></i>
                                         </div>
                                     </a>
                                     <a href="{{route('admin.product.edit',['id'=>$product->id])}}">
                                         <div class="item edit">
-                                            <i class="icon-edit-3"></i>
+                                            <i data-lucide="edit" style="width: 16px; height: 16px;"></i>
                                         </div>
                                     </a>
                                     <form action="{{route('admin.product.delete',['id'=>$product->id])}}" method="POST">
                                         @csrf
                                         @method('DELETE')
                                         <div class="item text-danger delete">
-                                            <i class="icon-trash-2"></i>
+                                            <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
                                         </div>
                                     </form>
                                 </div>

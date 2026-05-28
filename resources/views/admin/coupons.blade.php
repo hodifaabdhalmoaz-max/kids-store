@@ -43,36 +43,36 @@
                     <table class="table table-striped table-bordered">
                         <thead>
                             <tr>
-                                <th>#</th>
-                                <th>الرمز</th>
-                                <th>النوع</th>
-                                <th>القيمة</th>
-                                <th>قيمة السلة</th>
-                                <th>تاريخ الانتهاء</th>
-                                <th>الإجراءات</th>
+                                <th class="text-center">#</th>
+                                <th class="text-center">الرمز</th>
+                                <th class="text-center">النوع</th>
+                                <th class="text-center">القيمة</th>
+                                <th class="text-center">قيمة السلة</th>
+                                <th class="text-center">تاريخ الانتهاء</th>
+                                <th class="text-center">الإجراءات</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($coupons as $coupon)
                             <tr>
-                                <td>{{ $coupon->id }}</td>
-                                <td>{{ $coupon->code }}</td>
-                                <td>{{ $coupon->type}}</td>
-                                <td>{{ $coupon->value }}</td>
-                                <td>{{ $coupon->cart_value }}</td>
-                                <td>{{ $coupon->expiry_date }}</td>
-                                <td>
-                                    <div class="list-icon-function">
-                                        <a href="{{route('admin.coupon.edit',['id'=>$coupon->id])}}">
+                                <td class="text-center">{{ $coupon->id }}</td>
+                                <td class="text-center">{{ $coupon->code }}</td>
+                                <td class="text-center">{{ $coupon->type}}</td>
+                                <td class="text-center">{{ $coupon->value }}</td>
+                                <td class="text-center">{{ $coupon->cart_value }}</td>
+                                <td class="text-center">{{ $coupon->expiry_date }}</td>
+                                <td class="text-center">
+                                    <div class="list-icon-function justify-content-center">
+                                        <a href="{{route('admin.coupon.edit',['id'=>$coupon->id])}}" title="تعديل">
                                             <div class="item edit">
-                                                <i class="icon-edit-3"></i>
+                                                <i data-lucide="edit" style="width: 16px; height: 16px;"></i>
                                             </div>
                                         </a>
-                                        <form action="{{ route('admin.coupon.delete',['id'=>$coupon->id]) }}" method="POST">
+                                        <form action="{{ route('admin.coupon.delete',['id'=>$coupon->id]) }}" method="POST" style="margin: 0;">
                                             @csrf
                                             @method('DELETE')
-                                            <div class="item text-danger delete">
-                                                <i class="icon-trash-2"></i>
+                                            <div class="item text-danger delete" title="حذف">
+                                                <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
                                             </div>
                                         </form>
                                     </div>

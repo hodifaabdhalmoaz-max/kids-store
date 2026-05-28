@@ -203,10 +203,7 @@
                         </div>
                         @endif
 
-                        <div class="summary-item d-flex justify-content-between mb-2">
-                            <span>{{ __('messages.cart_tax') }}</span>
-                            <span>{{ Cart::instance('cart')->tax() }}</span>
-                        </div>
+
 
                         <div class="summary-item d-flex justify-content-between mb-2">
                             <span>{{ __('messages.cart_shipping') }}</span>
@@ -233,7 +230,7 @@
                             <i class="fab fa-whatsapp me-2"></i>{{ __('messages.contact_support') }}
                         </a>
                         <a href="tel:+967777548421" class="btn btn-outline-primary">
-                            <i class="fas fa-phone-alt me-2"></i>+967 777548421
+                            <i class="fas fa-phone-alt me-2"></i>777548421 967+
                         </a>
                         <a href="mailto:hodifaabdhalmoaz@gmail.com" class="btn btn-outline-primary">
                             <i class="fas fa-envelope me-2"></i>{{ __('messages.email_support') }}

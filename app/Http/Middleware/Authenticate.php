@@ -15,7 +15,7 @@ class Authenticate extends Middleware
         if (! $request->expectsJson()) {
             // إذا كان المسار يحتوي على admin، توجيه إلى صفحة تسجيل دخول الإدارة
             if ($request->is('admin') || $request->is('admin/*')) {
-                return route('admin.login');
+                return route('login');
             }
             
             // وإلا توجيه إلى صفحة تسجيل دخول العملاء

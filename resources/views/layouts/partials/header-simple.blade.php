@@ -7,7 +7,7 @@
                     <div class="top-bar-contact d-flex align-items-center flex-wrap">
                         <div class="me-4 mb-1 mb-md-0">
                             <i class="fas fa-phone-alt me-1"></i>
-                            <a href="tel:+967777548421" class="text-white text-decoration-none">+967 777548421</a>
+                            <a href="tel:+967777548421" class="text-white text-decoration-none">777548421 967+</a>
                         </div>
                         <div class="me-4 mb-1 mb-md-0">
                             <i class="fas fa-envelope me-1"></i>
@@ -63,18 +63,25 @@
                     <div class="header-actions d-flex justify-content-end align-items-center">
                         <!-- Wishlist -->
                         <div class="me-3">
-                            <a href="#" class="text-dark position-relative">
+                            <a href="{{ route('wishlist.index') }}" class="{{ Route::is('wishlist.index') ? 'text-gold' : 'text-dark' }} position-relative">
                                 <i class="fas fa-heart fa-lg"></i>
+                                @if(Cart::instance('wishlist')->content()->count() > 0)
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                    {{ Cart::instance('wishlist')->content()->count() }}
+                                </span>
+                                @endif
                             </a>
                         </div>
 
                         <!-- Cart -->
                         <div class="me-3">
-                            <a href="#" class="text-dark position-relative">
+                            <a href="{{ route('cart.index') }}" class="{{ Route::is('cart.index') ? 'text-gold' : 'text-dark' }} position-relative">
                                 <i class="fas fa-shopping-cart fa-lg"></i>
+                                @if(Cart::instance('cart')->content()->count() > 0)
                                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                    0
+                                    {{ Cart::instance('cart')->content()->count() }}
                                 </span>
+                                @endif
                             </a>
                         </div>
 
@@ -85,20 +92,22 @@
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                 @auth
-                                    <li><a class="dropdown-item" href="#">{{ __('messages.dashboard') }}</a></li>
-                                    <li><a class="dropdown-item" href="#">{{ __('messages.user_orders') }}</a></li>
-                                    <li><a class="dropdown-item" href="#">{{ __('messages.user_wishlist') }}</a></li>
-                                    <li><a class="dropdown-item" href="#">{{ __('messages.user_profile') }}</a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li>
-                                        <form method="POST" action="{{ route('logout') }}">
-                                            @csrf
-                                            <button type="submit" class="dropdown-item">{{ __('messages.logout') }}</button>
-                                        </form>
-                                    </li>
+                                <li><a class="dropdown-item" href="#">{{ __('messages.dashboard') }}</a></li>
+                                <li><a class="dropdown-item" href="#">{{ __('messages.user_orders') }}</a></li>
+                                <li><a class="dropdown-item" href="#">{{ __('messages.user_wishlist') }}</a></li>
+                                <li><a class="dropdown-item" href="#">{{ __('messages.user_profile') }}</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item">{{ __('messages.logout') }}</button>
+                                    </form>
+                                </li>
                                 @else
-                                    <li><a class="dropdown-item" href="{{ route('login') }}">{{ __('messages.login') }}</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('register') }}">{{ __('messages.register') }}</a></li>
+                                <li><a class="dropdown-item" href="{{ route('login') }}">{{ __('messages.login') }}</a></li>
+                                <li><a class="dropdown-item" href="{{ route('register') }}">{{ __('messages.register') }}</a></li>
                                 @endauth
                             </ul>
                         </div>

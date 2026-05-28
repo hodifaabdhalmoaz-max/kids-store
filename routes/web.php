@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LanguageController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WishlistController;
@@ -14,17 +15,30 @@ use Illuminate\Support\Facades\Route;
 
 Auth::routes(['verify' => true]);
 
-// Language switching route
+// // Redirect / → /home (permanent 301)
+// Route::permanentRedirect('/', '/home');
+// // Language switching route
 Route::get('/language/{locale}', [LanguageController::class, 'switchLang'])->name('language.switch');
 
-// Public routes with basic rate limiting
-Route::middleware(['security.headers', 'throttle:60,1'])->group(function () {
-    Route::get('/', [HomeController::class, 'index'])->name('home.index');
-    Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
+// ═══════════════════════════════════════════════════════════
+// Search routes — separate limiter to prevent search abuse (40/min)
+// ═══════════════════════════════════════════════════════════
+Route::middleware(['smart.throttle:search'])->group(function () {
     Route::get('/shop/search', [ShopController::class, 'search'])->name('shop.search');
     Route::get('/shop/quick-search', [ShopController::class, 'quickSearch'])->name('shop.quick.search');
+});
+
+// ═══════════════════════════════════════════════════════════
+// Public routes — generous limit (120/min for guests, 240/min for auth)
+// Uses named limiter 'web-public' from RateLimitServiceProvider
+// ═══════════════════════════════════════════════════════════
+Route::middleware(['smart.throttle:public'])->group(function () {
+    Route::get('/', [HomeController::class, 'index'])->name('home.index');
+    Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
+    Route::get('/categories', [ShopController::class, 'categories'])->name('categories.index');
     Route::get('/shop/category/{slug}', [ShopController::class, 'category'])->name('shop.category');
     Route::get('/shop/brand/{slug}', [ShopController::class, 'brand'])->name('shop.brand');
+    Route::get('/offers', [ShopController::class, 'offers'])->name('shop.offers');
     Route::get('/shop/{product_slug}', [ShopController::class, 'product_details'])->name('shop.product.details');
     Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
     Route::post('/contact', [HomeController::class, 'contact_send'])->name('contact.send');
@@ -37,8 +51,10 @@ Route::middleware(['security.headers', 'throttle:60,1'])->group(function () {
     Route::post('/newsletter/subscribe', [HomeController::class, 'newsletter_subscribe'])->name('newsletter.subscribe');
 });
 
-//Cart - with stricter rate limiting for cart operations
-Route::middleware(['security.headers', 'throttle:30,1'])->group(function () {
+// ═══════════════════════════════════════════════════════════
+// Cart — moderate limit (60/min)
+// ═══════════════════════════════════════════════════════════
+Route::middleware(['smart.throttle:cart'])->group(function () {
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/add', [CartController::class, 'add_to_cart'])->name('cart.add');
     Route::put('/cart/increase-quantity/{rowId}', [CartController::class, 'increase_cart_quantity'])->name('cart.qty.increase');
@@ -49,34 +65,58 @@ Route::middleware(['security.headers', 'throttle:30,1'])->group(function () {
     Route::delete('/cart/remove-coupon', [CartController::class, 'remove_coupon_code'])->name('cart.coupon.remove');
 });
 
-//checkout - very strict rate limiting for payment operations
-Route::middleware(['auth', 'security.headers', 'rate.limit.strict:5,1'])->group(function () {
+// ═══════════════════════════════════════════════════════════
+// Checkout — auth required, moderate limit (30/min)
+// Previous limit was 5/min which was way too aggressive
+// ═══════════════════════════════════════════════════════════
+Route::middleware(['auth', 'smart.throttle:checkout'])->group(function () {
     Route::get('/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
     Route::post('/place-an-order', [CartController::class, 'place_an_order'])->name('cart.place.an.order');
     Route::get('/order-confirmation', [CartController::class, 'order_confirmation'])->name('cart.order.confirmation');
 });
 
-//wishlist - moderate rate limiting
-Route::middleware(['security.headers', 'throttle:20,1'])->group(function () {
-    Route::post('/wishlist/add', [WishlistController::class,'add_to_wishlist'])->name('wishlist.add');
-    Route::get('/wishlist', [WishlistController::class,'index'])->name('wishlist.index');
-    Route::delete('/wishlist/item/remove/{rowId}', [WishlistController::class,'remove_item'])->name('wishlist.item.remove');
-    Route::delete('/wishlist/clear', [WishlistController::class,'empty_wishlist'])->name('wishlist.items.clear');
-    Route::post('/wishlist/move-to-cart/{rowId}', [WishlistController::class,'move_to_cart'])->name('wishlist.move-to-cart');
+// ═══════════════════════════════════════════════════════════
+// Wishlist — moderate limit (40/min)
+// ═══════════════════════════════════════════════════════════
+Route::middleware(['smart.throttle:wishlist'])->group(function () {
+    Route::post('/wishlist/add', [WishlistController::class, 'add_to_wishlist'])->name('wishlist.add');
+    Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
+    Route::delete('/wishlist/item/remove/{rowId}', [WishlistController::class, 'remove_item'])->name('wishlist.item.remove');
+    Route::delete('/wishlist/item/remove-by-id/{id}', [WishlistController::class, 'remove_item_by_id'])->name('wishlist.item.remove.by.id');
+    Route::delete('/wishlist/clear', [WishlistController::class, 'empty_wishlist'])->name('wishlist.items.clear');
+    Route::post('/wishlist/move-to-cart/{rowId}', [WishlistController::class, 'move_to_cart'])->name('wishlist.move-to-cart');
 });
 
-
-// User dashboard - authenticated users only
-Route::middleware(['auth', 'security.headers', 'throttle:30,1'])->group(function () {
+// ═══════════════════════════════════════════════════════════
+// User dashboard — auth required, generous limit (60/min)
+// ═══════════════════════════════════════════════════════════
+Route::middleware(['auth', 'smart.throttle:user_dashboard'])->group(function () {
     Route::get('/account-dashboard', [UserController::class, 'index'])->name('user.index');
     Route::get('/user/dashboard', [UserController::class, 'dashboard'])->name('user.dashboard');
     Route::get('/user/profile', [UserController::class, 'profile'])->name('user.profile');
+    Route::post('/user/profile', [UserController::class, 'profileUpdate'])->name('user.profile.update');
     Route::get('/user/orders', [UserController::class, 'orders'])->name('user.orders');
+    Route::get('/user/order/{id}', [UserController::class, 'orderDetails'])->name('user.order.details');
     Route::get('/user/wishlist', [UserController::class, 'wishlist'])->name('user.wishlist');
+
+    // Addresses
+    Route::get('/user/addresses', [UserController::class, 'addresses'])->name('user.addresses');
+    Route::get('/user/address/add', [UserController::class, 'addressAdd'])->name('user.address.add');
+    Route::post('/user/address/store', [UserController::class, 'addressStore'])->name('user.address.store');
+    Route::get('/user/address/edit/{id}', [UserController::class, 'addressEdit'])->name('user.address.edit');
+    Route::post('/user/address/update/{id}', [UserController::class, 'addressUpdate'])->name('user.address.update');
+    Route::delete('/user/address/delete/{id}', [UserController::class, 'addressDelete'])->name('user.address.delete');
+    Route::post('/user/address/default/{id}', [UserController::class, 'addressSetDefault'])->name('user.address.default');
+
+    // Reviews — تقييمات المنتجات
+    Route::post('/review/{product_id}', [ReviewController::class, 'store'])->name('review.store');
 });
 
-//Admin - very strict rate limiting for admin operations
-Route::middleware(['auth', AuthAdmin::class, 'security.headers', 'rate.limit.strict:10,1'])->group(function () {
+// ═══════════════════════════════════════════════════════════
+// Admin — very generous limit (200/min base × 5 admin multiplier = 1000/min)
+// Admins should never be rate-limited during normal operations
+// ═══════════════════════════════════════════════════════════
+Route::middleware(['auth', AuthAdmin::class, 'smart.throttle:admin'])->group(function () {
     Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     //Brand
@@ -102,6 +142,30 @@ Route::middleware(['auth', AuthAdmin::class, 'security.headers', 'rate.limit.str
     Route::get('/admin/product/edit/{id}', [AdminController::class, 'product_edit'])->name('admin.product.edit');
     Route::put('/admin/product/update', [AdminController::class, 'product_update'])->name('admin.product.update');
     Route::delete('/admin/product/{id}/delete', [AdminController::class, 'product_delete'])->name('admin.product.delete');
+
+    //Color
+    Route::get('/admin/colors', [AdminController::class, 'colors'])->name('admin.colors');
+    Route::get('/admin/color/add', [AdminController::class, 'add_color'])->name('admin.color.add');
+    Route::post('/admin/color/store', [AdminController::class, 'color_store'])->name('admin.color.store');
+    Route::get('/admin/color/edit/{id}', [AdminController::class, 'color_edit'])->name('admin.color.edit');
+    Route::put('/admin/color/update', [AdminController::class, 'color_update'])->name('admin.color.update');
+    Route::delete('/admin/color/{id}/delete', [AdminController::class, 'color_delete'])->name('admin.color.delete');
+
+    //Size
+    Route::get('/admin/sizes', [AdminController::class, 'sizes'])->name('admin.sizes');
+    Route::get('/admin/size/add', [AdminController::class, 'add_size'])->name('admin.size.add');
+    Route::post('/admin/size/store', [AdminController::class, 'size_store'])->name('admin.size.store');
+    Route::get('/admin/size/edit/{id}', [AdminController::class, 'size_edit'])->name('admin.size.edit');
+    Route::put('/admin/size/update', [AdminController::class, 'size_update'])->name('admin.size.update');
+    Route::delete('/admin/size/{id}/delete', [AdminController::class, 'size_delete'])->name('admin.size.delete');
+
+    //Slide
+    Route::get('/admin/slides', [AdminController::class, 'slides'])->name('admin.slides');
+    Route::get('/admin/slide/add', [AdminController::class, 'add_slide'])->name('admin.slide.add');
+    Route::post('/admin/slide/store', [AdminController::class, 'slide_store'])->name('admin.slide.store');
+    Route::get('/admin/slide/edit/{id}', [AdminController::class, 'slide_edit'])->name('admin.slide.edit');
+    Route::put('/admin/slide/update', [AdminController::class, 'slide_update'])->name('admin.slide.update');
+    Route::delete('/admin/slide/{id}/delete', [AdminController::class, 'slide_delete'])->name('admin.slide.delete');
 
     //coupons
     Route::get('/admin/coupons', [AdminController::class, 'coupons'])->name('admin.coupons');
@@ -129,7 +193,7 @@ Route::middleware(['auth', AuthAdmin::class, 'security.headers', 'rate.limit.str
     Route::get('/admin/revenue-analytics/advanced', [App\Http\Controllers\Admin\RevenueAnalyticsController::class, 'advancedStats'])->name('admin.revenue.advanced');
 
     // اختبار سريع للنظام الجديد
-    Route::get('/admin/test-revenue', function() {
+    Route::get('/admin/test-revenue', function () {
         $service = new App\Services\RevenueAnalyticsService();
         $analytics = $service->getRevenueAnalytics('this_week');
         $summary = $service->getOverallSummary();

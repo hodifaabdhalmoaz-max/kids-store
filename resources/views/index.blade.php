@@ -1,5 +1,72 @@
 @extends('layouts.app')
 @section('content')
+<style>
+  .pc__btn-wl {
+    top: 0.75rem !important;
+    left: 0.75rem !important;
+    right: auto !important;
+    z-index: 10;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+  }
+
+  .pc__btn-wl:hover {
+    background-color: rgba(255, 255, 255, 1) !important;
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .pc__info {
+    padding-left: 3rem;
+    padding-right: 0.5rem;
+  }
+
+  .pc__title {
+    margin-right: 0;
+    padding-right: 0;
+  }
+
+  .pc__category,
+  .pc__title a {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: calc(100% - 1rem);
+  }
+
+  .filled-heart {
+    color: orange;
+  }
+
+  .product-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .product-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Fix empty space above New Arrivals on mobile */
+  @media (max-width: 768px) {
+    .slideshow-text {
+      top: 25% !important;
+      transform: translate(-50%, -25%) !important;
+    }
+
+    .slideshow {
+      min-height: 500px !important;
+    }
+  }
+</style>
 <main>
 
   <section class="swiper-container js-swiper-slider swiper-number-pagination slideshow" data-settings='{
@@ -11,6 +78,35 @@
         "loop": true
       }'>
     <div class="swiper-wrapper">
+      @forelse($slides as $slide)
+      <div class="swiper-slide">
+        <div class="overflow-hidden position-relative h-100">
+          <div class="slideshow-character position-absolute bottom-0 pos_left-center">
+            @if($slide->image)
+            <img loading="lazy" src="{{ asset('uploads/slides/' . $slide->image) }}" width="400" height="733"
+              alt="{{ $slide->title ?? 'شريحة عرض' }}"
+              class="slideshow-character__img animate animate_fade animate_btt animate_delay-9 w-auto h-auto" />
+            @endif
+          </div>
+          <div class="slideshow-text container position-absolute start-50 top-50 translate-middle">
+            @if($slide->tagline)
+            <h6 class="text_inline_dash text-uppercase fs-base fw-medium animate animate_fade animate_btt animate_delay-3">
+              {{ $slide->tagline }}
+            </h6>
+            @endif
+            @if($slide->title)
+            <h2 class="h1 fw-normal mb-0 animate animate_fade animate_btt animate_delay-5">{{ $slide->title }}</h2>
+            @endif
+            @if($slide->subtitle)
+            <h2 class="h1 fw-bold animate animate_fade animate_btt animate_delay-7">{{ $slide->subtitle }}</h2>
+            @endif
+            <a href="{{ $slide->link ?? '#' }}"
+              class="btn-link btn-link_lg default-underline fw-medium animate animate_fade animate_btt animate_delay-7">تسوق
+              الآن</a>
+          </div>
+        </div>
+      </div>
+      @empty
       <div class="swiper-slide">
         <div class="overflow-hidden position-relative h-100">
           <div class="slideshow-character position-absolute bottom-0 pos_left-center">
@@ -76,6 +172,7 @@
           </div>
         </div>
       </div>
+      @endforelse
     </div>
 
     <div class="container">
@@ -87,7 +184,7 @@
   <div class="container mw-1620 bg-white border-radius-10">
     <div class="mb-3 mb-xl-5 pt-1 pb-4"></div>
     <section class="category-carousel container">
-      <h2 class="section-title text-center mb-5">قد يعجبك أيضاً</h2>
+      <h2 class="section-title text-center mb-5">تسوق حسب الفئة</h2>
 
       <div class="position-relative">
         <div class="swiper-container js-swiper-slider" data-settings='{
@@ -130,11 +227,25 @@
           <div class="swiper-wrapper">
             @foreach($categories as $category)
             <div class="swiper-slide">
-              <img loading="lazy" class="w-100 h-auto mb-3"
-                src="{{ asset('uploads/categories/' . $category->image) }}?v={{ time() }}"
-                width="124" height="124"
-                alt="{{ $category->name }}"
-                onerror="this.src='{{ asset('assets/images/home/demo3/category_1.png') }}'" />
+              @php
+              $imageSrc = $category->image;
+              if (!empty($imageSrc)) {
+              if (\Illuminate\Support\Str::startsWith($imageSrc, 'categories/')) {
+              $imageSrc = asset('uploads/' . $imageSrc);
+              } else {
+              $imageSrc = asset('uploads/categories/' . $imageSrc);
+              }
+              } else {
+              $imageSrc = asset('assets/images/home/demo3/category_1.png');
+              }
+              @endphp
+              <a href="{{ route('shop.category', $category->slug) }}" class="d-block">
+                <img loading="lazy" class="w-100 h-auto mb-3"
+                  src="{{ $imageSrc }}?v={{ time() }}"
+                  width="124" height="124"
+                  alt="{{ $category->name }}"
+                  onerror="this.src='{{ asset('assets/images/home/demo3/category_1.png') }}'" />
+              </a>
               <div class="text-center">
                 <a href="{{ route('shop.category', $category->slug) }}" class="menu-link fw-medium">{{ $category->name }}</a>
               </div>
@@ -165,8 +276,8 @@
       <div class="row">
         <div
           class="col-md-6 col-lg-4 col-xl-20per d-flex align-items-center flex-column justify-content-center py-4 align-items-md-start">
-          <h2>تخفيضات الشتاء</h2>
-          <h2 class="fw-bold">خصم يصل إلى 50%</h2>
+          <h2>تخفيضات دنيا الأطفال</h2>
+          <h2 class="fw-bold">خصم قد يصل إلى 50%</h2>
 
           <div class="position-relative d-flex align-items-center text-center pt-xxl-4 js-countdown mb-3"
             data-date="18-3-2024" data-time="06:50">
@@ -191,7 +302,7 @@
             </div>
           </div>
 
-          <a href="#" class="btn-link default-underline text-uppercase fw-medium mt-3">عرض الكل</a>
+          <a href="{{ route('shop.offers') }}" class="btn-link default-underline text-uppercase fw-medium mt-3">عرض الكل</a>
         </div>
         <div class="col-md-6 col-lg-8 col-xl-80per">
           <div class="position-relative">
@@ -229,304 +340,101 @@
                   }
                 }'>
               <div class="swiper-wrapper">
-                <div class="swiper-slide product-card product-card_style3">
-                  <div class="pc__img-wrapper">
-                    <a href="details.html">
-                      <img loading="lazy" src="{{ asset('assets/images/home/demo3/product-0-1.jpg') }}" width="258" height="313"
-                        alt="طقم ملابس أطفال قطني" class="pc__img">
-                      <img loading="lazy" src="{{ asset('assets/images/home/demo3/product-0-2.jpg') }}" width="258" height="313"
-                        alt="طقم ملابس أطفال قطني" class="pc__img pc__img-second">
-                    </a>
-                  </div>
-
-                  <div class="pc__info position-relative">
-                    <h6 class="pc__title"><a href="details.html">طقم ملابس أطفال قطني</a></h6>
-                    <div class="product-card__price d-flex">
-                      <span class="money price text-secondary">$29</span>
+                @foreach($offer_products as $product)
+                <div class="swiper-slide">
+                  <div class="product-card mb-2 mb-md-3 h-100">
+                    <div class="pc__img-wrapper">
+                      <div class="swiper-container background-img js-swiper-slider" data-settings='{"resizeObserver": true}'>
+                        <div class="swiper-wrapper">
+                          <div class="swiper-slide">
+                            <a href="{{route('shop.product.details',['product_slug'=>$product->slug])}}"><img loading="lazy" src="{{asset('uploads/products')}}/{{$product->image}}" width="330" height="400" alt="{{$product->name}}" class="pc__img"></a>
+                          </div>
+                          @if($product->images)
+                          <div class="swiper-slide">
+                            @foreach(explode(",",$product->images) as $gimg)
+                            <a href="{{route('shop.product.details',['product_slug'=>$product->slug])}}"><img loading="lazy" src="{{asset('uploads/products')}}/{{trim($gimg)}}" width="330" height="400" alt="{{$product->name}}" class="pc__img"></a>
+                            @endforeach
+                          </div>
+                          @endif
+                        </div>
+                        <span class="pc__img-prev"><svg width="7" height="11" viewBox="0 0 7 11" xmlns="http://www.w3.org/2000/svg">
+                            <use href="#icon_prev_sm" />
+                          </svg></span>
+                        <span class="pc__img-next"><svg width="7" height="11" viewBox="0 0 7 11" xmlns="http://www.w3.org/2000/svg">
+                            <use href="#icon_next_sm" />
+                          </svg></span>
+                      </div>
+                      @if(Cart::instance('cart')->content()->where('id', $product->id)->count()>0)
+                      <a href="{{route('cart.index')}}" class="cart-icon-btn" title="الذهاب للسلة"><i class="bi bi-cart-check fs-5"></i></a>
+                      @else
+                      <form name="addtocart-form" method="post" action="{{route('cart.add')}}">
+                        @csrf
+                        <input type="hidden" name="id" value="{{$product->id}}" />
+                        <input type="hidden" name="quantity" value="1" />
+                        <input type="hidden" name="name" value="{{$product->name}}" />
+                        <input type="hidden" name="price" value="{{$product->sale_price == '' ? $product->regular_price : $product->sale_price}}" />
+                        <button type="submit" class="cart-icon-btn border-0" data-aside="cartDrawer" title="إضافة للسلة"><i class="bi bi-cart-plus fs-5"></i></button>
+                      </form>
+                      @endif
                     </div>
 
-                    <div
-                      class="anim_appear-bottom position-absolute bottom-0 start-0 d-none d-sm-flex align-items-center bg-body">
-                      <button class="btn-link btn-link_lg me-4 text-uppercase fw-medium js-add-cart js-open-aside"
-                        data-aside="cartDrawer" title="إضافة للسلة">إضافة للسلة</button>
-                      <button class="btn-link btn-link_lg me-4 text-uppercase fw-medium js-quick-view"
-                        data-bs-toggle="modal" data-bs-target="#quickView" title="عرض سريع">
-                        <span class="d-none d-xxl-block">عرض سريع</span>
-                        <span class="d-block d-xxl-none"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <use href="#icon_view" />
-                          </svg></span>
-                      </button>
-                      <button class="pc__btn-wl bg-transparent border-0 js-add-wishlist" title="إضافة للمفضلة">
-                        <svg width="16" height="16" viewBox="0 0 20 20" fill="none"
-                          xmlns="http://www.w3.org/2000/svg">
-                          <use href="#icon_heart" />
-                        </svg>
-                      </button>
+                    <div class="pc__info position-relative">
+                      <h6 class="pc__title"><a href="{{route('shop.product.details',['product_slug'=>$product->slug])}}">{{$product->card_title}}</a></h6>
+                      <div class="product-card__price d-flex">
+                        <span class="money price text-secondary">
+                          @if($product->sale_price)
+                          <s>{{ format_price($product->regular_price) }}</s> {{ format_price($product->sale_price) }}
+                          @else
+                          {{ format_price($product->regular_price) }}
+                          @endif
+                        </span>
+                      </div>
+                      <x-star-rating :rating="$product->active_reviews_avg" :count="$product->active_reviews_count" />
+                      @if($product->colors && $product->colors->count() > 0)
+                      <div class="product-card__colors d-flex gap-1 my-2 flex-wrap" style="gap: 5px; margin-top: 8px; margin-bottom: 8px;">
+                        @foreach($product->colors as $color)
+                        <span class="color-dot" style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background-color: {{ $color->hex_code ?? '#ccc' }}; border: 1px solid #ddd;" title="{{ $color->name }}"></span>
+                        @endforeach
+                      </div>
+                      @endif
+                      <div class="product-info-badges">
+                        <div class="delivery-badge">
+                          <i class="bi bi-clock"></i>
+                          <span>يصلك في <b>1-7</b> أيام</span>
+                        </div>
+                        <div class="shipping-badge">
+                          <i class="bi bi-truck"></i>
+                          <span>شحن مجاني</span>
+                        </div>
+                      </div>
+                      @if(Cart::instance('wishlist')->content()->where('id',$product->id)->count()>0)
+                      <form method="POST" action="{{ route('wishlist.item.remove',['rowId'=>Cart::instance('wishlist')->content()->where('id',$product->id)->first()->rowId])}}">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="pc__btn-wl position-absolute top-0 start-0 bg-transparent border-0 js-add-wishlist filled-heart" title="إزالة من المفضلة">
+                          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <use href="#icon_heart" />
+                          </svg>
+                        </button>
+                      </form>
+                      @else
+                      <form method="POST" action="{{route('wishlist.add')}}">
+                        @csrf
+                        <input type="hidden" name="id" value="{{ $product->id }}" />
+                        <input type="hidden" name="name" value="{{ $product->name }}" />
+                        <input type="hidden" name="price" value="{{ $product->sale_price=='' ? $product->regular_price : $product->sale_price }}" />
+                        <input type="hidden" name="quantity" value="1" />
+                        <button type="submit" class="pc__btn-wl position-absolute top-0 start-0 bg-transparent border-0 js-add-wishlist" title="إضافة للمفضلة">
+                          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <use href="#icon_heart" />
+                          </svg>
+                        </button>
+                      </form>
+                      @endif
                     </div>
                   </div>
                 </div>
-                <div class="swiper-slide product-card product-card_style3">
-                  <div class="pc__img-wrapper">
-                    <a href="details.html">
-                      <img loading="lazy" src="{{ asset('assets/images/home/demo3/product-1-1.jpg') }}" width="258" height="313"
-                        alt="حذاء رياضي للأطفال" class="pc__img">
-                      <img loading="lazy" src="{{ asset('assets/images/home/demo3/product-1-2.jpg') }}" width="258" height="313"
-                        alt="حذاء رياضي للأطفال" class="pc__img pc__img-second">
-                    </a>
-                  </div>
-
-                  <div class="pc__info position-relative">
-                    <h6 class="pc__title"><a href="details.html">حذاء رياضي للأطفال</a></h6>
-                    <div class="product-card__price d-flex">
-                      <span class="money price text-secondary">$62</span>
-                    </div>
-
-                    <div
-                      class="anim_appear-bottom position-absolute bottom-0 start-0 d-none d-sm-flex align-items-center bg-body">
-                      <button class="btn-link btn-link_lg me-4 text-uppercase fw-medium js-add-cart js-open-aside"
-                        data-aside="cartDrawer" title="إضافة للسلة">إضافة للسلة</button>
-                      <button class="btn-link btn-link_lg me-4 text-uppercase fw-medium js-quick-view"
-                        data-bs-toggle="modal" data-bs-target="#quickView" title="عرض سريع">
-                        <span class="d-none d-xxl-block">عرض سريع</span>
-                        <span class="d-block d-xxl-none"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <use href="#icon_view" />
-                          </svg></span>
-                      </button>
-                      <button class="pc__btn-wl bg-transparent border-0 js-add-wishlist" title="إضافة للمفضلة">
-                        <svg width="16" height="16" viewBox="0 0 20 20" fill="none"
-                          xmlns="http://www.w3.org/2000/svg">
-                          <use href="#icon_heart" />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                <div class="swiper-slide product-card product-card_style3">
-                  <div class="pc__img-wrapper">
-                    <a href="details.html">
-                      <img loading="lazy" src="{{ asset('assets/images/home/demo3/product-2-1.jpg') }}" width="258" height="313"
-                        alt="لعبة تعليمية ملونة" class="pc__img">
-                      <img loading="lazy" src="{{ asset('assets/images/home/demo3/product-2-2.jpg') }}" width="258" height="313"
-                        alt="لعبة تعليمية ملونة" class="pc__img pc__img-second">
-                    </a>
-                  </div>
-
-                  <div class="pc__info position-relative">
-                    <h6 class="pc__title"><a href="details.html">لعبة تعليمية ملونة</a></h6>
-                    <div class="product-card__price d-flex">
-                      <span class="money price text-secondary">$62</span>
-                    </div>
-
-                    <div
-                      class="anim_appear-bottom position-absolute bottom-0 start-0 d-none d-sm-flex align-items-center bg-body">
-                      <button class="btn-link btn-link_lg me-4 text-uppercase fw-medium js-add-cart js-open-aside"
-                        data-aside="cartDrawer" title="إضافة للسلة">إضافة للسلة</button>
-                      <button class="btn-link btn-link_lg me-4 text-uppercase fw-medium js-quick-view"
-                        data-bs-toggle="modal" data-bs-target="#quickView" title="عرض سريع">
-                        <span class="d-none d-xxl-block">عرض سريع</span>
-                        <span class="d-block d-xxl-none"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <use href="#icon_view" />
-                          </svg></span>
-                      </button>
-                      <button class="pc__btn-wl bg-transparent border-0 js-add-wishlist" title="إضافة للمفضلة">
-                        <svg width="16" height="16" viewBox="0 0 20 20" fill="none"
-                          xmlns="http://www.w3.org/2000/svg">
-                          <use href="#icon_heart" />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                <div class="swiper-slide product-card product-card_style3">
-                  <div class="pc__img-wrapper">
-                    <a href="details.html">
-                      <img loading="lazy" src="{{ asset('assets/images/home/demo3/product-3-1.jpg') }}" width="258" height="313"
-                        alt="جاكيت شتوي للأطفال" class="pc__img">
-                      <img loading="lazy" src="{{ asset('assets/images/home/demo3/product-3-2.jpg') }}" width="258" height="313"
-                        alt="جاكيت شتوي للأطفال" class="pc__img pc__img-second">
-                    </a>
-                  </div>
-
-                  <div class="pc__info position-relative">
-                    <h6 class="pc__title"><a href="details.html">جاكيت شتوي للأطفال</a></h6>
-                    <div class="product-card__price d-flex align-items-center">
-                      <span class="money price-old">$129</span>
-                      <span class="money price text-secondary">$99</span>
-                    </div>
-
-                    <div
-                      class="anim_appear-bottom position-absolute bottom-0 start-0 d-none d-sm-flex align-items-center bg-body">
-                      <button class="btn-link btn-link_lg me-4 text-uppercase fw-medium js-add-cart js-open-aside"
-                        data-aside="cartDrawer" title="إضافة للسلة">إضافة للسلة</button>
-                      <button class="btn-link btn-link_lg me-4 text-uppercase fw-medium js-quick-view"
-                        data-bs-toggle="modal" data-bs-target="#quickView" title="عرض سريع">
-                        <span class="d-none d-xxl-block">عرض سريع</span>
-                        <span class="d-block d-xxl-none"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <use href="#icon_view" />
-                          </svg></span>
-                      </button>
-                      <button class="pc__btn-wl bg-transparent border-0 js-add-wishlist" title="إضافة للمفضلة">
-                        <svg width="16" height="16" viewBox="0 0 20 20" fill="none"
-                          xmlns="http://www.w3.org/2000/svg">
-                          <use href="#icon_heart" />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                <div class="swiper-slide product-card product-card_style3">
-                  <div class="pc__img-wrapper">
-                    <a href="details.html">
-                      <img loading="lazy" src="{{ asset('assets/images/home/demo3/product-0-1.jpg') }}" width="258" height="313"
-                        alt="Cropped Faux leather Jacket" class="pc__img">
-                      <img loading="lazy" src="{{ asset('assets/images/home/demo3/product-0-2.jpg') }}" width="258" height="313"
-                        alt="Cropped Faux leather Jacket" class="pc__img pc__img-second">
-                    </a>
-                  </div>
-
-                  <div class="pc__info position-relative">
-                    <h6 class="pc__title"><a href="details.html">حقيبة مدرسية ملونة</a></h6>
-                    <div class="product-card__price d-flex">
-                      <span class="money price text-secondary">$29</span>
-                    </div>
-
-                    <div
-                      class="anim_appear-bottom position-absolute bottom-0 start-0 d-none d-sm-flex align-items-center bg-body">
-                      <button class="btn-link btn-link_lg me-4 text-uppercase fw-medium js-add-cart js-open-aside"
-                        data-aside="cartDrawer" title="إضافة للسلة">إضافة للسلة</button>
-                      <button class="btn-link btn-link_lg me-4 text-uppercase fw-medium js-quick-view"
-                        data-bs-toggle="modal" data-bs-target="#quickView" title="عرض سريع">
-                        <span class="d-none d-xxl-block">عرض سريع</span>
-                        <span class="d-block d-xxl-none"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <use href="#icon_view" />
-                          </svg></span>
-                      </button>
-                      <button class="pc__btn-wl bg-transparent border-0 js-add-wishlist" title="إضافة للمفضلة">
-                        <svg width="16" height="16" viewBox="0 0 20 20" fill="none"
-                          xmlns="http://www.w3.org/2000/svg">
-                          <use href="#icon_heart" />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                <div class="swiper-slide product-card product-card_style3">
-                  <div class="pc__img-wrapper">
-                    <a href="details.html">
-                      <img loading="lazy" src="{{ asset('assets/images/home/demo3/product-1-1.jpg') }}" width="258" height="313"
-                        alt="Cropped Faux leather Jacket" class="pc__img">
-                      <img loading="lazy" src="{{ asset('assets/images/home/demo3/product-1-2.jpg') }}" width="258" height="313"
-                        alt="Cropped Faux leather Jacket" class="pc__img pc__img-second">
-                    </a>
-                  </div>
-
-                  <div class="pc__info position-relative">
-                    <h6 class="pc__title"><a href="details.html">بيجامة أطفال ناعمة</a></h6>
-                    <div class="product-card__price d-flex">
-                      <span class="money price text-secondary">$62</span>
-                    </div>
-
-                    <div
-                      class="anim_appear-bottom position-absolute bottom-0 start-0 d-none d-sm-flex align-items-center bg-body">
-                      <button class="btn-link btn-link_lg me-4 text-uppercase fw-medium js-add-cart js-open-aside"
-                        data-aside="cartDrawer" title="إضافة للسلة">إضافة للسلة</button>
-                      <button class="btn-link btn-link_lg me-4 text-uppercase fw-medium js-quick-view"
-                        data-bs-toggle="modal" data-bs-target="#quickView" title="عرض سريع">
-                        <span class="d-none d-xxl-block">عرض سريع</span>
-                        <span class="d-block d-xxl-none"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <use href="#icon_view" />
-                          </svg></span>
-                      </button>
-                      <button class="pc__btn-wl bg-transparent border-0 js-add-wishlist" title="إضافة للمفضلة">
-                        <svg width="16" height="16" viewBox="0 0 20 20" fill="none"
-                          xmlns="http://www.w3.org/2000/svg">
-                          <use href="#icon_heart" />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                <div class="swiper-slide product-card product-card_style3">
-                  <div class="pc__img-wrapper">
-                    <a href="details.html">
-                      <img loading="lazy" src="{{ asset('assets/images/home/demo3/product-2-1.jpg') }}" width="258" height="313"
-                        alt="Cropped Faux leather Jacket" class="pc__img">
-                      <img loading="lazy" src="{{ asset('assets/images/home/demo3/product-2-2.jpg') }}" width="258" height="313"
-                        alt="Cropped Faux leather Jacket" class="pc__img pc__img-second">
-                    </a>
-                  </div>
-
-                  <div class="pc__info position-relative">
-                    <h6 class="pc__title"><a href="details.html">عربة أطفال مريحة</a></h6>
-                    <div class="product-card__price d-flex">
-                      <span class="money price text-secondary">$62</span>
-                    </div>
-
-                    <div
-                      class="anim_appear-bottom position-absolute bottom-0 start-0 d-none d-sm-flex align-items-center bg-body">
-                      <button class="btn-link btn-link_lg me-4 text-uppercase fw-medium js-add-cart js-open-aside"
-                        data-aside="cartDrawer" title="إضافة للسلة">إضافة للسلة</button>
-                      <button class="btn-link btn-link_lg me-4 text-uppercase fw-medium js-quick-view"
-                        data-bs-toggle="modal" data-bs-target="#quickView" title="عرض سريع">
-                        <span class="d-none d-xxl-block">عرض سريع</span>
-                        <span class="d-block d-xxl-none"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <use href="#icon_view" />
-                          </svg></span>
-                      </button>
-                      <button class="pc__btn-wl bg-transparent border-0 js-add-wishlist" title="إضافة للمفضلة">
-                        <svg width="16" height="16" viewBox="0 0 20 20" fill="none"
-                          xmlns="http://www.w3.org/2000/svg">
-                          <use href="#icon_heart" />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                <div class="swiper-slide product-card product-card_style3">
-                  <div class="pc__img-wrapper">
-                    <a href="details.html">
-                      <img loading="lazy" src="{{ asset('assets/images/home/demo3/product-3-1.jpg') }}" width="258" height="313"
-                        alt="Cropped Faux leather Jacket" class="pc__img">
-                      <img loading="lazy" src="{{ asset('assets/images/home/demo3/product-3-2.jpg') }}" width="258" height="313"
-                        alt="Cropped Faux leather Jacket" class="pc__img pc__img-second">
-                    </a>
-                  </div>
-
-                  <div class="pc__info position-relative">
-                    <h6 class="pc__title"><a href="details.html">كرسي طعام للأطفال</a></h6>
-                    <div class="product-card__price d-flex align-items-center">
-                      <span class="money price-old">$129</span>
-                      <span class="money price text-secondary">$99</span>
-                    </div>
-
-                    <div
-                      class="anim_appear-bottom position-absolute bottom-0 start-0 d-none d-sm-flex align-items-center bg-body">
-                      <button class="btn-link btn-link_lg me-4 text-uppercase fw-medium js-add-cart js-open-aside"
-                        data-aside="cartDrawer" title="إضافة للسلة">إضافة للسلة</button>
-                      <button class="btn-link btn-link_lg me-4 text-uppercase fw-medium js-quick-view"
-                        data-bs-toggle="modal" data-bs-target="#quickView" title="عرض سريع">
-                        <span class="d-none d-xxl-block">عرض سريع</span>
-                        <span class="d-block d-xxl-none"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <use href="#icon_view" />
-                          </svg></span>
-                      </button>
-                      <button class="pc__btn-wl bg-transparent border-0 js-add-wishlist" title="إضافة للمفضلة">
-                        <svg width="16" height="16" viewBox="0 0 20 20" fill="none"
-                          xmlns="http://www.w3.org/2000/svg">
-                          <use href="#icon_heart" />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                </div>
+                @endforeach
               </div><!-- /.swiper-wrapper -->
             </div><!-- /.swiper-container js-swiper-slider -->
           </div><!-- /.position-relative -->
@@ -573,298 +481,101 @@
       <h2 class="section-title text-center mb-5">المنتجات المميزة</h2>
 
       <div class="row">
+        @foreach($featured_products as $product)
         <div class="col-6 col-md-4 col-lg-3">
-          <div class="product-card product-card_style3 mb-3 mb-md-4 mb-xxl-5">
+          <div class="product-card mb-3 mb-md-4 mb-xxl-5 h-100">
             <div class="pc__img-wrapper">
-              <a href="details.html">
-                <img loading="lazy" src="{{ asset('assets/images/home/demo3/product-4.jpg') }}" width="330" height="400"
-                  alt="فستان أطفال أنيق" class="pc__img">
-              </a>
+              <div class="swiper-container background-img js-swiper-slider" data-settings='{"resizeObserver": true}'>
+                <div class="swiper-wrapper">
+                  <div class="swiper-slide">
+                    <a href="{{route('shop.product.details',['product_slug'=>$product->slug])}}"><img loading="lazy" src="{{asset('uploads/products')}}/{{$product->image}}" width="330" height="400" alt="{{$product->name}}" class="pc__img"></a>
+                  </div>
+                  @if($product->images)
+                  <div class="swiper-slide">
+                    @foreach(explode(",",$product->images) as $gimg)
+                    <a href="{{route('shop.product.details',['product_slug'=>$product->slug])}}"><img loading="lazy" src="{{asset('uploads/products')}}/{{trim($gimg)}}" width="330" height="400" alt="{{$product->name}}" class="pc__img"></a>
+                    @endforeach
+                  </div>
+                  @endif
+                </div>
+                <span class="pc__img-prev"><svg width="7" height="11" viewBox="0 0 7 11" xmlns="http://www.w3.org/2000/svg">
+                    <use href="#icon_prev_sm" />
+                  </svg></span>
+                <span class="pc__img-next"><svg width="7" height="11" viewBox="0 0 7 11" xmlns="http://www.w3.org/2000/svg">
+                    <use href="#icon_next_sm" />
+                  </svg></span>
+              </div>
+              @if(Cart::instance('cart')->content()->where('id', $product->id)->count()>0)
+              <a href="{{route('cart.index')}}" class="cart-icon-btn" title="الذهاب للسلة"><i class="bi bi-cart-check fs-5"></i></a>
+              @else
+              <form name="addtocart-form" method="post" action="{{route('cart.add')}}">
+                @csrf
+                <input type="hidden" name="id" value="{{$product->id}}" />
+                <input type="hidden" name="quantity" value="1" />
+                <input type="hidden" name="name" value="{{$product->name}}" />
+                <input type="hidden" name="price" value="{{$product->sale_price == '' ? $product->regular_price : $product->sale_price}}" />
+                <button type="submit" class="cart-icon-btn border-0" data-aside="cartDrawer" title="إضافة للسلة"><i class="bi bi-cart-plus fs-5"></i></button>
+              </form>
+              @endif
             </div>
 
             <div class="pc__info position-relative">
-              <h6 class="pc__title"><a href="details.html">فستان أطفال أنيق</a></h6>
-              <div class="product-card__price d-flex align-items-center">
-                <span class="money price text-secondary">$29</span>
+              <h6 class="pc__title"><a href="{{route('shop.product.details',['product_slug'=>$product->slug])}}">{{$product->card_title}}</a></h6>
+              <div class="product-card__price d-flex">
+                <span class="money price text-secondary">
+                  @if($product->sale_price)
+                  <s>{{ format_price($product->regular_price) }}</s> {{ format_price($product->sale_price) }}
+                  @else
+                  {{ format_price($product->regular_price) }}
+                  @endif
+                </span>
               </div>
-
-              <div
-                class="anim_appear-bottom position-absolute bottom-0 start-0 d-none d-sm-flex align-items-center bg-body">
-                <button class="btn-link btn-link_lg me-4 text-uppercase fw-medium js-add-cart js-open-aside"
-                  data-aside="cartDrawer" title="إضافة للسلة">إضافة للسلة</button>
-                <button class="btn-link btn-link_lg me-4 text-uppercase fw-medium js-quick-view"
-                  data-bs-toggle="modal" data-bs-target="#quickView" title="عرض سريع">
-                  <span class="d-none d-xxl-block">عرض سريع</span>
-                  <span class="d-block d-xxl-none"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"
-                      xmlns="http://www.w3.org/2000/svg">
-                      <use href="#icon_view" />
-                    </svg></span>
-                </button>
-                <button class="pc__btn-wl bg-transparent border-0 js-add-wishlist" title="إضافة للمفضلة">
+              <x-star-rating :rating="$product->active_reviews_avg" :count="$product->active_reviews_count" />
+              @if($product->colors && $product->colors->count() > 0)
+              <div class="product-card__colors d-flex gap-1 my-2 flex-wrap" style="gap: 5px; margin-top: 8px; margin-bottom: 8px;">
+                @foreach($product->colors as $color)
+                <span class="color-dot" style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background-color: {{ $color->hex_code ?? '#ccc' }}; border: 1px solid #ddd;" title="{{ $color->name }}"></span>
+                @endforeach
+              </div>
+              @endif
+              <div class="product-info-badges">
+                <div class="delivery-badge">
+                  <i class="bi bi-clock"></i>
+                  <span>يصلك في <b>1-7</b> أيام</span>
+                </div>
+                <div class="shipping-badge">
+                  <i class="bi bi-truck"></i>
+                  <span>شحن مجاني</span>
+                </div>
+              </div>
+              @if(Cart::instance('wishlist')->content()->where('id',$product->id)->count()>0)
+              <form method="POST" action="{{ route('wishlist.item.remove',['rowId'=>Cart::instance('wishlist')->content()->where('id',$product->id)->first()->rowId])}}">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="pc__btn-wl position-absolute top-0 start-0 bg-transparent border-0 js-add-wishlist filled-heart" title="إزالة من المفضلة">
                   <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <use href="#icon_heart" />
                   </svg>
                 </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-6 col-md-4 col-lg-3">
-          <div class="product-card product-card_style3 mb-3 mb-md-4 mb-xxl-5">
-            <div class="pc__img-wrapper">
-              <a href="details.html">
-                <img loading="lazy" src="{{ asset('assets/images/home/demo3/product-5.jpg') }}" width="330" height="400"
-                  alt="قميص قطني مخطط" class="pc__img">
-              </a>
-            </div>
-
-            <div class="pc__info position-relative">
-              <h6 class="pc__title"><a href="details.html">قميص قطني مخطط</a></h6>
-              <div class="product-card__price d-flex align-items-center">
-                <span class="money price text-secondary">$62</span>
-              </div>
-
-              <div
-                class="anim_appear-bottom position-absolute bottom-0 start-0 d-none d-sm-flex align-items-center bg-body">
-                <button class="btn-link btn-link_lg me-4 text-uppercase fw-medium js-add-cart js-open-aside"
-                  data-aside="cartDrawer" title="إضافة للسلة">إضافة للسلة</button>
-                <button class="btn-link btn-link_lg me-4 text-uppercase fw-medium js-quick-view"
-                  data-bs-toggle="modal" data-bs-target="#quickView" title="عرض سريع">
-                  <span class="d-none d-xxl-block">عرض سريع</span>
-                  <span class="d-block d-xxl-none"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"
-                      xmlns="http://www.w3.org/2000/svg">
-                      <use href="#icon_view" />
-                    </svg></span>
-                </button>
-                <button class="pc__btn-wl bg-transparent border-0 js-add-wishlist" title="إضافة للمفضلة">
+              </form>
+              @else
+              <form method="POST" action="{{route('wishlist.add')}}">
+                @csrf
+                <input type="hidden" name="id" value="{{ $product->id }}" />
+                <input type="hidden" name="name" value="{{ $product->name }}" />
+                <input type="hidden" name="price" value="{{ $product->sale_price=='' ? $product->regular_price : $product->sale_price }}" />
+                <input type="hidden" name="quantity" value="1" />
+                <button type="submit" class="pc__btn-wl position-absolute top-0 start-0 bg-transparent border-0 js-add-wishlist" title="إضافة للمفضلة">
                   <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <use href="#icon_heart" />
                   </svg>
                 </button>
-              </div>
+              </form>
+              @endif
             </div>
           </div>
         </div>
-        <div class="col-6 col-md-4 col-lg-3">
-          <div class="product-card product-card_style3 mb-3 mb-md-4 mb-xxl-5">
-            <div class="pc__img-wrapper">
-              <a href="details.html">
-                <img loading="lazy" src="{{ asset('assets/images/home/demo3/product-6.jpg') }}" width="330" height="400"
-                  alt="طقم رياضي للأطفال" class="pc__img">
-              </a>
-              <div class="product-label text-uppercase bg-white top-0 left-0 mt-2 mx-2">جديد</div>
-            </div>
-
-            <div class="pc__info position-relative">
-              <h6 class="pc__title"><a href="details.html">طقم رياضي للأطفال</a></h6>
-              <div class="product-card__price d-flex align-items-center">
-                <span class="money price text-secondary">$17</span>
-              </div>
-
-              <div
-                class="anim_appear-bottom position-absolute bottom-0 start-0 d-none d-sm-flex align-items-center bg-body">
-                <button class="btn-link btn-link_lg me-4 text-uppercase fw-medium js-add-cart js-open-aside"
-                  data-aside="cartDrawer" title="إضافة للسلة">إضافة للسلة</button>
-                <button class="btn-link btn-link_lg me-4 text-uppercase fw-medium js-quick-view"
-                  data-bs-toggle="modal" data-bs-target="#quickView" title="عرض سريع">
-                  <span class="d-none d-xxl-block">عرض سريع</span>
-                  <span class="d-block d-xxl-none"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"
-                      xmlns="http://www.w3.org/2000/svg">
-                      <use href="#icon_view" />
-                    </svg></span>
-                </button>
-                <button class="pc__btn-wl bg-transparent border-0 js-add-wishlist" title="إضافة للمفضلة">
-                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <use href="#icon_heart" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-6 col-md-4 col-lg-3">
-          <div class="product-card product-card_style3 mb-3 mb-md-4 mb-xxl-5">
-            <div class="pc__img-wrapper">
-              <a href="details.html">
-                <img loading="lazy" src="{{ asset('assets/images/home/demo3/product-7.jpg') }}" width="330" height="400"
-                  alt="سترة صوفية دافئة" class="pc__img">
-              </a>
-              <div class="product-label bg-red text-white right-0 top-0 left-auto mt-2 mx-2">-67%</div>
-            </div>
-
-            <div class="pc__info position-relative">
-              <h6 class="pc__title">سترة صوفية دافئة</h6>
-              <div class="product-card__price d-flex align-items-center">
-                <span class="money price-old">$129</span>
-                <span class="money price text-secondary">$99</span>
-              </div>
-
-              <div
-                class="anim_appear-bottom position-absolute bottom-0 start-0 d-none d-sm-flex align-items-center bg-body">
-                <button class="btn-link btn-link_lg me-4 text-uppercase fw-medium js-add-cart js-open-aside"
-                  data-aside="cartDrawer" title="إضافة للسلة">إضافة للسلة</button>
-                <button class="btn-link btn-link_lg me-4 text-uppercase fw-medium js-quick-view"
-                  data-bs-toggle="modal" data-bs-target="#quickView" title="عرض سريع">
-                  <span class="d-none d-xxl-block">عرض سريع</span>
-                  <span class="d-block d-xxl-none"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"
-                      xmlns="http://www.w3.org/2000/svg">
-                      <use href="#icon_view" />
-                    </svg></span>
-                </button>
-                <button class="pc__btn-wl bg-transparent border-0 js-add-wishlist" title="إضافة للمفضلة">
-                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <use href="#icon_heart" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-6 col-md-4 col-lg-3">
-          <div class="product-card product-card_style3 mb-3 mb-md-4 mb-xxl-5">
-            <div class="pc__img-wrapper">
-              <a href="details.html">
-                <img loading="lazy" src="{{ asset('assets/images/home/demo3/product-8.jpg') }}" width="330" height="400"
-                  alt="بنطال جينز أطفال" class="pc__img">
-              </a>
-            </div>
-
-            <div class="pc__info position-relative">
-              <h6 class="pc__title"><a href="details.html">بنطال جينز أطفال</a></h6>
-              <div class="product-card__price d-flex align-items-center">
-                <span class="money price text-secondary">$29</span>
-              </div>
-
-              <div
-                class="anim_appear-bottom position-absolute bottom-0 start-0 d-none d-sm-flex align-items-center bg-body">
-                <button class="btn-link btn-link_lg me-4 text-uppercase fw-medium js-add-cart js-open-aside"
-                  data-aside="cartDrawer" title="إضافة للسلة">إضافة للسلة</button>
-                <button class="btn-link btn-link_lg me-4 text-uppercase fw-medium js-quick-view"
-                  data-bs-toggle="modal" data-bs-target="#quickView" title="عرض سريع">
-                  <span class="d-none d-xxl-block">عرض سريع</span>
-                  <span class="d-block d-xxl-none"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"
-                      xmlns="http://www.w3.org/2000/svg">
-                      <use href="#icon_view" />
-                    </svg></span>
-                </button>
-                <button class="pc__btn-wl bg-transparent border-0 js-add-wishlist" title="إضافة للمفضلة">
-                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <use href="#icon_heart" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-6 col-md-4 col-lg-3">
-          <div class="product-card product-card_style3 mb-3 mb-md-4 mb-xxl-5">
-            <div class="pc__img-wrapper">
-              <a href="details.html">
-                <img loading="lazy" src="{{ asset('assets/images/home/demo3/product-9.jpg') }}" width="330" height="400"
-                  alt="حذاء كاجوال مريح" class="pc__img">
-              </a>
-            </div>
-
-            <div class="pc__info position-relative">
-              <h6 class="pc__title"><a href="details.html">حذاء كاجوال مريح</a></h6>
-              <div class="product-card__price d-flex align-items-center">
-                <span class="money price text-secondary">$62</span>
-              </div>
-
-              <div
-                class="anim_appear-bottom position-absolute bottom-0 start-0 d-none d-sm-flex align-items-center bg-body">
-                <button class="btn-link btn-link_lg me-4 text-uppercase fw-medium js-add-cart js-open-aside"
-                  data-aside="cartDrawer" title="إضافة للسلة">إضافة للسلة</button>
-                <button class="btn-link btn-link_lg me-4 text-uppercase fw-medium js-quick-view"
-                  data-bs-toggle="modal" data-bs-target="#quickView" title="عرض سريع">
-                  <span class="d-none d-xxl-block">عرض سريع</span>
-                  <span class="d-block d-xxl-none"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"
-                      xmlns="http://www.w3.org/2000/svg">
-                      <use href="#icon_view" />
-                    </svg></span>
-                </button>
-                <button class="pc__btn-wl bg-transparent border-0 js-add-wishlist" title="إضافة للمفضلة">
-                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <use href="#icon_heart" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-6 col-md-4 col-lg-3">
-          <div class="product-card product-card_style3 mb-3 mb-md-4 mb-xxl-5">
-            <div class="pc__img-wrapper">
-              <a href="details.html">
-                <img loading="lazy" src="{{ asset('assets/images/home/demo3/product-10.jpg') }}" width="330" height="400"
-                  alt="قبعة أطفال ملونة" class="pc__img">
-              </a>
-            </div>
-
-            <div class="pc__info position-relative">
-              <h6 class="pc__title"><a href="details.html">قبعة أطفال ملونة</a></h6>
-              <div class="product-card__price d-flex align-items-center">
-                <span class="money price text-secondary">$17</span>
-              </div>
-
-              <div
-                class="anim_appear-bottom position-absolute bottom-0 start-0 d-none d-sm-flex align-items-center bg-body">
-                <button class="btn-link btn-link_lg me-4 text-uppercase fw-medium js-add-cart js-open-aside"
-                  data-aside="cartDrawer" title="إضافة للسلة">إضافة للسلة</button>
-                <button class="btn-link btn-link_lg me-4 text-uppercase fw-medium js-quick-view"
-                  data-bs-toggle="modal" data-bs-target="#quickView" title="عرض سريع">
-                  <span class="d-none d-xxl-block">عرض سريع</span>
-                  <span class="d-block d-xxl-none"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"
-                      xmlns="http://www.w3.org/2000/svg">
-                      <use href="#icon_view" />
-                    </svg></span>
-                </button>
-                <button class="pc__btn-wl bg-transparent border-0 js-add-wishlist" title="إضافة للمفضلة">
-                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <use href="#icon_heart" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-6 col-md-4 col-lg-3">
-          <div class="product-card product-card_style3 mb-3 mb-md-4 mb-xxl-5">
-            <div class="pc__img-wrapper">
-              <a href="details.html">
-                <img loading="lazy" src="{{ asset('assets/images/home/demo3/product-11.jpg') }}" width="330" height="400"
-                  alt="سويتر أطفال مضلع" class="pc__img">
-              </a>
-            </div>
-
-            <div class="pc__info position-relative">
-              <h6 class="pc__title">سويتر أطفال مضلع</h6>
-              <div class="product-card__price d-flex align-items-center">
-                <span class="money price-old">$129</span>
-                <span class="money price text-secondary">$99</span>
-              </div>
-
-              <div
-                class="anim_appear-bottom position-absolute bottom-0 start-0 d-none d-sm-flex align-items-center bg-body">
-                <button class="btn-link btn-link_lg me-4 text-uppercase fw-medium js-add-cart js-open-aside"
-                  data-aside="cartDrawer" title="إضافة للسلة">إضافة للسلة</button>
-                <button class="btn-link btn-link_lg me-4 text-uppercase fw-medium js-quick-view"
-                  data-bs-toggle="modal" data-bs-target="#quickView" title="عرض سريع">
-                  <span class="d-none d-xxl-block">عرض سريع</span>
-                  <span class="d-block d-xxl-none"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"
-                      xmlns="http://www.w3.org/2000/svg">
-                      <use href="#icon_view" />
-                    </svg></span>
-                </button>
-                <button class="pc__btn-wl bg-transparent border-0 js-add-wishlist" title="إضافة للمفضلة">
-                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <use href="#icon_heart" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        @endforeach
       </div><!-- /.row -->
 
       <div class="text-center mt-2">
@@ -899,8 +610,20 @@
             @foreach($brands as $brand)
             <div class="swiper-slide">
               <div class="text-center p-3">
+                @php
+                $brandImageSrc = $brand->image;
+                if (!empty($brandImageSrc)) {
+                if (\Illuminate\Support\Str::startsWith($brandImageSrc, 'brands/')) {
+                $brandImageSrc = asset('uploads/' . $brandImageSrc);
+                } else {
+                $brandImageSrc = asset('uploads/brands/' . $brandImageSrc);
+                }
+                } else {
+                $brandImageSrc = asset('assets/images/home/demo3/category_1.png');
+                }
+                @endphp
                 <img loading="lazy" class="w-100 h-auto mb-3"
-                  src="{{ asset('uploads/brands/' . $brand->image) }}?v={{ time() }}"
+                  src="{{ $brandImageSrc }}?v={{ time() }}"
                   width="124" height="124"
                   alt="{{ $brand->name }}"
                   onerror="this.src='{{ asset('assets/images/home/demo3/category_1.png') }}'" />

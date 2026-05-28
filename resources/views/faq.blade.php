@@ -3,19 +3,6 @@
 @section('title', 'الأسئلة الشائعة - متجر الأطفال')
 @section('description', 'إجابات سريعة لأهم الاستفسارات حول منتجاتنا وخدماتنا')
 
-@push('styles')
-<style>
-:root {
-    --page-brand-start: #f59e0b; /* Amber 500 */
-    --page-brand-end: #d97706;   /* Amber 600 */
-}
-
-.accordion-modern .accordion-button:not(.collapsed) {
-    background: rgba(245, 158, 11, 0.1);
-}
-</style>
-@endpush
-
 @section('content')
 <!-- Hero Section -->
 <section class="info-hero">
@@ -43,7 +30,7 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-9">
-                
+
                 <div class="accordion accordion-modern" id="faqAccordion">
                     <!-- FAQ 1 -->
                     <div class="accordion-item shadow-sm">
@@ -100,7 +87,7 @@
                         </h2>
                         <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
                             <div class="accordion-body">
-                                نعم، يمكنك إرجاع المنتج خلال 14 يوماً من تاريخ الاستلام بشرط أن يكون في حالته الأصلية وغير مستخدم. تفضل بزيارة صفحة سياسة الإرجاع لمزيد من التفاصيل.
+                                نعم، يمكنك إرجاع المنتج خلال 3 أيام من تاريخ الاستلام بشرط أن يكون في حالته الأصلية وغير مستخدم. تفضل بزيارة صفحة سياسة الإرجاع لمزيد من التفاصيل.
                             </div>
                         </div>
                     </div>
@@ -143,10 +130,6 @@
 
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    if (typeof lucide !== 'undefined') {
-        lucide.createIcons();
-    }
-});
+    // FAQ page scripts
 </script>
 @endpush

@@ -4,6 +4,12 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
+use App\Models\Product;
+use App\Models\Category;
+use App\Models\Brand;
+use App\Observers\ProductObserver;
+use App\Observers\CategoryObserver;
+use App\Observers\BrandObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,6 +26,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Register cache-busting observers
+        Product::observe(ProductObserver::class);
+        Category::observe(CategoryObserver::class);
+        Brand::observe(BrandObserver::class);
+
         // Load translation helper
         require_once app_path('Helpers/TranslationHelper.php');
 

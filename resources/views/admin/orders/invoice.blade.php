@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,70 +14,84 @@
             padding: 20px;
             color: #333;
         }
+
         .header {
             text-align: center;
             margin-bottom: 30px;
             border-bottom: 2px solid #007bff;
             padding-bottom: 20px;
         }
+
         .company-name {
             font-size: 24px;
             font-weight: bold;
             color: #007bff;
             margin-bottom: 10px;
         }
+
         .invoice-title {
             font-size: 20px;
             margin-bottom: 10px;
         }
+
         .invoice-info {
             display: flex;
             justify-content: space-between;
             margin-bottom: 30px;
         }
+
         .info-section {
             width: 48%;
         }
+
         .info-title {
             font-weight: bold;
             font-size: 16px;
             margin-bottom: 10px;
             color: #007bff;
         }
+
         .info-content {
             line-height: 1.6;
         }
+
         .items-table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 30px;
         }
+
         .items-table th,
         .items-table td {
             border: 1px solid #ddd;
             padding: 12px;
             text-align: center;
         }
+
         .items-table th {
             background-color: #f8f9fa;
             font-weight: bold;
         }
+
         .totals {
             float: left;
             width: 300px;
         }
+
         .total-row {
             display: flex;
             justify-content: space-between;
             padding: 8px 0;
             border-bottom: 1px solid #eee;
         }
+
         .total-row.final {
             font-weight: bold;
             font-size: 18px;
             border-bottom: 2px solid #007bff;
             color: #007bff;
         }
+
         .footer {
             margin-top: 50px;
             text-align: center;
@@ -85,6 +100,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="header">
         <div class="company-name">متجر الأطفال</div>
@@ -109,17 +125,17 @@
             <div class="info-content">
                 <strong>رقم الطلب:</strong> {{ $order->id }}<br>
                 <strong>تاريخ الطلب:</strong> {{ $order->created_at->format('Y-m-d H:i') }}<br>
-                <strong>حالة الطلب:</strong> 
+                <strong>حالة الطلب:</strong>
                 @if($order->status == 'ordered')
-                    مطلوب
+                مطلوب
                 @elseif($order->status == 'processing')
-                    قيد المعالجة
+                قيد المعالجة
                 @elseif($order->status == 'shipped')
-                    تم الشحن
+                تم الشحن
                 @elseif($order->status == 'delivered')
-                    تم التسليم
+                تم التسليم
                 @elseif($order->status == 'cancelled')
-                    ملغي
+                ملغي
                 @endif
                 <br>
                 <strong>طريقة الدفع:</strong> {{ $order->transaction->paymentMethod->name ?? 'غير محدد' }}
@@ -141,8 +157,8 @@
             <tr>
                 <td>{{ $item->product->name }}</td>
                 <td>{{ $item->quantity }}</td>
-                <td>${{ number_format($item->price, 2) }}</td>
-                <td>${{ number_format($item->quantity * $item->price, 2) }}</td>
+                <td>{{ format_price($item->price) }}</td>
+                <td>{{ format_price($item->quantity * $item->price) }}</td>
             </tr>
             @endforeach
         </tbody>
@@ -151,19 +167,16 @@
     <div class="totals">
         <div class="total-row">
             <span>المجموع الفرعي:</span>
-            <span>${{ number_format($order->subtotal, 2) }}</span>
+            <span>{{ format_price($order->subtotal) }}</span>
         </div>
-        <div class="total-row">
-            <span>الضريبة:</span>
-            <span>${{ number_format($order->tax, 2) }}</span>
-        </div>
+
         <div class="total-row">
             <span>الشحن:</span>
-            <span>${{ number_format($order->shipping_cost ?? 0, 2) }}</span>
+            <span>{{ format_price($order->shipping_cost ?? 0) }}</span>
         </div>
         <div class="total-row final">
             <span>الإجمالي:</span>
-            <span>${{ number_format($order->total, 2) }}</span>
+            <span>{{ format_price($order->total) }}</span>
         </div>
     </div>
 
@@ -171,7 +184,8 @@
 
     <div class="footer">
         <p>شكراً لك على تسوقك معنا!</p>
-        <p>للاستفسارات: hodifaabdhalmoaz@gmail.com | +967 777548421</p>
+        <p>للاستفسارات: hodifaabdhalmoaz@gmail.com | 777548421 967+</p>
     </div>
 </body>
+
 </html>

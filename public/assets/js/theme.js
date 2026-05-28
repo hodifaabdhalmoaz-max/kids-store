@@ -681,7 +681,10 @@ function pureFadeOut(e) {
           }
         }
 
-        document.querySelector("main").style.paddingTop = headerHeight + 'px';
+        const mainElement = document.querySelector("main");
+        if (mainElement) {
+          mainElement.style.paddingTop = headerHeight + 'px';
+        }
         _this.$header.classList.add('position-absolute');
 
         document.removeEventListener('scroll', this._stickyScrollHander);
@@ -1283,15 +1286,15 @@ function pureFadeOut(e) {
           const priceRange = new Slider($se, {
             tooltip_split: true,
             formatter: function(value) {
-              return currency + value;
+              return value + ' ' + currency;
             },
           });
 
           priceRange.on('slideStop', (value) => {
             const $minEl = $se.parentElement.querySelector(selectors.minElement);
             const $maxEl = $se.parentElement.querySelector(selectors.maxElement);
-            $minEl.innerText = currency + value[0];
-            $maxEl.innerText = currency + value[1];
+            $minEl.innerText = value[0] + ' ' + currency;
+            $maxEl.innerText = value[1] + ' ' + currency;
           });
         }
       });
@@ -1331,19 +1334,26 @@ function pureFadeOut(e) {
     return new bootstrap.Popover(popoverTriggerEl, {'html':true})
   });
 
-  $('.shopping-cart .btn-checkout').off('click').on('click', function() {
-    window.location.href='./shop_checkout.html';
-  });
 
-  $('.checkout-form .btn-checkout').off('click').on('click', function() {
-    window.location.href='./shop_order_complete.html';
-  });
+  const jsShowRegister = document.querySelector('.js-show-register');
+  if (jsShowRegister) {
+    jsShowRegister.addEventListener('click', function(e) {
+      const targetHref = this.getAttribute("href");
+      if (targetHref) {
+        const targetElement = document.querySelector(targetHref);
+        if (targetElement) {
+            targetElement.click();
+        }
+      }
+    });
+  }
 
-  document.querySelector('.js-show-register').addEventListener('click', function(e) {
-    document.querySelector(this.getAttribute("href")).click();
-  });
-
-  $('button.js-add-wishlist, a.add-to-wishlist').off('click').on('click', function() {
+  $('button.js-add-wishlist, a.add-to-wishlist').off('click').on('click', function(e) {
+    var form = $(this).closest('form');
+    if(form.length > 0) {
+      return true; // Let the form submit normally
+    }
+    
     if($(this).hasClass("active"))
       $(this).removeClass("active");
     else

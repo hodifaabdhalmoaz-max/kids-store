@@ -20,19 +20,21 @@ use App\Http\Controllers\Api\AuthController;
 */
 
 // Public routes with rate limiting and security
-Route::prefix('v1')->middleware(['security.headers', 'throttle:api', 'cache.response:300'])->group(function () {
+Route::prefix('v1')->middleware(['throttle:api'])->group(function () {
     // Authentication - strict rate limiting for auth endpoints
-    Route::middleware('rate.limit.strict:5,1')->group(function () {
+    Route::middleware('throttle:api-auth')->group(function () {
         Route::post('/login', [AuthController::class, 'login']);
         Route::post('/register', [AuthController::class, 'register']);
     });
 
-    // Products
-    Route::get('/products', [ApiProductController::class, 'index']);
-    Route::get('/products/featured', [ApiProductController::class, 'featured']);
-    Route::get('/products/latest', [ApiProductController::class, 'latest']);
-    Route::get('/products/search', [ApiProductController::class, 'search']);
-    Route::get('/products/{slug}', [ApiProductController::class, 'show']);
+    // Products — generous limit for catalog browsing
+    Route::middleware('throttle:api-products')->group(function () {
+        Route::get('/products', [ApiProductController::class, 'index']);
+        Route::get('/products/featured', [ApiProductController::class, 'featured']);
+        Route::get('/products/latest', [ApiProductController::class, 'latest']);
+        Route::get('/products/search', [ApiProductController::class, 'search']);
+        Route::get('/products/{slug}', [ApiProductController::class, 'show']);
+    });
 
     // Categories
     Route::get('/categories', [CategoryController::class, 'index']);

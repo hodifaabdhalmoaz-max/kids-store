@@ -44,13 +44,48 @@
     }
 
     .shop-sidebar {
-      width: 100%;
-      padding-left: 0;
+      position: fixed;
+      top: 0;
+      right: -320px;
+      width: 320px;
+      max-width: 100%;
+      height: 100vh;
+      background: #fff;
+      z-index: 1050;
+      overflow-y: auto;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      padding: 1.5rem !important;
+      margin: 0 !important;
+      box-shadow: -5px 0 25px rgba(0,0,0,0.1);
+      visibility: hidden;
+      opacity: 0;
+    }
+    
+    .shop-sidebar.is-open {
+      right: 0;
+      visibility: visible;
+      opacity: 1;
     }
 
     .shop-list {
       padding-right: 0;
     }
+  }
+
+  .filter-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 1040;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .filter-overlay.is-active {
+    opacity: 1;
   }
 
   @media (min-width: 992px) {
@@ -193,13 +228,6 @@
   /* تحسين المسافات في الشريط الجانبي */
   .shop-sidebar {
     margin-left: 1rem;
-  }
-
-  @media (max-width: 991.98px) {
-    .shop-sidebar {
-      margin-left: 0;
-      margin-bottom: 2rem;
-    }
   }
 
   /* ضبط المسافات في منطقة المنتجات */
@@ -688,7 +716,7 @@
     <div class="shop-sidebar side-sticky bg-body pe-3 pe-lg-4" id="shopFilter">
       <div class="aside-header d-flex d-lg-none align-items-center mb-4 p-3 border-bottom">
         <h3 class="text-uppercase fs-6 mb-0 fw-bold">تصفية المنتجات</h3>
-        <button class="btn-close-lg js-close-aside btn-close-aside ms-auto"></button>
+        <button class="btn-close-lg btn-close-aside ms-auto" id="closeFilterBtn"></button>
       </div>
 
       <div class="pt-3 pt-lg-0"></div>
@@ -851,18 +879,18 @@
               <!-- شريط السعر -->
               <div class="price-slider-wrapper mb-4">
                 <input class="price-range-slider" type="text" name="price_range" value="" data-slider-min="1"
-                  data-slider-max="500" data-slider-step="5" data-slider-value="[{{ $min_price}},{{$max_price }}]" data-currency="$" />
+                  data-slider-max="500000" data-slider-step="1000" data-slider-value="[{{ $min_price}},{{$max_price }}]" data-currency="ريال جديد" />
               </div>
 
               <!-- معلومات السعر -->
               <div class="price-range__info d-flex justify-content-between mt-2">
                 <div>
                   <span class="text-secondary">أقل سعر: </span>
-                  <span class="price-range__min">$1</span>
+                  <span class="price-range__min">1 ريال جديد</span>
                 </div>
                 <div>
                   <span class="text-secondary">أعلى سعر: </span>
-                  <span class="price-range__max">$500</span>
+                  <span class="price-range__max">500,000 ريال جديد</span>
                 </div>
               </div>
 
@@ -1007,7 +1035,7 @@
           </div>
 
           <div class="shop-filter d-flex align-items-center order-0 order-md-3 d-lg-none">
-            <button class="btn-link btn-link_f d-flex align-items-center ps-0 js-open-aside" data-aside="shopFilter">
+            <button class="btn-link btn-link_f d-flex align-items-center ps-0" id="desktopFilterBtn">
               <svg class="d-inline-block align-middle me-2" width="14" height="10" viewBox="0 0 14 10" fill="none"
                 xmlns="http://www.w3.org/2000/svg">
                 <use href="#icon_filter" />
@@ -1028,11 +1056,13 @@
                   <div class="swiper-slide">
                     <a href="{{route('shop.product.details',['product_slug'=>$product->slug])}}"><img loading="lazy" src="{{asset('uploads/products')}}/{{$product->image}}" width="330" height="400" alt="{{$product->name}}" class="pc__img"></a>
                   </div>
-                  <div class="swiper-slide">
+                  @if($product->images)
                     @foreach(explode(",",$product->images) as $gimg)
-                    <a href="{{route('shop.product.details',['product_slug'=>$product->slug])}}"><img loading="lazy" src="{{asset('uploads/products')}}/{{$gimg}}" width="330" height="400" alt="{{$product->name}}" class="pc__img"></a>
+                    <div class="swiper-slide">
+                      <a href="{{route('shop.product.details',['product_slug'=>$product->slug])}}"><img loading="lazy" src="{{asset('uploads/products')}}/{{trim($gimg)}}" width="330" height="400" alt="{{$product->name}}" class="pc__img"></a>
+                    </div>
                     @endforeach
-                  </div>
+                  @endif
                 </div>
                 <span class="pc__img-prev"><svg width="7" height="11" viewBox="0 0 7 11"
                     xmlns="http://www.w3.org/2000/svg">
@@ -1044,7 +1074,7 @@
                   </svg></span>
               </div>
               @if(Cart::instance('cart')->content()->where('id', $product->id)->count()>0)
-              <a href="{{route('cart.index')}}" class="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium btn-warning mb-3">الذهاب للسلة</a>
+              <a href="{{route('cart.index')}}" class="cart-icon-btn" title="الذهاب للسلة"><i class="bi bi-cart-check fs-5"></i></a>
               @else
               <form name="addtocart-form" method="post" action="{{route('cart.add')}}">
                 @csrf
@@ -1052,42 +1082,39 @@
                 <input type="hidden" name="quantity" value="1" />
                 <input type="hidden" name="name" value="{{$product->name}}" />
                 <input type="hidden" name="price" value="{{$product->sale_price == '' ? $product->regular_price : $product->sale_price}}" />
-                <button type="submit" class="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium" data-aside="cartDrawer" title="إضافة للسلة">إضافة للسلة</button>
+                <button type="submit" class="cart-icon-btn border-0" data-aside="cartDrawer" title="إضافة للسلة"><i class="bi bi-cart-plus fs-5"></i></button>
               </form>
               @endif
             </div>
 
             <div class="pc__info position-relative">
-              <p class="pc__category">{{$product->category->name}}</p>
-              <h6 class="pc__title"><a href="{{route('shop.product.details',['product_slug'=>$product->slug])}}">{{$product->name}}</a></h6>
+              <h6 class="pc__title"><a href="{{route('shop.product.details',['product_slug'=>$product->slug])}}">{{$product->card_title}}</a></h6>
               <div class="product-card__price d-flex">
                 <span class="money price">
                   @if($product->sale_price)
-                  <s>${{$product->regular_price}}</s> ${{$product->sale_price}}
+                  <s>{{ format_price($product->regular_price) }}</s> {{ format_price($product->sale_price) }}
                   @else
-                  ${{$product->regular_price}}
+                  {{ format_price($product->regular_price) }}
                   @endif
                 </span>
               </div>
-              <div class="product-card__review d-flex align-items-center">
-                <div class="reviews-group d-flex">
-                  <svg class="review-star" viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg">
-                    <use href="#icon_star" />
-                  </svg>
-                  <svg class="review-star" viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg">
-                    <use href="#icon_star" />
-                  </svg>
-                  <svg class="review-star" viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg">
-                    <use href="#icon_star" />
-                  </svg>
-                  <svg class="review-star" viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg">
-                    <use href="#icon_star" />
-                  </svg>
-                  <svg class="review-star" viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg">
-                    <use href="#icon_star" />
-                  </svg>
+              <x-star-rating :rating="$product->active_reviews_avg" :count="$product->active_reviews_count" />
+              @if($product->colors && $product->colors->count() > 0)
+              <div class="product-card__colors d-flex gap-1 my-2 flex-wrap" style="gap: 5px; margin-top: 8px; margin-bottom: 8px;">
+                @foreach($product->colors as $color)
+                <span class="color-dot" style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background-color: {{ $color->hex_code ?? '#ccc' }}; border: 1px solid #ddd;" title="{{ $color->name }}"></span>
+                @endforeach
+              </div>
+              @endif
+              <div class="product-info-badges">
+                <div class="delivery-badge">
+                  <i class="bi bi-clock"></i>
+                  <span>يصلك في <b>1-7</b> أيام</span>
                 </div>
-                <span class="reviews-note text-lowercase text-secondary ms-1">أكثر من 8 آلاف تقييم</span>
+                <div class="shipping-badge">
+                  <i class="bi bi-truck"></i>
+                  <span>شحن مجاني</span>
+                </div>
               </div>
               @if(Cart::instance('wishlist')->content()->where('id',$product->id)->count()>0)
               <form method="POST" action="{{ route('wishlist.item.remove',['rowId'=>Cart::instance('wishlist')->content()->where('id',$product->id)->first()->rowId])}}">
@@ -1131,7 +1158,7 @@
 </main>
 
 <!-- زر التصفية العائم للجوال -->
-<button class="btn btn-primary btn-filter-mobile js-open-aside d-lg-none" data-aside="shopFilter">
+<button class="btn btn-primary btn-filter-mobile d-lg-none" id="mobileFilterBtn">
   <svg width="18" height="14" viewBox="0 0 14 10" fill="none" xmlns="http://www.w3.org/2000/svg">
     <use href="#icon_filter" fill="white" />
   </svg>
@@ -1344,21 +1371,78 @@
       $('.price-range__max').text('$' + maxPrice);
     });
 
+    // Mobile Filter Custom Drawer Logic
+    const shopFilter = document.getElementById('shopFilter');
+    const mobileFilterBtn = document.getElementById('mobileFilterBtn');
+    const desktopFilterBtn = document.getElementById('desktopFilterBtn');
+    const closeFilterBtn = document.getElementById('closeFilterBtn');
+
+    function openFilter(e) {
+      if(e) e.preventDefault();
+      shopFilter.classList.add('is-open');
+      document.body.style.overflow = 'hidden';
+      
+      let filterOverlay = document.getElementById('filterOverlay');
+      if (!filterOverlay) {
+          filterOverlay = document.createElement('div');
+          filterOverlay.className = 'filter-overlay';
+          filterOverlay.id = 'filterOverlay';
+          document.body.appendChild(filterOverlay);
+          
+          setTimeout(() => filterOverlay.classList.add('is-active'), 10);
+          filterOverlay.addEventListener('click', closeFilter);
+      } else {
+          filterOverlay.classList.add('is-active');
+      }
+    }
+
+    function closeFilter(e) {
+      if(e) e.preventDefault();
+      shopFilter.classList.remove('is-open');
+      document.body.style.overflow = '';
+      const overlay = document.getElementById('filterOverlay');
+      if (overlay) {
+          overlay.classList.remove('is-active');
+          setTimeout(() => overlay.remove(), 300);
+      }
+    }
+
+    if (mobileFilterBtn) mobileFilterBtn.addEventListener('click', openFilter);
+    if (desktopFilterBtn) desktopFilterBtn.addEventListener('click', openFilter);
+    if (closeFilterBtn) closeFilterBtn.addEventListener('click', closeFilter);
 
   });
 </script>
 
 <style>
+  .swatch-color::after {
+    background-color: transparent !important;
+    content: '' !important;
+  }
+
   .swatch-color.active {
-    border: 2px solid #007bff !important;
+    border: 2px solid #000 !important;
     transform: scale(1.1);
-    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.15) !important;
+  }
+
+  .swatch-color.active::after {
+    content: '✓' !important;
+    color: #fff !important;
+    font-size: 14px !important;
+    font-weight: bold !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.8) !important;
   }
 
   .swatch-size.active {
-    background-color: #007bff !important;
+    background-color: #e6b13a !important;
     color: white !important;
-    border-color: #007bff !important;
+    border-color: #e6b13a !important;
+    box-shadow: 0 4px 6px rgba(230, 177, 58, 0.2) !important;
   }
 
   .swatch-color-wrapper,

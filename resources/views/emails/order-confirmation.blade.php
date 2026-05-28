@@ -263,10 +263,7 @@
                     <span>-{{ number_format($order->discount, 2) }} ر.ي</span>
                 </div>
                 @endif
-                <div class="total-row">
-                    <span>الضريبة:</span>
-                    <span>{{ number_format($order->tax, 2) }} ر.ي</span>
-                </div>
+
                 <div class="total-row total-final">
                     <span>المجموع الإجمالي:</span>
                     <span>{{ number_format($order->total, 2) }} ر.ي</span>

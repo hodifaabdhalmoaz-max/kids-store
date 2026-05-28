@@ -148,8 +148,8 @@
 /* RTL Search */
 [dir="rtl"] .search-field__input {
     text-align: right;
-    padding-right: 3rem;
-    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-left: 3rem;
 }
 
 [dir="rtl"] .btn-search,

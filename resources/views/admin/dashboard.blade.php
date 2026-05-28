@@ -18,7 +18,8 @@
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                                {{ __('admin.total_orders') }}</div>
+                                                {{ __('admin.total_orders') }}
+                                            </div>
                                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalOrders }}</div>
                                         </div>
                                         <div class="col-auto">
@@ -35,7 +36,8 @@
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                                {{ __('admin.total_revenue') }}</div>
+                                                {{ __('admin.total_revenue') }}
+                                            </div>
                                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalRevenue }}</div>
                                         </div>
                                         <div class="col-auto">
@@ -52,7 +54,8 @@
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                                {{ __('admin.total_products') }}</div>
+                                                {{ __('admin.total_products') }}
+                                            </div>
                                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalProducts }}</div>
                                         </div>
                                         <div class="col-auto">
@@ -69,7 +72,8 @@
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                                {{ __('admin.total_customers') }}</div>
+                                                {{ __('admin.total_customers') }}
+                                            </div>
                                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalCustomers }}</div>
                                         </div>
                                         <div class="col-auto">
@@ -190,10 +194,10 @@
                                         <h5>{{ __('admin.contact_information') }}</h5>
                                         <p><strong>{{ __('admin.admin_name') }}:</strong> حذيفة عبدالمعز الحذيفي</p>
                                         <p><strong>{{ __('admin.admin_email') }}:</strong> <a href="mailto:hodifaabdhalmoaz@gmail.com">hodifaabdhalmoaz@gmail.com</a></p>
-                                        <p><strong>{{ __('admin.admin_phone') }}:</strong> <a href="tel:+967777548421">+967 777548421</a> / <a href="tel:+967718706242">+967 718706242</a></p>
-                                        <p><strong>{{ __('admin.admin_whatsapp') }}:</strong> <a href="https://wa.me/967718706242" target="_blank">+967 718706242</a></p>
+                                        <p><strong>{{ __('admin.admin_phone') }}:</strong> <a href="tel:+967777548421">777548421 967+</a> / <a href="tel:+967718706242">718706242 967+</a></p>
+                                        <p><strong>{{ __('admin.admin_whatsapp') }}:</strong> <a href="https://wa.me/967718706242" target="_blank">718706242 967+</a></p>
                                     </div>
-                                    
+
                                     <div>
                                         <h5>{{ __('admin.social_media') }}</h5>
                                         <p>
@@ -223,10 +227,14 @@
     var monthlySalesChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: {!! json_encode($monthlySalesLabels) !!},
+            labels: {
+                !!json_encode($monthlySalesLabels) !!
+            },
             datasets: [{
                 label: '{{ __("admin.monthly_sales") }}',
-                data: {!! json_encode($monthlySalesData) !!},
+                data: {
+                    !!json_encode($monthlySalesData) !!
+                },
                 backgroundColor: 'rgba(78, 115, 223, 0.05)',
                 borderColor: 'rgba(78, 115, 223, 1)',
                 pointBackgroundColor: 'rgba(78, 115, 223, 1)',
@@ -257,9 +265,13 @@
     var orderStatusChart = new Chart(ctx2, {
         type: 'doughnut',
         data: {
-            labels: {!! json_encode($orderStatusLabels) !!},
+            labels: {
+                !!json_encode($orderStatusLabels) !!
+            },
             datasets: [{
-                data: {!! json_encode($orderStatusData) !!},
+                data: {
+                    !!json_encode($orderStatusData) !!
+                },
                 backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b'],
                 hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf', '#f4b619', '#e02d1b'],
                 hoverBorderColor: 'rgba(234, 236, 244, 1)',

@@ -56,37 +56,43 @@ class SecurityHeaders
      */
     protected function buildContentSecurityPolicy(): string
     {
+        // Use associative array to prevent duplicate directives
         $policies = [
-            "default-src 'self'",
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://code.jquery.com https://stackpath.bootstrapcdn.com https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://www.facebook.com",
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://stackpath.bootstrapcdn.com",
-            "font-src 'self' https://fonts.gstatic.com https://fonts.googleapis.com https://cdn.jsdelivr.net",
-            "img-src 'self' data: https: blob: *.googleapis.com *.gstatic.com",
-            "connect-src 'self' https://api.whatsapp.com https://wa.me https://www.google-analytics.com https://stats.g.doubleclick.net",
-            "frame-src 'self' https://www.youtube.com https://www.google.com https://www.facebook.com",
-            "object-src 'none'",
-            "base-uri 'self'",
-            "form-action 'self'",
-            "frame-ancestors 'self'",
-            "manifest-src 'self'",
-            "worker-src 'self'",
+            'default-src' => "'self'",
+            'script-src' => "'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://code.jquery.com https://stackpath.bootstrapcdn.com https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://www.facebook.com",
+            'style-src' => "'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://stackpath.bootstrapcdn.com",
+            'font-src' => "'self' data: blob: https://fonts.gstatic.com https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com",
+            'img-src' => "'self' data: https: blob: *.googleapis.com *.gstatic.com",
+            'connect-src' => "'self' https://api.whatsapp.com https://wa.me https://www.google-analytics.com https://stats.g.doubleclick.net",
+            'frame-src' => "'self' https://www.youtube.com https://www.google.com https://www.facebook.com",
+            'object-src' => "'none'",
+            'base-uri' => "'self'",
+            'form-action' => "'self'",
+            'frame-ancestors' => "'self'",
+            'manifest-src' => "'self'",
+            'worker-src' => "'self' blob:",
         ];
 
         // Add upgrade-insecure-requests only in production
         if (app()->environment('production')) {
-            $policies[] = "upgrade-insecure-requests";
+            $policies['upgrade-insecure-requests'] = '';
         }
 
-        // In development, allow more sources
+        // In development, allow more sources (overrides instead of duplicating)
         if (app()->environment('local', 'development')) {
-            $policies = array_merge($policies, [
-                "script-src 'self' 'unsafe-inline' 'unsafe-eval' *",
-                "style-src 'self' 'unsafe-inline' *",
-                "connect-src 'self' *",
-            ]);
+            $policies['script-src'] = "'self' 'unsafe-inline' 'unsafe-eval' *";
+            $policies['style-src'] = "'self' 'unsafe-inline' *";
+            $policies['connect-src'] = "'self' *";
+            $policies['font-src'] = "'self' data: blob: *";
         }
 
-        return implode('; ', $policies);
+        // Build the CSP string
+        $cspParts = [];
+        foreach ($policies as $directive => $value) {
+            $cspParts[] = trim("{$directive} {$value}");
+        }
+
+        return implode('; ', $cspParts);
     }
 
     /**

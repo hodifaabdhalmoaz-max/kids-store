@@ -183,44 +183,80 @@ class RevenueAnalyticsService
      */
     private function getChartData(string $period): array
     {
+        Carbon::setLocale('ar');
+
         $chartData = [
             'labels' => [],
             'revenue' => [],
             'orders' => []
         ];
 
-        // تحديد عدد النقاط والفترة بناءً على النوع
-        [$points, $interval, $format] = match($period) {
-            'this_week', 'last_week' => [7, 'day', 'D'],
-            'this_month', 'last_month' => [30, 'day', 'd'],
-            'this_year', 'last_year' => [12, 'month', 'M'],
-            default => [7, 'day', 'D']
-        };
-
         $dateRange = $this->getDateRange($period);
         $start = $dateRange['start']->copy();
 
+        // تحديد عدد النقاط والفترة بناءً على النوع
+        [$points, $interval] = match($period) {
+            'this_week', 'last_week' => [7, 'day'],
+            'this_month', 'last_month' => [$start->daysInMonth, 'day'],
+            'this_year', 'last_year' => [12, 'month'],
+            default => [7, 'day']
+        };
+
+        // استعلام تجميعي واحد لتحسين الأداء وتجنب الاستعلامات المتكررة داخل الحلقة
+        if ($interval === 'day') {
+            $dbData = Order::select(
+                    DB::raw('DATE(created_at) as date_key'),
+                    DB::raw("SUM(CASE WHEN status = 'delivered' THEN total ELSE 0 END) as revenue"),
+                    DB::raw('COUNT(*) as total_orders')
+                )
+                ->whereBetween('created_at', [$dateRange['start'], $dateRange['end']])
+                ->groupBy(DB::raw('DATE(created_at)'))
+                ->get()
+                ->keyBy('date_key');
+        } else {
+            $dbData = Order::select(
+                    DB::raw("DATE_FORMAT(created_at, '%Y-%m') as date_key"),
+                    DB::raw("SUM(CASE WHEN status = 'delivered' THEN total ELSE 0 END) as revenue"),
+                    DB::raw('COUNT(*) as total_orders')
+                )
+                ->whereBetween('created_at', [$dateRange['start'], $dateRange['end']])
+                ->groupBy(DB::raw("DATE_FORMAT(created_at, '%Y-%m')"))
+                ->get()
+                ->keyBy('date_key');
+        }
+
         for ($i = 0; $i < $points; $i++) {
             $periodStart = $start->copy();
-            $periodEnd = $interval === 'day' 
-                ? $periodStart->copy()->endOfDay()
-                : $periodStart->copy()->endOfMonth();
+            
+            // تحديد مفتاح البحث في البيانات المجمعة
+            $dateKey = $interval === 'day' 
+                ? $periodStart->format('Y-m-d')
+                : $periodStart->format('Y-m');
 
-            $chartData['labels'][] = $periodStart->format($format);
+            // استخدام translatedFormat للحصول على أسماء الأيام والأشهر باللغة العربية
+            if ($interval === 'day') {
+                if ($period === 'this_week' || $period === 'last_week') {
+                    $chartData['labels'][] = $periodStart->translatedFormat('D');
+                } else {
+                    $chartData['labels'][] = $periodStart->format('j');
+                }
+            } else {
+                $chartData['labels'][] = $periodStart->translatedFormat('M');
+            }
 
-            // إيرادات الفترة
-            $revenue = Order::where('status', 'delivered')
-                ->whereBetween('created_at', [$periodStart, $periodEnd])
-                ->sum('total') ?? 0;
-
-            // طلبات الفترة
-            $orders = Order::whereBetween('created_at', [$periodStart, $periodEnd])
-                ->sum('total') ?? 0;
+            // جلب البيانات من المجموعة المحملة مسبقاً
+            $record = $dbData->get($dateKey);
+            $revenue = $record ? $record->revenue : 0;
+            $orders = $record ? $record->total_orders : 0;
 
             $chartData['revenue'][] = floatval($revenue);
-            $chartData['orders'][] = floatval($orders);
+            $chartData['orders'][] = intval($orders);
 
-            $start->add(1, $interval);
+            if ($interval === 'day') {
+                $start->addDay();
+            } else {
+                $start->addMonth();
+            }
         }
 
         return $chartData;

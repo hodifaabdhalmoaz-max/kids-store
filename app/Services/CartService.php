@@ -212,10 +212,10 @@ class CartService
             $totalAfterDiscount = $subtotalAfterDiscount + $taxAfterDiscount;
 
             Session::put('discounts', [
-                'discount' => number_format(floatval($discount), 2, '.', ''),
-                'subtotal' => number_format(floatval($subtotalAfterDiscount), 2, '.', ''),
-                'tax' => number_format(floatval($taxAfterDiscount), 2, '.', ''),
-                'total' => number_format(floatval($totalAfterDiscount), 2, '.', ''),
+                'discount' => number_format(floatval($discount), 0, '.', ''),
+                'subtotal' => number_format(floatval($subtotalAfterDiscount), 0, '.', ''),
+                'tax' => number_format(floatval($taxAfterDiscount), 0, '.', ''),
+                'total' => number_format(floatval($totalAfterDiscount), 0, '.', ''),
             ]);
         }
     }

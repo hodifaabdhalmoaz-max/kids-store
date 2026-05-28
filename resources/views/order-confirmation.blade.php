@@ -5,21 +5,21 @@
     <section class="shop-checkout container">
       <h2 class="page-title">تم استلام الطلب</h2>
       <div class="checkout-steps">
-        <a href="javascript:void(0)" class="checkout-steps__item active">
+        <a href="javascript:void(0)" class="checkout-steps__item active completed">
           <span class="checkout-steps__item-number">01</span>
           <span class="checkout-steps__item-title">
             <span>حقيبة التسوق</span>
             <em>إدارة قائمة العناصر الخاصة بك</em>
           </span>
         </a>
-        <a href="javascript:void(0)" class="checkout-steps__item active">
+        <a href="javascript:void(0)" class="checkout-steps__item active completed">
           <span class="checkout-steps__item-number">02</span>
           <span class="checkout-steps__item-title">
             <span>الشحن والدفع</span>
             <em>إتمام عملية الشراء</em>
           </span>
         </a>
-        <a href="javascript:void(0)" class="checkout-steps__item active">
+        <a href="javascript:void(0)" class="checkout-steps__item active current">
           <span class="checkout-steps__item-number">03</span>
           <span class="checkout-steps__item-title">
             <span>التأكيد</span>
@@ -49,7 +49,7 @@
           </div>
           <div class="order-info__item">
             <label>الإجمالي</label>
-            <span>${{$order->total }}</span>
+            <span>{{ format_price($order->total) }}</span>
           </div>
           <div class="order-info__item">
             <label>طريقة الدفع</label>
@@ -75,7 +75,7 @@
                     {{ $item->product->name }} x {{$item->quantity}}
                   </td>
                   <td>
-                    ${{$item->price }}
+                    {{ format_price($item->price) }}
                   </td>
                 </tr>
               </tbody>
@@ -84,23 +84,20 @@
               <tbody>
                 <tr>
                   <th>المجموع الفرعي</th>
-                  <td>${{$order->subtotal}}</td>
+                  <td>{{ format_price($order->subtotal) }}</td>
                 </tr>
                 <tr>
                     <th>الخصم</th>
-                    <td>${{$order->subtotal}}</td>
+                    <td>{{ format_price($order->subtotal) }}</td>
                   </tr>
                 <tr>
                   <th>الشحن</th>
                   <td>شحن مجاني</td>
                 </tr>
-                <tr>
-                  <th>ضريبة القيمة المضافة</th>
-                  <td>${{$order->tax}}</td>
-                </tr>
+
                 <tr>
                   <th>الإجمالي</th>
-                  <td>${{$order->total}}</td>
+                  <td>{{ format_price($order->total) }}</td>
                 </tr>
               </tbody>
             </table>
