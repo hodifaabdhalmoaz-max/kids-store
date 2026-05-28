@@ -43,6 +43,7 @@ yarn-error.log
 
 # ===== Database & Backups =====
 *.sql
+!kids_store.sql
 *.sqlite
 *.db
 /database/*.sqlite
