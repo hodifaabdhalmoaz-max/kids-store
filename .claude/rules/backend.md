@@ -8,27 +8,11 @@ paths:
   - "app/Providers/**/*.php"
 ---
 
-# Backend Rules for Dunya-Alatfaal-Shop
+# Backend Rules
 
-- **Architecture Standards**:
-  - Follow the **Controller-Service-Repository** pattern. Keep controllers light.
-  - Controllers must only handle validation, delegation, and formatting the response.
-  - Business logic (calculations, transactions, order creation, notifications) belongs in **Services** (`OrderService`, `CartService`, `ImageService`, etc.).
-  - Database queries should be routed through **Repositories** to abstract Eloquent query-building.
-- **Database Eager Loading**:
-  - Eager-load relations (`category`, `brand`, `colors`, `sizes`) using `with()` to prevent **N+1 query problems** in paginated or loops listings.
-- **Security & Authorization**:
-  - Restrict access to admin features using the `['auth', AuthAdmin::class]` middleware.
-  - Restrict user dashboards using the `['auth']` middleware stack.
-  - Do not bypass security checks in user requests; scope queries using `Auth::id()` or `Auth::user()` directly to prevent IDOR vulnerabilities.
-- **Rate Limiting**:
-  - Wrap routes in the custom `smart.throttle` middleware using the appropriate type:
-    - `public` for public catalog pages (120-240 req/min).
-    - `search` for search queries (40 req/min).
-    - `cart` for shopping cart manipulations (60 req/min).
-    - `checkout` for placing orders (30 req/min).
-- **Caching**:
-  - Use `CacheService` to handle key generation, tags, and fallback logic for high-traffic pages (e.g. search filters, categories, homepage sliders, featured items).
-  - Explicitly clear/forget related cache keys when models are updated or deleted (e.g. forgetting `search_filters` upon product store).
-- **Image Uploads**:
-  - Always handle uploaded files using the `ImageService` to automatically convert images to `.webp`, coverage-crop, and generate proper thumbnails.
+- Follow Controller-Service-Repository pattern: controllers handle validation/delegation only, Services hold business logic, Repositories abstract queries.
+- Eager-load relations (`category`, `brand`, `colors`, `sizes`) with `with()` to prevent N+1 queries.
+- Admin routes use `['auth', AuthAdmin::class]`; user routes use `['auth']`; scope queries with `Auth::id()` to prevent IDOR.
+- Wrap routes in `smart.throttle` with profiles: `public` (120-240/min), `search` (40/min), `cart` (60/min), `checkout` (30/min).
+- Use `CacheService` for high-traffic data (search filters, categories, featured items); clear related cache keys on model updates.
+- Handle all image uploads through `ImageService` for automatic webp conversion, cropping, and thumbnail generation.
