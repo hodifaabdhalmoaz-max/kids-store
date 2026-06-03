@@ -13,7 +13,7 @@ use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
-    protected $auditService;
+    protected AuditService $auditService;
 
     public function __construct(AuditService $auditService)
     {
@@ -32,7 +32,7 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => ['required', 'confirmed', Password::defaults()],
-            'phone' => 'nullable|string|max:20',
+            'mobile' => 'required|string|max:20|unique:users',
         ]);
         
         if ($validator->fails()) {
@@ -42,11 +42,12 @@ class AuthController extends Controller
             ], 422);
         }
         
+        /** @var \App\Models\User $user */
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'phone' => $request->phone,
+            'mobile' => $request->mobile,
         ]);
         
         // Log user registration
@@ -100,6 +101,7 @@ class AuthController extends Controller
             ], 401);
         }
         
+        /** @var \App\Models\User $user */
         $user = User::where('email', $request->email)->firstOrFail();
         
         // Revoke previous tokens
@@ -132,13 +134,18 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
+        /** @var \App\Models\User|null $user */
+        $user = $request->user();
+
         // Log logout
         $this->auditService->log('logout', [
-            'user_id' => auth()->id(),
+            'user_id' => $user?->id,
             'ip' => $request->ip(),
         ]);
         
-        auth()->user()->tokens()->delete();
+        if ($user) {
+            $user->tokens()->delete();
+        }
         
         return response()->json([
             'success' => true,
@@ -170,6 +177,7 @@ class AuthController extends Controller
      */
     public function refresh(Request $request)
     {
+        /** @var \App\Models\User $user */
         $user = $request->user();
         
         // Revoke previous tokens

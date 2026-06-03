@@ -15,6 +15,9 @@ class Coupon extends Model
         'value',
         'cart_value',
         'expiry_date',
+        'is_active',
+        'used_count',
+        'usage_limit',
     ];
 
     protected function casts(): array
@@ -23,6 +26,9 @@ class Coupon extends Model
             'value' => 'decimal:2',
             'cart_value' => 'decimal:2',
             'expiry_date' => 'date',
+            'is_active' => 'boolean',
+            'used_count' => 'integer',
+            'usage_limit' => 'integer',
         ];
     }
 }

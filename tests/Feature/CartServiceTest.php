@@ -163,7 +163,7 @@ class CartServiceTest extends TestCase
         // Create a valid coupon
         $coupon = Coupon::factory()->create([
             'code' => 'TEST10',
-            'type' => 'percentage',
+            'type' => 'percent',
             'value' => 10,
             'cart_value' => 50,
             'expiry_date' => Carbon::tomorrow(),
@@ -288,7 +288,7 @@ class CartServiceTest extends TestCase
         $this->cartService->applyCoupon('FIXED20');
         $discounts = $this->cartService->getDiscountDetails();
 
-        $this->assertEquals('20.00', $discounts['discount']);
+        $this->assertEquals('20', $discounts['discount']);
     }
 
     /** @test */
@@ -296,7 +296,7 @@ class CartServiceTest extends TestCase
     {
         $coupon = Coupon::factory()->create([
             'code' => 'PERCENT15',
-            'type' => 'percentage',
+            'type' => 'percent',
             'value' => 15,
             'cart_value' => 50,
             'expiry_date' => Carbon::tomorrow(),
@@ -312,7 +312,7 @@ class CartServiceTest extends TestCase
         $this->cartService->applyCoupon('PERCENT15');
         $discounts = $this->cartService->getDiscountDetails();
 
-        $this->assertEquals('15.00', $discounts['discount']);
+        $this->assertEquals('15', $discounts['discount']);
     }
 
     /** @test */
@@ -341,6 +341,15 @@ class CartServiceTest extends TestCase
     /** @test */
     public function it_clears_cart_after_order()
     {
+        // Create a valid coupon
+        Coupon::factory()->create([
+            'code' => 'TEST10',
+            'type' => 'percent',
+            'value' => 10,
+            'cart_value' => 50,
+            'expiry_date' => Carbon::tomorrow(),
+        ]);
+
         $this->cartService->addToCart([
             'id' => 1,
             'name' => 'Test Product',

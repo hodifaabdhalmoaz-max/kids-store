@@ -32,6 +32,9 @@ yarn-error.log
 *.swp
 *.swo
 *~
+_ide_helper.php
+_ide_helper_models.php
+.phpstorm.meta.php
 
 # ===== Security & Sensitive Files =====
 /storage/logs/*.log

@@ -9,7 +9,7 @@ use App\Services\AuditService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Session;
-use Gloudemans\Shoppingcart\Facades\Cart;
+use Surfsidemedia\Shoppingcart\Facades\Cart;
 
 class CartController extends Controller
 {
@@ -281,7 +281,7 @@ class CartController extends Controller
         }
         
         $coupon = Coupon::where('code', $request->code)
-            ->where('status', 'active')
+            ->where('is_active', true)
             ->where('expiry_date', '>=', now())
             ->first();
         
@@ -291,13 +291,27 @@ class CartController extends Controller
                 'message' => 'Invalid or expired coupon',
             ], 400);
         }
+
+        // Validate usage limit if set
+        if ($coupon->usage_limit !== null && $coupon->used_count >= $coupon->usage_limit) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This coupon usage limit has been reached',
+            ], 400);
+        }
         
-        // Calculate discount
-        $subtotal = Cart::instance('cart')->subtotal();
+        // Calculate discount and check minimum cart value
+        $subtotal = floatval(str_replace(',', '', Cart::instance('cart')->subtotal()));
+        if ($subtotal < $coupon->cart_value) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Minimum purchase amount of ' . $coupon->cart_value . ' is required for this coupon',
+            ], 400);
+        }
+
         $discount = 0;
-        
         if ($coupon->type === 'fixed') {
-            $discount = $coupon->value;
+            $discount = min($coupon->value, $subtotal);
         } else {
             $discount = ($subtotal * $coupon->value) / 100;
         }
