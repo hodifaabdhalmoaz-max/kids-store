@@ -129,6 +129,34 @@ class WeeklyMaintenance extends Command
                 ->delete();
         }
 
+        // Clean old user activities (keep 90 days)
+        if (DB::getSchemaBuilder()->hasTable('user_activities')) {
+            DB::table('user_activities')
+                ->where('created_at', '<', now()->subDays(90))
+                ->delete();
+        }
+
+        // Clean old error logs (keep 30 days)
+        if (DB::getSchemaBuilder()->hasTable('error_logs')) {
+            DB::table('error_logs')
+                ->where('created_at', '<', now()->subDays(30))
+                ->delete();
+        }
+
+        // Clean old security logs (keep 180 days)
+        if (DB::getSchemaBuilder()->hasTable('security_logs')) {
+            DB::table('security_logs')
+                ->where('created_at', '<', now()->subDays(180))
+                ->delete();
+        }
+
+        // Clean old product views (keep 90 days)
+        if (DB::getSchemaBuilder()->hasTable('product_views')) {
+            DB::table('product_views')
+                ->where('viewed_at', '<', now()->subDays(90))
+                ->delete();
+        }
+
         // Clean old cart items (abandoned carts older than 30 days)
         if (DB::getSchemaBuilder()->hasTable('shopping_cart')) {
             DB::table('shopping_cart')

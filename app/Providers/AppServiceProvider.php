@@ -26,6 +26,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Prevent lazy loading in local development to avoid N+1 query problems
+        \Illuminate\Database\Eloquent\Model::preventLazyLoading(!app()->isProduction());
+
         // Register cache-busting observers
         Product::observe(ProductObserver::class);
         Category::observe(CategoryObserver::class);
