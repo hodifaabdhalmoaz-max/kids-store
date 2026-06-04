@@ -4,26 +4,44 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Surfsidemedia\Shoppingcart\Facades\Cart;
 use App\Models\Wishlist;
+use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 
 class WishlistController extends Controller
 {
     public function index()
     {
-        $items = Cart::instance('wishlist')->content();
-        return view('wishlist', compact('items'));
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('message', 'يرجى تسجيل الدخول لعرض المفضلة');
+        }
+
+        $wishlistItems = Wishlist::with(['product.category'])
+            ->where('user_id', Auth::id())
+            ->get();
+
+        return view('wishlist', compact('wishlistItems'));
     }
     public function add_to_wishlist(Request $request)
     {
-       Cart::instance('wishlist')->add($request->id,$request->name,$request->quantity,$request->price)->associate('App\Models\Product');
+        $request->validate([
+            'id' => 'required|integer|exists:products,id',
+            'quantity' => 'required|integer|min:1|max:100',
+        ]);
+
+        $product = Product::findOrFail($request->id);
+        $price = ($product->sale_price > 0 && $product->sale_price < $product->regular_price) 
+            ? $product->sale_price 
+            : $product->regular_price;
+
+        Cart::instance('wishlist')->add($product->id, $product->name, (int) $request->quantity, $price)->associate('App\Models\Product');
        
-       if(Auth::check()) {
-           Wishlist::updateOrCreate(
-               ['user_id' => Auth::id(), 'product_id' => $request->id]
-           );
-       }
+        if(Auth::check()) {
+            Wishlist::updateOrCreate(
+                ['user_id' => Auth::id(), 'product_id' => $product->id]
+            );
+        }
        
-       return redirect()->back();
+        return redirect()->back();
     }
     public function remove_item($rowId)
     {
@@ -51,8 +69,11 @@ class WishlistController extends Controller
     }
     public function empty_wishlist()
     {
-       Cart::instance('wishlist')->destroy();
-       return redirect()->back();
+        if (Auth::check()) {
+            Wishlist::where('user_id', Auth::id())->delete();
+        }
+        Cart::instance('wishlist')->destroy();
+        return redirect()->back();
     }
     public function move_to_cart($rowId)
     {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Address;
+use App\Models\Product;
 use App\Services\CartService;
 use App\Services\OrderService;
 use App\Http\Requests\PlaceOrderRequest;
@@ -27,11 +28,21 @@ class CartController extends Controller
 
     public function add_to_cart(Request $request)
     {
+        $request->validate([
+            'id' => 'required|integer|exists:products,id',
+            'quantity' => 'required|integer|min:1|max:100',
+        ]);
+
+        $product = Product::findOrFail($request->id);
+        $price = ($product->sale_price > 0 && $product->sale_price < $product->regular_price) 
+            ? $product->sale_price 
+            : $product->regular_price;
+
         $productData = [
-            'id' => $request->id,
-            'name' => $request->name,
-            'quantity' => $request->quantity,
-            'price' => $request->price
+            'id' => $product->id,
+            'name' => $product->name,
+            'quantity' => (int) $request->quantity,
+            'price' => $price
         ];
 
         $this->cartService->addToCart($productData);

@@ -55,6 +55,17 @@ This project is a premium e-commerce storefront for kids' products, designed to 
   - Keep both English and Arabic translations synchronized inside `lang/en/` and `lang/ar/` folders.
 ## Recent Fixes (2026-06-04)
 
+### Security & Performance Audit Fixes
+- **C1 (Production Debug Mode)**: Changed `APP_DEBUG=true` to `APP_DEBUG=false` in `.env.production` to prevent details of system errors and credentials from leaking.
+- **C3 (Null Dereference Protection)**: Updated all unsafe database updates/reads in `AdminController.php` (such as categories, brands, products, slides, coupons, colors, sizes) from `find($id)` to `findOrFail($id)` to return 404 instead of throwing 500 error crashes.
+- **C4 & C5 (Cart & Wishlist Input Sanitization)**: Rewrote `add_to_cart` in `CartController.php` and `add_to_wishlist` in `WishlistController.php` to validate incoming parameters, fetching product name and price directly from the database instead of trusting user input (preventing price manipulation attacks).
+- **C6 (Insecure Route Removal)**: Removed `/admin/test-revenue` test endpoint from `routes/web.php` which exposed analytics data.
+- **H1 (Security Configuration Consolidation)**: Merged duplicate arrays (`password`, `2fa`, `headers`) in `config/security.php` to prevent newer config arrays from overwriting original settings.
+- **H2 (Route Normalization)**: Corrected malformed coupon URL routing patterns (`/admin/coupon/{id}edit` and `/admin/coupon/{id}delete` to `/admin/coupon/{id}/edit` and `/admin/coupon/{id}/delete`).
+- **H3 (Wishlist Database Cleanup)**: Fixed `empty_wishlist` in `WishlistController.php` to prune wishlist entries from the database when a user clears their wishlist.
+- **M5 (Secure Upload File Naming)**: Replaced timestamp-based file uploads in `AdminController.php` (for brands, categories, products, slides) with `Str::uuid()` to prevent filename collision issues.
+- **M8 (Carbon Mutability Bug)**: Replaced mutated Carbon dates in `getDateRange` of `AdminController.php` with `$now->copy()` to ensure accurate dashboard sales reporting intervals.
+
 ### Bug 1 — Admin Products Page: `LazyLoadingViolationException` on `category` & `brand`
 - **File**: `app/Http/Controllers/AdminController.php` — `products()` method
 - **Root Cause**: The query fetched products without eager loading `category` and `brand`, but the view `admin/products.blade.php` (lines 75–76) accessed `$product->category?->name` and `$product->brand?->name`, triggering lazy loading which is prohibited in dev via `Model::preventLazyLoading(!app()->isProduction())` in `AppServiceProvider`.

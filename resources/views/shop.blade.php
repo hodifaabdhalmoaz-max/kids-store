@@ -746,7 +746,7 @@
                       @if(in_array($category->id, explode(',', $f_categories))) checked="checked" @endif/>
                     <label class="form-check-label flex-grow-1 cursor-pointer">{{ $category->name }}</label>
                   </div>
-                  <span class="badge bg-secondary rounded-pill ms-2">{{ $category->products->count() }}</span>
+                  <span class="badge bg-secondary rounded-pill ms-2">{{ $category->products_count }}</span>
                 </li>
                 @endforeach
               </ul>
@@ -849,7 +849,7 @@
                       @if(in_array($brand->id, explode(',',$f_brands))) checked="checked" @endif>
                     <label class="form-check-label flex-grow-1 cursor-pointer">{{ $brand->name }}</label>
                   </div>
-                  <span class="badge bg-secondary rounded-pill ms-2">{{ $brand->products->count() }}</span>
+                  <span class="badge bg-secondary rounded-pill ms-2">{{ $brand->products_count }}</span>
                 </li>
                 @endforeach
               </ul>

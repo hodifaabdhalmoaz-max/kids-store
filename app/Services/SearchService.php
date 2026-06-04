@@ -385,8 +385,8 @@ class SearchService
     {
         return Cache::remember('search_filters', 1800, function () {
             $filters = [
-                'categories' => Category::select('id', 'name', 'slug')->orderBy('name')->get(),
-                'brands'     => Brand::select('id', 'name', 'slug')->orderBy('name')->get(),
+                'categories' => Category::select('id', 'name', 'slug')->withCount('products')->orderBy('name')->get(),
+                'brands'     => Brand::select('id', 'name', 'slug')->withCount('products')->orderBy('name')->get(),
                 'colors'     => collect(),
                 'sizes'      => collect(),
                 'price_ranges' => $this->getPriceRanges(),

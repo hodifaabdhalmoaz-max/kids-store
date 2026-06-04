@@ -108,7 +108,7 @@ class UserController extends Controller
     {
         $user = Auth::user();
         $wishlistItems = Wishlist::where('user_id', $user->id)
-            ->with('product')
+            ->with(['product.category'])
             ->latest()
             ->get();
             

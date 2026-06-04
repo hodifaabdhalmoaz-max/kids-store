@@ -114,7 +114,7 @@ class AdminController extends Controller
         $brand->name = $request->name;
         $brand->slug = $request->slug;
         $image = $request->file('image');
-        $file_name = Carbon::now()->timestamp.'.webp';
+        $file_name = Str::uuid().'.webp';
         $this->GenerateBrandThumbailsImage($image, $file_name);
         $brand->image = $file_name;
         $brand->save();
@@ -129,7 +129,7 @@ class AdminController extends Controller
 
     public function brand_edit($id)
     {
-        $brand = Brand::find($id);
+        $brand = Brand::findOrFail($id);
         return view('admin.brand-edit', compact('brand'));
     }
 
@@ -141,7 +141,7 @@ class AdminController extends Controller
             'image' => 'mimes:png,jpg,jpeg|max:2048'
         ]);
 
-        $brand = Brand::find($request->id);
+        $brand = Brand::findOrFail($request->id);
         $brand->name = $request->name;
         $brand->slug = $request->slug;
         if ($request->hasFile('image')) {
@@ -149,7 +149,7 @@ class AdminController extends Controller
                 File::delete(public_path('uploads/brands').'/'.$brand->image);
             }
             $image = $request->file('image');
-            $file_name = Carbon::now()->timestamp.'.webp';
+            $file_name = Str::uuid().'.webp';
             $this->GenerateBrandThumbailsImage($image, $file_name);
             $brand->image = $file_name;
         }
@@ -175,7 +175,7 @@ class AdminController extends Controller
 
     public function brand_delete($id)
     {
-        $brand = Brand::find($id);
+        $brand = Brand::findOrFail($id);
         if (File::exists(public_path('uploads/brands').'/'.$brand->image)) {
             File::delete(public_path('uploads/brands').'/'.$brand->image);
         }
@@ -208,7 +208,7 @@ class AdminController extends Controller
         $category->name = $request->name;
         $category->slug = $request->slug;
         $image = $request->file('image');
-        $file_name = Carbon::now()->timestamp.'.webp';
+        $file_name = Str::uuid().'.webp';
         $this->GenerateCategoryThumbailsImage($image, $file_name);
         $category->image = $file_name;
         $category->save();
@@ -223,7 +223,7 @@ class AdminController extends Controller
 
     public function category_edit($id)
     {
-        $category = Category::find($id);
+        $category = Category::findOrFail($id);
         return view('admin.category-edit', compact('category'));
     }
 
@@ -235,7 +235,7 @@ class AdminController extends Controller
             'image' => 'mimes:png,jpg,jpeg|max:2048'
         ]);
 
-        $category = Category::find($request->id);
+        $category = Category::findOrFail($request->id);
         $category->name = $request->name;
         $category->slug = $request->slug;
         if ($request->hasFile('image')) {
@@ -243,7 +243,7 @@ class AdminController extends Controller
                 File::delete(public_path('uploads/categories').'/'.$category->image);
             }
             $image = $request->file('image');
-            $file_name = Carbon::now()->timestamp.'.webp';
+            $file_name = Str::uuid().'.webp';
             $this->GenerateCategoryThumbailsImage($image, $file_name);
             $category->image = $file_name;
         }
@@ -269,7 +269,7 @@ class AdminController extends Controller
 
     public function category_delete($id)
     {
-        $category = Category::find($id);
+        $category = Category::findOrFail($id);
         if (File::exists(public_path('uploads/categories').'/'.$category->image)) {
             File::delete(public_path('uploads/categories').'/'.$category->image);
         }
@@ -281,7 +281,7 @@ class AdminController extends Controller
     //Product
     public function products()
     {
-        $products = Product::orderBy('created_at', 'DESC')->paginate(10);
+        $products = Product::with(['category', 'brand'])->orderBy('created_at', 'DESC')->paginate(10);
         return view('admin.products', compact('products'));
     }
 
@@ -348,7 +348,7 @@ class AdminController extends Controller
         $product->dimensions = $request->dimensions;
         $product->weight = $request->weight;
 
-        $current_timestamp = Carbon::now()->timestamp;
+        $current_timestamp = (string) Str::uuid();
 
         if ($request->hasFile('image')) {
             $image = $request->file('image');
@@ -410,7 +410,7 @@ class AdminController extends Controller
 
     public function product_edit($id)
     {
-        $product = Product::with(['colors', 'sizes'])->find($id);
+        $product = Product::with(['colors', 'sizes'])->findOrFail($id);
         $categories = Category::select('id', 'name')->orderBy('name')->get();
         $brands = Brand::select('id', 'name')->orderBy('name')->get();
         $colors = Color::active()->ordered()->get();
@@ -455,7 +455,7 @@ class AdminController extends Controller
             'quantity.integer' => 'الكمية يجب أن تكون رقماً صحيحاً'
         ]);
 
-        $product = Product::find($request->id);
+        $product = Product::findOrFail($request->id);
         $product->name = $request->name;
         $product->slug = $request->slug;
         $product->short_description = $request->short_description;
@@ -472,7 +472,7 @@ class AdminController extends Controller
         $product->dimensions = $request->dimensions;
         $product->weight = $request->weight;
 
-        $current_timestamp = Carbon::now()->timestamp;
+        $current_timestamp = (string) Str::uuid();
 
 
         if ($request->hasFile('image')) {
@@ -568,7 +568,7 @@ class AdminController extends Controller
 
     public function product_delete($id)
     {
-        $product = Product::find($id);
+        $product = Product::findOrFail($id);
         if (File::exists(public_path('uploads/products').'/'.$product->image)) {
             File::delete(public_path('uploads/products').'/'.$product->image);
         }
@@ -622,7 +622,7 @@ class AdminController extends Controller
     }
     public function coupon_edit($id)
     {
-        $coupon = Coupon::find($id);
+        $coupon = Coupon::findOrFail($id);
         return view('admin.coupon-edit', compact('coupon'));
     }
     public function coupon_update(Request $request)
@@ -634,7 +634,7 @@ class AdminController extends Controller
             'cart_value'=>'required|numeric',
             'expiry_date'=>'required|date',
         ]);
-        $coupon = Coupon::find($request->id);
+        $coupon = Coupon::findOrFail($request->id);
         $coupon->code = $request->code;
         $coupon->type = $request->type;
         $coupon->value = $request->value;
@@ -645,7 +645,7 @@ class AdminController extends Controller
     }
     public function coupon_delete($id)
     {
-        $coupon = Coupon::find($id);
+        $coupon = Coupon::findOrFail($id);
         $coupon->delete();
         return redirect()->route('admin.coupons')->with('status', 'coupon has been deleted succesfully!');
     }
@@ -660,38 +660,38 @@ class AdminController extends Controller
         switch ($period) {
             case 'this_week':
                 return [
-                    'start' => $now->startOfWeek(),
-                    'end' => $now->endOfWeek()
+                    'start' => $now->copy()->startOfWeek(),
+                    'end' => $now->copy()->endOfWeek()
                 ];
             case 'last_week':
                 return [
-                    'start' => $now->subWeek()->startOfWeek(),
-                    'end' => $now->subWeek()->endOfWeek()
+                    'start' => $now->copy()->subWeek()->startOfWeek(),
+                    'end' => $now->copy()->subWeek()->endOfWeek()
                 ];
             case 'this_month':
                 return [
-                    'start' => $now->startOfMonth(),
-                    'end' => $now->endOfMonth()
+                    'start' => $now->copy()->startOfMonth(),
+                    'end' => $now->copy()->endOfMonth()
                 ];
             case 'last_month':
                 return [
-                    'start' => $now->subMonth()->startOfMonth(),
-                    'end' => $now->subMonth()->endOfMonth()
+                    'start' => $now->copy()->subMonth()->startOfMonth(),
+                    'end' => $now->copy()->subMonth()->endOfMonth()
                 ];
             case 'this_year':
                 return [
-                    'start' => $now->startOfYear(),
-                    'end' => $now->endOfYear()
+                    'start' => $now->copy()->startOfYear(),
+                    'end' => $now->copy()->endOfYear()
                 ];
             case 'last_year':
                 return [
-                    'start' => $now->subYear()->startOfYear(),
-                    'end' => $now->subYear()->endOfYear()
+                    'start' => $now->copy()->subYear()->startOfYear(),
+                    'end' => $now->copy()->subYear()->endOfYear()
                 ];
             default:
                 return [
-                    'start' => $now->startOfWeek(),
-                    'end' => $now->endOfWeek()
+                    'start' => $now->copy()->startOfWeek(),
+                    'end' => $now->copy()->endOfWeek()
                 ];
         }
     }
@@ -854,7 +854,7 @@ class AdminController extends Controller
 
     public function color_edit($id)
     {
-        $color = Color::find($id);
+        $color = Color::findOrFail($id);
         return view('admin.color-edit', compact('color'));
     }
 
@@ -869,7 +869,7 @@ class AdminController extends Controller
             'is_active' => 'required|boolean'
         ]);
 
-        $color = Color::find($request->id);
+        $color = Color::findOrFail($request->id);
         $color->name = $request->name;
         $color->code = $request->code;
         $color->hex_code = $request->hex_code;
@@ -885,7 +885,7 @@ class AdminController extends Controller
 
     public function color_delete($id)
     {
-        $color = Color::find($id);
+        $color = Color::findOrFail($id);
         $color->delete();
         
         Cache::forget('search_filters');
@@ -930,7 +930,7 @@ class AdminController extends Controller
 
     public function size_edit($id)
     {
-        $size = Size::find($id);
+        $size = Size::findOrFail($id);
         return view('admin.size-edit', compact('size'));
     }
 
@@ -944,7 +944,7 @@ class AdminController extends Controller
             'is_active' => 'required|boolean'
         ]);
 
-        $size = Size::find($request->id);
+        $size = Size::findOrFail($request->id);
         $size->name = $request->name;
         $size->code = $request->code;
         $size->description = $request->description;
@@ -959,7 +959,7 @@ class AdminController extends Controller
 
     public function size_delete($id)
     {
-        $size = Size::find($id);
+        $size = Size::findOrFail($id);
         $size->delete();
 
         Cache::forget('search_filters');
@@ -1001,7 +1001,7 @@ class AdminController extends Controller
 
         if ($request->hasFile('image')) {
             $image = $request->file('image');
-            $file_name = Carbon::now()->timestamp . '.' . $image->getClientOriginalExtension();
+            $file_name = Str::uuid() . '.' . $image->getClientOriginalExtension();
             
             $this->GenerateSlideImage($image, $file_name);
             $slide->image = $file_name;
@@ -1016,7 +1016,7 @@ class AdminController extends Controller
 
     public function slide_edit($id)
     {
-        $slide = Slide::find($id);
+        $slide = Slide::findOrFail($id);
         return view('admin.slide-edit', compact('slide'));
     }
 
@@ -1033,7 +1033,7 @@ class AdminController extends Controller
             'order' => 'nullable|integer'
         ]);
 
-        $slide = Slide::find($request->id);
+        $slide = Slide::findOrFail($request->id);
         $slide->tagline = $request->tagline;
         $slide->title = $request->title;
         $slide->subtitle = $request->subtitle;
@@ -1047,7 +1047,7 @@ class AdminController extends Controller
             }
 
             $image = $request->file('image');
-            $file_name = Carbon::now()->timestamp . '.' . $image->getClientOriginalExtension();
+            $file_name = Str::uuid() . '.' . $image->getClientOriginalExtension();
             
             $this->GenerateSlideImage($image, $file_name);
             $slide->image = $file_name;

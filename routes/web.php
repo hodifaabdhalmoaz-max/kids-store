@@ -171,9 +171,9 @@ Route::middleware(['auth', AuthAdmin::class, 'smart.throttle:admin'])->group(fun
     Route::get('/admin/coupons', [AdminController::class, 'coupons'])->name('admin.coupons');
     Route::get('/admin/coupon/add', [AdminController::class, 'coupon_add'])->name('admin.coupon.add');
     Route::post('/admin/coupon/store', [AdminController::class, 'coupon_store'])->name('admin.coupon.store');
-    Route::get('/admin/coupon/{id}edit', [AdminController::class, 'coupon_edit'])->name('admin.coupon.edit');
+    Route::get('/admin/coupon/{id}/edit', [AdminController::class, 'coupon_edit'])->name('admin.coupon.edit');
     Route::put('/admin/coupon/update', [AdminController::class, 'coupon_update'])->name('admin.coupon.update');
-    Route::delete('/admin/coupon/{id}delete', [AdminController::class, 'coupon_delete'])->name('admin.coupon.delete');
+    Route::delete('/admin/coupon/{id}/delete', [AdminController::class, 'coupon_delete'])->name('admin.coupon.delete');
 
     //Orders - إدارة الطلبات
     Route::get('/admin/orders', [AdminOrderController::class, 'index'])->name('admin.orders');
@@ -191,17 +191,4 @@ Route::middleware(['auth', AuthAdmin::class, 'smart.throttle:admin'])->group(fun
     Route::get('/admin/revenue-analytics/data', [App\Http\Controllers\Admin\RevenueAnalyticsController::class, 'getData'])->name('admin.revenue.data');
     Route::get('/admin/revenue-analytics/pdf', [App\Http\Controllers\Admin\RevenueAnalyticsController::class, 'downloadPDF'])->name('admin.revenue.pdf');
     Route::get('/admin/revenue-analytics/advanced', [App\Http\Controllers\Admin\RevenueAnalyticsController::class, 'advancedStats'])->name('admin.revenue.advanced');
-
-    // اختبار سريع للنظام الجديد
-    Route::get('/admin/test-revenue', function () {
-        $service = new App\Services\RevenueAnalyticsService();
-        $analytics = $service->getRevenueAnalytics('this_week');
-        $summary = $service->getOverallSummary();
-
-        return response()->json([
-            'analytics' => $analytics,
-            'summary' => $summary,
-            'test_successful' => true
-        ]);
-    })->name('admin.test.revenue');
 });

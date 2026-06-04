@@ -21,6 +21,15 @@ return [
         'issuer' => env('TWO_FACTOR_ISSUER', config('app.name')),
         'window' => 1, // Time window for TOTP validation
         'recovery_codes_count' => 8,
+        'required_for_admin' => true,
+        'backup_codes_count' => 8,
+    ],
+
+    '2fa' => [
+        'enabled' => env('TWO_FACTOR_ENABLED', false),
+        'required_for_admin' => true,
+        'backup_codes_count' => 8,
+        'window' => 1,
     ],
 
     /*
@@ -47,6 +56,8 @@ return [
         'hsts_max_age' => env('HSTS_MAX_AGE', 31536000),
         'csp_enabled' => env('CSP_ENABLED', true),
         'xss_protection' => env('XSS_PROTECTION', true),
+        'csp_report_uri' => '/security/csp-report',
+        'expect_ct_max_age' => 86400, // 1 day
     ],
 
     /*
@@ -62,6 +73,9 @@ return [
         'require_symbols' => true,
         'max_age_days' => 90, // Force password change after 90 days
         'history_count' => 5, // Remember last 5 passwords
+        'max_attempts' => 5,
+        'lockout_duration' => 900, // seconds (15 minutes)
+        'hash_rounds' => 12,
     ],
 
     /*
@@ -121,34 +135,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Password Security
-    |--------------------------------------------------------------------------
-    */
-    'password' => [
-        'min_length' => 8,
-        'require_uppercase' => true,
-        'require_lowercase' => true,
-        'require_numbers' => true,
-        'require_symbols' => true,
-        'max_attempts' => 5,
-        'lockout_duration' => 900, // seconds (15 minutes)
-        'hash_rounds' => 12,
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Two-Factor Authentication
-    |--------------------------------------------------------------------------
-    */
-    '2fa' => [
-        'enabled' => true,
-        'required_for_admin' => true,
-        'backup_codes_count' => 8,
-        'window' => 1, // 30-second windows
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
     | File Upload Security
     |--------------------------------------------------------------------------
     */
@@ -169,17 +155,6 @@ return [
         'whitelist' => [],
         'blacklist' => [],
         'admin_whitelist' => [],
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Security Headers
-    |--------------------------------------------------------------------------
-    */
-    'headers' => [
-        'hsts_max_age' => 31536000, // 1 year
-        'csp_report_uri' => '/security/csp-report',
-        'expect_ct_max_age' => 86400, // 1 day
     ],
 
     /*
