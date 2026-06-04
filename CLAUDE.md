@@ -53,3 +53,50 @@ This project is a premium e-commerce storefront for kids' products, designed to 
 - **Localization**:
   - Make all user-facing copy translatable by wrapping text in `__('...')` or `@lang('...')`.
   - Keep both English and Arabic translations synchronized inside `lang/en/` and `lang/ar/` folders.
+## Recent Fixes (2026-06-04)
+
+### Bug 1 — Admin Products Page: `LazyLoadingViolationException` on `category` & `brand`
+- **File**: `app/Http/Controllers/AdminController.php` — `products()` method
+- **Root Cause**: The query fetched products without eager loading `category` and `brand`, but the view `admin/products.blade.php` (lines 75–76) accessed `$product->category?->name` and `$product->brand?->name`, triggering lazy loading which is prohibited in dev via `Model::preventLazyLoading(!app()->isProduction())` in `AppServiceProvider`.
+- **Fix**: Changed `Product::orderBy(...)->paginate(10)` to `Product::with(['category', 'brand'])->orderBy(...)->paginate(10)`.
+- **Impact**: Eliminates the crash in dev AND the silent N+1 query performance hit in production.
+
+### Bug 2 — Shop Page (Storefront): `LazyLoadingViolationException` on `products` relation
+- **File 1**: `app/Services/SearchService.php` — `getSearchFilters()` method
+- **File 2**: `resources/views/shop.blade.php` — category and brand sidebar filter (lines 749, 852)
+- **Root Cause**: The shop sidebar displayed product counts per category and brand using `$category->products->count()` and `$brand->products->count()`. The `categories` and `brands` collections passed from `SearchService::getSearchFilters()` were queried without `withCount('products')`, causing the view to trigger lazy loading on the `products` relation.
+- **Fix**:
+  1. In `SearchService::getSearchFilters()` — added `->withCount('products')` to both Category and Brand queries so the count is computed by the DB in a single aggregated query.
+  2. In `shop.blade.php` — replaced `$category->products->count()` with `$category->products_count` and `$brand->products->count()` with `$brand->products_count` to use the eagerly computed attribute instead of triggering a relation load.
+- **Impact**: Eliminates crash in dev, removes N+1 queries in production, and improves page load performance for the shop page.
+
+### Bug 3 — Wishlist Page: `Undefined variable $wishlistItems`
+- **File**: `resources/views/wishlist.blade.php` and `resources/views/user/wishlist.blade.php`
+- **Root Cause**: The view expected a variable named `$wishlistItems`, but `WishlistController::index()` passed `$items` (from `Cart::instance('wishlist')->content()`). There is also a separate user wishlist route (`/user/wishlist`) handled by `UserController::wishlist()` which correctly passes `$wishlistItems` from the DB model.
+- **Status**: Documented. The `WishlistController::index()` uses the Cart session (variable name `$items`), while `UserController::wishlist()` uses the DB Wishlist model (variable name `$wishlistItems`). Views must match the variable name of their respective controller.
+
+### General Rules Reinforced
+- Always use `with(['relation'])` or `withCount('relation')` when a view renders relational data inside a loop.
+- Never call `$model->relation->count()` in Blade templates unless the relation was eagerly loaded — use `$model->relation_count` from `withCount()` instead.
+- Run `php artisan cache:clear` after changes to `SearchService` since filter results are cached for 1800 seconds.
+
+## Session Fixes (2026-06-03)
+
+### Fix 1 — `AuthController::logout()`: IDE Static Analysis Warnings
+
+- **File**: `app/Http/Controllers/Api/AuthController.php` — `logout()` method
+- **Root Cause 1**: `auth()->user()` returns `Authenticatable|null`. The `Authenticatable` interface does not declare `tokens()` (provided by Sanctum's `HasApiTokens` trait on `User`), causing IDEs to flag the call as undefined. Calling it on a potential `null` also risks a runtime `Call to a member function tokens() on null`.
+- **Root Cause 2**: `auth()->id()` was flagged because IDEs resolve `auth()` to `Illuminate\Contracts\Auth\Factory`, which has no `id()` method.
+- **Fix**:
+  1. Moved user retrieval to the top of the method using `$request->user()` (the established pattern across the project) with a `/** @var \App\Models\User|null $user */` docblock.
+  2. Replaced `auth()->id()` in the Audit Log call with `$user?->id` (null-safe operator).
+  3. Wrapped `$user->tokens()->delete()` in `if ($user)` to guard against null.
+- **Pattern to follow**: Always use `$request->user()` in controller methods to retrieve the authenticated user. Always guard with `if ($user)` or `?->` before chaining methods on potentially null results.
+
+### Fix 2 — `.gitignore`: IDE Helper Files Not Excluded
+
+- **File**: `.gitignore`
+- **Root Cause**: The `barryvdh/laravel-ide-helper` package generates `_ide_helper.php`, `_ide_helper_models.php`, and `.phpstorm.meta.php` locally. These were not listed in `.gitignore`, causing them to appear as untracked files polluting the working tree.
+- **Fix**: Added the three IDE helper file patterns to the `# IDE Files` section of `.gitignore`.
+- **Rule**: IDE-generated helper files must never be committed — they are environment-specific and regenerated on demand via `php artisan ide-helper:generate`.
+
