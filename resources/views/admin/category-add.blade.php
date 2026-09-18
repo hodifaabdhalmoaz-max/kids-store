@@ -30,6 +30,17 @@
         </div>
         <!-- new-category -->
         <div class="wg-box">
+            @if ($errors->any())
+                <div class="alert alert-danger" style="margin-bottom: 20px;">
+                    <strong>تعذر حفظ الفئة.</strong>
+                    <ul style="margin: 8px 0 0; padding-inline-start: 20px;">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <form class="form-new-product form-style-1" action="{{ route('admin.category.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <fieldset class="name">
@@ -38,12 +49,26 @@
                 </fieldset>
                 @error('name') <span class="alert alert-danger text-center">{{$message}}</span> @enderror
                 <fieldset class="name">
-                    <div class="body-title">رابط الفئة <span class="tf-color-1">*</span></div>
-                    <input class="flex-grow" type="text" placeholder="رابط الفئة" name="slug" tabindex="0" value="{{old('slug')}}" aria-required="true" required="">
+                    <div class="body-title">رابط الفئة</div>
+                    <input class="flex-grow" type="text" placeholder="يتم توليده تلقائيا من الاسم عند تركه فارغا" name="slug" tabindex="0" value="{{old('slug')}}">
                 </fieldset>
                 @error('slug') <span class="alert alert-danger text-center">{{$message}}</span> @enderror
+                <fieldset class="name">
+                    <div class="body-title">الفئة الأب</div>
+                    <div class="select flex-grow">
+                        <select name="parent_id">
+                            <option value="">بدون فئة أب</option>
+                            @foreach($parentCategories as $parentCategory)
+                                <option value="{{ $parentCategory->id }}" {{ old('parent_id') == $parentCategory->id ? 'selected' : '' }}>
+                                    {{ $parentCategory->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </fieldset>
+                @error('parent_id') <span class="alert alert-danger text-center">{{$message}}</span> @enderror
                 <fieldset>
-                    <div class="body-title">رفع الصور <span class="tf-color-1">*</span>
+                    <div class="body-title">رفع الصورة
                     </div>
                     <div class="upload-image flex-grow">
                         <div class="item" id="imgpreview" style="display:none">
@@ -62,6 +87,8 @@
                     </div>
                 </fieldset>
                 @error('image') <span class="alert alert-danger text-center">{{$message}}</span> @enderror
+
+                @include('admin.partials.storefront-category-fields')
 
                 <div class="bot">
                     <div></div>
@@ -95,9 +122,9 @@
         function StringToSlug(Text)
         {
             return Text.toLowerCase()
-            .replace(/[^\w ]+/g,"")
-            .replace(/ +/g,"-");
+            .replace(/[^\p{L}\p{N}\s_-]+/gu, "")
+            .replace(/[\s_]+/g, "-")
+            .replace(/^-+|-+$/g, "");
         }
     </script>
 @endpush
-

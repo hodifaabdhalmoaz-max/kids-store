@@ -27,6 +27,8 @@ class Product extends Model
         'brand_id',
         'is_offer',
         'details',
+        'storefront_sections',
+        'storefront_order',
     ];
 
     protected function casts(): array
@@ -38,18 +40,27 @@ class Product extends Model
             'quantity' => 'integer',
             'views' => 'integer',
             'is_offer' => 'boolean',
+            'images' => 'array',
             'details' => 'array',
+            'storefront_sections' => 'array',
+            'storefront_order' => 'integer',
         ];
     }
 
     public function category()
     {
-        return $this->belongsTo(Category::class,'category_id');
+        return $this->belongsTo(Category::class, 'category_id');
+    }
+
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class, 'category_product')
+            ->withTimestamps();
     }
 
     public function brand()
     {
-        return $this->belongsTo(Brand::class,'brand_id');
+        return $this->belongsTo(Brand::class, 'brand_id');
     }
 
     public function colors()
@@ -57,6 +68,11 @@ class Product extends Model
         return $this->belongsToMany(Color::class, 'product_colors')
             ->withPivot('quantity', 'price_adjustment', 'image')
             ->withTimestamps();
+    }
+
+    public function colorImages()
+    {
+        return $this->hasMany(ProductColorImage::class)->orderBy('sort_order');
     }
 
     public function sizes()
@@ -82,6 +98,47 @@ class Product extends Model
         return $this->hasMany(Review::class)->where('status', true);
     }
 
+    public function relatedProducts()
+    {
+        return $this->belongsToMany(
+            Product::class,
+            'related_products',
+            'product_id',
+            'related_product_id'
+        )->withTimestamps();
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('stock_status', 'instock');
+    }
+
+    public function scopeFeatured($query)
+    {
+        return $query->where('featured', true);
+    }
+
+    public function getCurrentPriceAttribute()
+    {
+        return $this->is_on_sale ? $this->sale_price : $this->regular_price;
+    }
+
+    public function getIsOnSaleAttribute(): bool
+    {
+        return $this->sale_price !== null
+            && (float) $this->sale_price > 0
+            && (float) $this->sale_price < (float) $this->regular_price;
+    }
+
+    public function getDiscountPercentageAttribute(): int
+    {
+        if (! $this->is_on_sale || (float) $this->regular_price <= 0) {
+            return 0;
+        }
+
+        return (int) round((((float) $this->regular_price - (float) $this->sale_price) / (float) $this->regular_price) * 100);
+    }
+
     /**
      * Get average rating from active reviews.
      */
@@ -90,6 +147,7 @@ class Product extends Model
         if ($this->relationLoaded('reviews')) {
             return $this->reviews->avg('rating') ?? 0;
         }
+
         return $this->activeReviews()->avg('rating') ?? 0;
     }
 
@@ -101,6 +159,7 @@ class Product extends Model
         if ($this->relationLoaded('reviews')) {
             return $this->reviews->count();
         }
+
         return $this->activeReviews()->count();
     }
 
@@ -109,7 +168,6 @@ class Product extends Model
      */
     public function getCardTitleAttribute()
     {
-        return !empty($this->short_description) ? $this->short_description : $this->name;
+        return ! empty($this->short_description) ? $this->short_description : $this->name;
     }
 }
-

@@ -68,16 +68,16 @@
               </thead>
               <tbody>
                 @foreach($order->orderItems as $item)
-
+                  <tr>
+                    <td>
+                      {{ $item->product->name }} x {{$item->quantity}}
+                      <x-order-item-options :options="$item->options" compact />
+                    </td>
+                    <td>
+                      {{ format_price($item->price * $item->quantity) }}
+                    </td>
+                  </tr>
                 @endforeach
-                <tr>
-                  <td>
-                    {{ $item->product->name }} x {{$item->quantity}}
-                  </td>
-                  <td>
-                    {{ format_price($item->price) }}
-                  </td>
-                </tr>
               </tbody>
             </table>
             <table class="checkout-totals">

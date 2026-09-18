@@ -11,10 +11,6 @@ class ImageService
 {
     /**
      * Generate and save brand thumbnail image
-     *
-     * @param UploadedFile $image
-     * @param string|null $imageName
-     * @return string
      */
     public function generateBrandThumbnail(UploadedFile $image, ?string $imageName = null): string
     {
@@ -25,20 +21,16 @@ class ImageService
         $this->ensureDirectoryExists($destinationPath);
 
         $img = Image::read($image->path());
-        $img->cover(124, 124, "top");
+        $img->cover(124, 124, 'top');
         $img->resize(124, 124, function ($constraint) {
             $constraint->aspectRatio();
-        })->save($destinationPath . '/' . $imageName);
+        })->save($destinationPath.'/'.$imageName);
 
         return $imageName;
     }
 
     /**
      * Generate and save category thumbnail image
-     *
-     * @param UploadedFile $image
-     * @param string|null $imageName
-     * @return string
      */
     public function generateCategoryThumbnail(UploadedFile $image, ?string $imageName = null): string
     {
@@ -49,20 +41,16 @@ class ImageService
         $this->ensureDirectoryExists($destinationPath);
 
         $img = Image::read($image->path());
-        $img->cover(124, 124, "top");
+        $img->cover(124, 124, 'top');
         $img->resize(124, 124, function ($constraint) {
             $constraint->aspectRatio();
-        })->save($destinationPath . '/' . $imageName);
+        })->save($destinationPath.'/'.$imageName);
 
         return $imageName;
     }
 
     /**
      * Generate and save product images (main and thumbnail)
-     *
-     * @param UploadedFile $image
-     * @param string|null $imageName
-     * @return string
      */
     public function generateProductImages(UploadedFile $image, ?string $imageName = null): string
     {
@@ -77,25 +65,37 @@ class ImageService
         $img = Image::read($image->path());
 
         // Save main product image
-        $img->cover(540, 689, "top");
+        $img->cover(540, 689, 'top');
         $img->resize(540, 689, function ($constraint) {
             $constraint->aspectRatio();
-        })->save($destinationPath . '/' . $imageName);
+        })->save($destinationPath.'/'.$imageName);
 
         // Save thumbnail
         $img->resize(104, 104, function ($constraint) {
             $constraint->aspectRatio();
-        })->save($thumbnailPath . '/' . $imageName);
+        })->save($thumbnailPath.'/'.$imageName);
 
         return $imageName;
     }
 
+    public function generateProductColorImage(UploadedFile $image, ?string $imageName = null): string
+    {
+        $imageName = $imageName ?: $this->generateImageName($image);
+        $destinationPath = public_path('uploads/products/colors');
+
+        $this->ensureDirectoryExists($destinationPath);
+
+        $img = Image::read($image->path());
+        $img->cover(540, 689, 'top');
+        $img->resize(540, 689, function ($constraint) {
+            $constraint->aspectRatio();
+        })->save($destinationPath.'/'.$imageName);
+
+        return 'uploads/products/colors/'.$imageName;
+    }
+
     /**
      * Process multiple product gallery images
-     *
-     * @param array $images
-     * @param string $baseTimestamp
-     * @return string
      */
     public function processProductGallery(array $images, ?string $baseTimestamp = null): string
     {
@@ -105,14 +105,14 @@ class ImageService
         $counter = 1;
 
         foreach ($images as $file) {
-            if (!($file instanceof UploadedFile)) {
+            if (! ($file instanceof UploadedFile)) {
                 continue;
             }
 
             $extension = $file->getClientOriginalExtension();
 
             if (in_array(strtolower($extension), $allowedExtensions)) {
-                $fileName = $baseTimestamp . "-" . $counter . "." . $extension;
+                $fileName = $baseTimestamp.'-'.$counter.'.'.$extension;
                 $this->generateProductImages($file, $fileName);
                 $galleryArray[] = $fileName;
                 $counter++;
@@ -124,13 +124,10 @@ class ImageService
 
     /**
      * Delete brand image
-     *
-     * @param string $imageName
-     * @return bool
      */
     public function deleteBrandImage(string $imageName): bool
     {
-        $imagePath = public_path('uploads/brands/' . $imageName);
+        $imagePath = public_path('uploads/brands/'.$imageName);
 
         if (File::exists($imagePath)) {
             return File::delete($imagePath);
@@ -141,13 +138,10 @@ class ImageService
 
     /**
      * Delete category image
-     *
-     * @param string $imageName
-     * @return bool
      */
     public function deleteCategoryImage(string $imageName): bool
     {
-        $imagePath = public_path('uploads/categories/' . $imageName);
+        $imagePath = public_path('uploads/categories/'.$imageName);
 
         if (File::exists($imagePath)) {
             return File::delete($imagePath);
@@ -158,14 +152,11 @@ class ImageService
 
     /**
      * Delete product images (main and thumbnail)
-     *
-     * @param string $imageName
-     * @return bool
      */
     public function deleteProductImage(string $imageName): bool
     {
-        $mainImagePath = public_path('uploads/products/' . $imageName);
-        $thumbnailPath = public_path('uploads/products/thumbnails/' . $imageName);
+        $mainImagePath = public_path('uploads/products/'.$imageName);
+        $thumbnailPath = public_path('uploads/products/thumbnails/'.$imageName);
 
         $deleted = true;
 
@@ -182,9 +173,6 @@ class ImageService
 
     /**
      * Delete multiple product gallery images
-     *
-     * @param string $galleryImages
-     * @return bool
      */
     public function deleteProductGallery(string $galleryImages): bool
     {
@@ -196,7 +184,7 @@ class ImageService
         $allDeleted = true;
 
         foreach ($images as $imageName) {
-            if (!empty(trim($imageName))) {
+            if (! empty(trim($imageName))) {
                 $allDeleted = $allDeleted && $this->deleteProductImage(trim($imageName));
             }
         }
@@ -204,43 +192,43 @@ class ImageService
         return $allDeleted;
     }
 
+    public function deleteProductColorImage(string $imagePath): bool
+    {
+        $fullPath = public_path($imagePath);
+
+        if (File::exists($fullPath)) {
+            return File::delete($fullPath);
+        }
+
+        return true;
+    }
+
     /**
      * Generate unique image name with timestamp
-     *
-     * @param UploadedFile $image
-     * @return string
      */
     protected function generateImageName(UploadedFile $image): string
     {
-        return Carbon::now()->timestamp . '.' . $image->extension();
+        return Carbon::now()->timestamp.'.'.$image->extension();
     }
 
     /**
      * Ensure directory exists, create if not
-     *
-     * @param string $path
-     * @return void
      */
     protected function ensureDirectoryExists(string $path): void
     {
-        if (!File::exists($path)) {
+        if (! File::exists($path)) {
             File::makeDirectory($path, 0755, true);
         }
     }
 
     /**
      * Validate image file
-     *
-     * @param UploadedFile $image
-     * @param array $allowedExtensions
-     * @param int $maxSize
-     * @return bool
      */
     public function validateImage(UploadedFile $image, array $allowedExtensions = ['png', 'jpg', 'jpeg'], int $maxSize = 2048): bool
     {
         // Check file extension
         $extension = strtolower($image->getClientOriginalExtension());
-        if (!in_array($extension, $allowedExtensions)) {
+        if (! in_array($extension, $allowedExtensions)) {
             return false;
         }
 
@@ -254,9 +242,6 @@ class ImageService
 
     /**
      * Get image dimensions
-     *
-     * @param UploadedFile $image
-     * @return array
      */
     public function getImageDimensions(UploadedFile $image): array
     {
@@ -270,18 +255,11 @@ class ImageService
 
     /**
      * Resize image to specific dimensions
-     *
-     * @param UploadedFile $image
-     * @param int $width
-     * @param int $height
-     * @param string $savePath
-     * @param bool $maintainAspectRatio
-     * @return string
      */
     public function resizeImage(UploadedFile $image, int $width, int $height, string $savePath, bool $maintainAspectRatio = true): string
     {
         $imageName = $this->generateImageName($image);
-        $fullPath = $savePath . '/' . $imageName;
+        $fullPath = $savePath.'/'.$imageName;
 
         // Ensure directory exists
         $this->ensureDirectoryExists($savePath);
@@ -303,17 +281,11 @@ class ImageService
 
     /**
      * Create image with watermark
-     *
-     * @param UploadedFile $image
-     * @param string $watermarkPath
-     * @param string $savePath
-     * @param string $position
-     * @return string
      */
     public function addWatermark(UploadedFile $image, string $watermarkPath, string $savePath, string $position = 'bottom-right'): string
     {
         $imageName = $this->generateImageName($image);
-        $fullPath = $savePath . '/' . $imageName;
+        $fullPath = $savePath.'/'.$imageName;
 
         // Ensure directory exists
         $this->ensureDirectoryExists($savePath);
@@ -332,10 +304,6 @@ class ImageService
 
     /**
      * Generate thumbnails for an image
-     *
-     * @param string $imagePath
-     * @param array $sizes
-     * @return array
      */
     public function generateThumbnails(string $imagePath, array $sizes): array
     {
@@ -345,16 +313,16 @@ class ImageService
         $extension = pathinfo($imagePath, PATHINFO_EXTENSION);
 
         foreach ($sizes as $sizeName => $dimensions) {
-            $thumbnailName = $filename . '_' . $sizeName . '.' . $extension;
-            $thumbnailPath = $basePath . '/thumbnails/' . $thumbnailName;
+            $thumbnailName = $filename.'_'.$sizeName.'.'.$extension;
+            $thumbnailPath = $basePath.'/thumbnails/'.$thumbnailName;
 
             // Ensure thumbnail directory exists
-            $this->ensureDirectoryExists($basePath . '/thumbnails');
+            $this->ensureDirectoryExists($basePath.'/thumbnails');
 
-            $img = Image::read(storage_path('app/public/' . $imagePath));
+            $img = Image::read(storage_path('app/public/'.$imagePath));
             $img->resize($dimensions[0], $dimensions[1], function ($constraint) {
                 $constraint->aspectRatio();
-            })->save(storage_path('app/public/' . $thumbnailPath));
+            })->save(storage_path('app/public/'.$thumbnailPath));
 
             $thumbnails[$sizeName] = $thumbnailPath;
         }
@@ -364,16 +332,12 @@ class ImageService
 
     /**
      * Optimize image file size
-     *
-     * @param string $imagePath
-     * @param int $quality
-     * @return string
      */
     public function optimizeImage(string $imagePath, int $quality = 85): string
     {
-        $fullPath = storage_path('app/public/' . $imagePath);
+        $fullPath = storage_path('app/public/'.$imagePath);
 
-        if (!File::exists($fullPath)) {
+        if (! File::exists($fullPath)) {
             throw new \Exception("Image file not found: {$imagePath}");
         }
 
@@ -398,17 +362,5 @@ class ImageService
         $img->save($fullPath);
 
         return $imagePath;
-    }
-
-    /**
-     * Clear opcache if available
-     *
-     * @return void
-     */
-    public function clearOpcache(): void
-    {
-        if (function_exists('opcache_reset')) {
-            opcache_reset();
-        }
     }
 }

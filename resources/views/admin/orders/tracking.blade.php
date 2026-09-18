@@ -57,7 +57,7 @@
                                     <option value="processing">قيد المعالجة</option>
                                     <option value="shipped">تم الشحن</option>
                                     <option value="delivered">تم التسليم</option>
-                                    <option value="cancelled">ملغي</option>
+                                    <option value="canceled">ملغي</option>
                                 </select>
                             </fieldset>
                         </div>
@@ -108,7 +108,7 @@
                                         <span class="badge bg-primary">تم الشحن</span>
                                     @elseif($track->status == 'delivered')
                                         <span class="badge bg-success">تم التسليم</span>
-                                    @elseif($track->status == 'cancelled')
+                                    @elseif($track->status == 'canceled')
                                         <span class="badge bg-danger">ملغي</span>
                                     @endif
                                 </td>

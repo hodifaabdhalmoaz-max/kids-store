@@ -4,9 +4,9 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class PerformanceMonitoring
@@ -20,9 +20,13 @@ class PerformanceMonitoring
     {
         $startTime = microtime(true);
         $startMemory = memory_get_usage(true);
+        $queryCount = 0;
+        $totalQueryTime = 0.0;
 
-        // Enable query logging for this request
-        DB::enableQueryLog();
+        DB::listen(function ($query) use (&$queryCount, &$totalQueryTime) {
+            $queryCount++;
+            $totalQueryTime += $query->time;
+        });
 
         $response = $next($request);
 
@@ -31,15 +35,11 @@ class PerformanceMonitoring
 
         $executionTime = ($endTime - $startTime) * 1000; // Convert to milliseconds
         $memoryUsage = $endMemory - $startMemory;
-        $queries = DB::getQueryLog();
-        $queryCount = count($queries);
-        $totalQueryTime = array_sum(array_column($queries, 'time'));
-
         // Add performance headers
-        $response->headers->set('X-Response-Time', round($executionTime, 2) . 'ms');
+        $response->headers->set('X-Response-Time', round($executionTime, 2).'ms');
         $response->headers->set('X-Memory-Usage', $this->formatBytes($memoryUsage));
         $response->headers->set('X-Query-Count', $queryCount);
-        $response->headers->set('X-Query-Time', round($totalQueryTime, 2) . 'ms');
+        $response->headers->set('X-Query-Time', round($totalQueryTime, 2).'ms');
 
         // Log slow requests
         if ($executionTime > 1000) { // Slower than 1 second
@@ -93,6 +93,6 @@ class PerformanceMonitoring
 
         $bytes /= pow(1024, $pow);
 
-        return round($bytes, 2) . ' ' . $units[$pow];
+        return round($bytes, 2).' '.$units[$pow];
     }
 }

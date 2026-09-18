@@ -46,13 +46,15 @@ Route::prefix('v1')->middleware(['throttle:api'])->group(function () {
     Route::get('/brands/{slug}', [BrandController::class, 'show']);
     Route::get('/brands/{slug}/products', [BrandController::class, 'products']);
 
-    // Cart
-    Route::get('/cart', [CartController::class, 'index']);
-    Route::post('/cart/add', [CartController::class, 'add']);
-    Route::put('/cart/{rowId}', [CartController::class, 'update']);
-    Route::delete('/cart/{rowId}', [CartController::class, 'remove']);
-    Route::delete('/cart', [CartController::class, 'clear']);
-    Route::post('/cart/coupon', [CartController::class, 'applyCoupon']);
+    // Cart — requires authentication to prevent unauthorized cart manipulation
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/cart', [CartController::class, 'index']);
+        Route::post('/cart/add', [CartController::class, 'add']);
+        Route::put('/cart/{rowId}', [CartController::class, 'update']);
+        Route::delete('/cart/{rowId}', [CartController::class, 'remove']);
+        Route::delete('/cart', [CartController::class, 'clear']);
+        Route::post('/cart/coupon', [CartController::class, 'applyCoupon']);
+    });
 });
 
 // Protected routes - Currently disabled, will be implemented when needed

@@ -216,6 +216,24 @@
                                         <div class="text">الشرائح المتحركة</div>
                                     </a>
                                 </li>
+                                <li class="menu-item has-children">
+                                    <a href="javascript:void(0);" class="menu-item-button {{ request()->routeIs('admin.marketing.*') ? 'active' : '' }}">
+                                        <div class="icon"><i class="icon-tag"></i></div>
+                                        <div class="text">التسويق والإعلانات</div>
+                                    </a>
+                                    <ul class="sub-menu">
+                                        <li class="sub-menu-item">
+                                            <a href="{{ route('admin.marketing.campaigns.index') }}" class="{{ request()->routeIs('admin.marketing.campaigns.*') ? 'active' : '' }}">
+                                                <div class="text">الحملات الإعلانية</div>
+                                            </a>
+                                        </li>
+                                        <li class="sub-menu-item">
+                                            <a href="{{ route('admin.marketing.placements.index') }}" class="{{ request()->routeIs('admin.marketing.placements.*') ? 'active' : '' }}">
+                                                <div class="text">أماكن الظهور</div>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
                                 <li class="menu-item">
                                     <a href="{{route('admin.coupons') }}" class="">
                                         <div class="icon"><i class="icon-grid"></i></div>

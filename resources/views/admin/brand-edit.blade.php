@@ -40,8 +40,8 @@
                 </fieldset>
                 @error('name') <span class="alert alert-danger text-center">{{$message}}</span> @enderror
                 <fieldset class="name">
-                    <div class="body-title">رابط العلامة التجارية <span class="tf-color-1">*</span></div>
-                    <input class="flex-grow" type="text" placeholder="رابط العلامة التجارية" name="slug" tabindex="0" value="{{$brand->slug}}" aria-required="true" required="">
+                    <div class="body-title">رابط العلامة التجارية</div>
+                    <input class="flex-grow" type="text" placeholder="رابط العلامة التجارية" name="slug" tabindex="0" value="{{$brand->slug}}" aria-required="false">
                 </fieldset>
                 @error('slug') <span class="alert alert-danger text-center">{{$message}}</span> @enderror
                 <fieldset>
@@ -90,8 +90,17 @@
                 }
             });
 
-            $("input[name='name']").on("change", function(){
-                $("input[name='slug']").val(StringToSlug($(this).val()));
+            const slugInput = $("input[name='slug']");
+            let slugTouched = false;
+
+            slugInput.on("input", function(){
+                slugTouched = true;
+            });
+
+            $("input[name='name']").on("input change", function(){
+                if (!slugTouched || !slugInput.val()) {
+                    slugInput.val(StringToSlug($(this).val()));
+                }
             });
 
         });
@@ -99,9 +108,9 @@
         function StringToSlug(Text)
         {
             return Text.toLowerCase()
-            .replace(/[^\w ]+/g,"")
-            .replace(/ +/g,"-");
+            .replace(/[^\p{L}\p{N}\s_-]+/gu, "")
+            .replace(/[\s_]+/g, "-")
+            .replace(/^-+|-+$/g, "");
         }
     </script>
 @endpush
-

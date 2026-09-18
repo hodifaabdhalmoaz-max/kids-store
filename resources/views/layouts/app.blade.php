@@ -419,6 +419,7 @@
       }
     }
   </style>
+  @if(!request()->routeIs('home.index'))
   <div class="header-mobile header_sticky">
     <div class="container d-flex align-items-center h-100">
       <a class="mobile-nav-activator d-block position-relative" href="#">
@@ -523,6 +524,7 @@
   </div>
   </nav>
   </div>
+  @endif
 
 
   <header id="header" class="header header-fullwidth header-transparent-bg">
@@ -679,16 +681,6 @@
         <a href="{{route('shop.offers')}}" class="footer-mobile__link d-flex flex-column align-items-center py-2 {{ Route::is('shop.offers') ? 'active' : '' }}">
           <i class="bi bi-tags-fill d-flex justify-content-center align-items-center mb-1" style="font-size: 18px; width: 18px; height: 18px; line-height: 1;"></i>
           <span style="font-size: 10px;">العروض</span>
-        </a>
-      </div>
-
-      <div class="col">
-        <a href="{{route('shop.index')}}" class="footer-mobile__link d-flex flex-column align-items-center py-2 {{ Route::is('shop.index') ? 'active' : '' }}">
-          <svg class="d-block mb-1" width="18" height="18" viewBox="0 0 18 18" fill="none"
-            xmlns="http://www.w3.org/2000/svg">
-            <use href="#icon_hanger" />
-          </svg>
-          <span style="font-size: 10px;">المتجر</span>
         </a>
       </div>
 

@@ -11,28 +11,65 @@
 }
 
 /* Common Hero Sections */
-.info-hero {
-    background: linear-gradient(135deg, var(--page-brand-start) 0%, var(--page-brand-end) 100%);
-    color: white;
-    padding: 140px 0 80px;
+.info-hero,
+.contact-hero,
+.about-hero {
     position: relative;
     overflow: hidden;
+    min-height: 214px;
+    padding: 70px 0 78px !important;
+    background:
+        radial-gradient(circle at 18% 22%, rgba(255, 255, 255, 0.28) 0 5px, transparent 6px),
+        radial-gradient(circle at 76% 18%, rgba(255, 255, 255, 0.18) 0 4px, transparent 5px),
+        linear-gradient(165deg, #64c9cf 0%, #6fd7cf 42%, #ffb48d 100%) !important;
+    color: white;
+    border-bottom-right-radius: 38px;
+    border-bottom-left-radius: 38px;
+    box-shadow: 0 12px 28px rgba(100, 201, 207, 0.24);
 }
 
-.info-hero::before {
+.info-hero::before,
+.contact-hero::before,
+.about-hero::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="1" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="1" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1.4" fill="white" opacity="0.12"/><circle cx="75" cy="75" r="1.2" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="1" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="1" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>') !important;
     pointer-events: none;
     opacity: 0.4;
 }
 
+.info-hero h1,
+.contact-hero h1,
+.about-hero h1 {
+    max-width: 100%;
+    margin-bottom: 18px !important;
+    overflow-wrap: anywhere;
+    color: #fff;
+    text-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
+    white-space: normal;
+    font-size: clamp(34px, 10vw, 52px) !important;
+    line-height: 1.25;
+    letter-spacing: 0;
+}
+
+.info-hero .lead,
+.contact-hero .lead,
+.about-hero .lead {
+    max-width: 620px;
+    margin-inline: auto;
+    color: rgba(255, 255, 255, 0.94);
+    font-size: clamp(15px, 4vw, 20px);
+    line-height: 1.8;
+}
+
 /* Common Breadcrumb Styles */
-.breadcrumb-modern {
+.breadcrumb-modern,
+.breadcrumb-contact,
+.breadcrumb-about {
     background: rgba(255,255,255,0.92);
     backdrop-filter: blur(15px);
     border-radius: 50px;
@@ -47,8 +84,10 @@
     z-index: 2;
 }
 
-.breadcrumb-modern a {
-    color: var(--page-brand-start) !important;
+.breadcrumb-modern a,
+.breadcrumb-contact a,
+.breadcrumb-about a {
+    color: #c99a2f !important;
     text-decoration: none;
     font-weight: 700;
     transition: all 0.3s ease;
@@ -57,9 +96,21 @@
     gap: 5px;
 }
 
-.breadcrumb-modern a:hover {
-    color: var(--page-brand-end) !important;
+.breadcrumb-modern a:hover,
+.breadcrumb-contact a:hover,
+.breadcrumb-about a:hover {
+    color: #b38322 !important;
     transform: translateY(-1px);
+}
+
+.breadcrumb-modern span,
+.breadcrumb-contact span,
+.breadcrumb-about span {
+    max-width: min(50vw, 260px);
+    overflow-wrap: anywhere;
+    color: #1f2937 !important;
+    text-align: start;
+    white-space: normal;
 }
 
 /* Common Card Styles */
@@ -213,7 +264,23 @@
 }
 
 @media (max-width: 768px) {
-    .info-hero { padding: 120px 0 60px; }
+    .info-hero,
+    .contact-hero,
+    .about-hero {
+        min-height: 220px;
+        padding: 58px 14px 66px !important;
+        border-bottom-right-radius: 34px;
+        border-bottom-left-radius: 34px;
+    }
+
+    .breadcrumb-modern,
+    .breadcrumb-contact,
+    .breadcrumb-about {
+        max-width: calc(100vw - 48px);
+        margin-bottom: 28px;
+        padding: 10px 18px;
+    }
+
     .info-card { padding: 30px 20px; }
     .info-icon { width: 55px; height: 55px; }
     .info-section-title { font-size: 1.25rem; }

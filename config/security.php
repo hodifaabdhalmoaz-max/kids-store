@@ -25,13 +25,6 @@ return [
         'backup_codes_count' => 8,
     ],
 
-    '2fa' => [
-        'enabled' => env('TWO_FACTOR_ENABLED', false),
-        'required_for_admin' => true,
-        'backup_codes_count' => 8,
-        'window' => 1,
-    ],
-
     /*
     |--------------------------------------------------------------------------
     | Login Attempt Protection

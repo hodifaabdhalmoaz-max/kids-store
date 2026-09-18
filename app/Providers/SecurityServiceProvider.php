@@ -162,14 +162,9 @@ class SecurityServiceProvider extends ServiceProvider
      */
     protected function registerViewComposers(): void
     {
-        // إضافة متغيرات أمنية لجميع الـ Views
+        // إضافة متغيرات أمنية للـ Views (فقط ما لا يمكن الوصول إليه مباشرة)
         View::composer('*', function ($view) {
-            $view->with([
-                'isSecureConnection' => request()->isSecure(),
-                'userAgent' => request()->userAgent(),
-                'clientIp' => request()->ip(),
-                'csrfToken' => csrf_token(),
-            ]);
+            $view->with('isSecureConnection', request()->isSecure());
         });
 
         // إضافة معلومات المصادقة الثنائية للوحة التحكم

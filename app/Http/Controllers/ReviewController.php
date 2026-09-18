@@ -16,35 +16,29 @@ class ReviewController extends Controller
     {
         $request->validate([
             'rating' => 'required|integer|min:1|max:5',
+            'title' => 'required|string|max:255',
             'comment' => 'required|string|min:5|max:1000',
-        ], [
-            'rating.required' => 'يرجى اختيار تقييم',
-            'rating.min' => 'يرجى اختيار تقييم من 1 إلى 5',
-            'rating.max' => 'يرجى اختيار تقييم من 1 إلى 5',
-            'comment.required' => 'يرجى كتابة تقييمك',
-            'comment.min' => 'يجب أن يكون التقييم 5 أحرف على الأقل',
-            'comment.max' => 'يجب ألا يتجاوز التقييم 1000 حرف',
         ]);
 
-        $product = Product::findOrFail($product_id);
+        Product::findOrFail($product_id);
 
-        // Check if user already reviewed this product
         $existingReview = Review::where('product_id', $product_id)
             ->where('user_id', Auth::id())
             ->first();
 
         if ($existingReview) {
-            return redirect()->back()->with('error', 'لقد قمت بتقييم هذا المنتج مسبقاً.');
+            return redirect()->back()->with('error', __('messages.review_already_added'));
         }
 
         Review::create([
             'product_id' => $product_id,
             'user_id' => Auth::id(),
-            'rating' => $request->rating,
-            'comment' => $request->comment,
-            'status' => true, // Auto-approve for now
+            'rating' => $request->integer('rating'),
+            'title' => $request->string('title')->toString(),
+            'comment' => $request->string('comment')->toString(),
+            'status' => true,
         ]);
 
-        return redirect()->back()->with('success', 'تم إضافة تقييمك بنجاح! شكراً لك.');
+        return redirect()->back()->with('success', __('messages.review_added'));
     }
 }

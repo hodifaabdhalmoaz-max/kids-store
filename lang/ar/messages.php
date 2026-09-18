@@ -402,4 +402,28 @@ return [
 
     'terms_changes_title' => 'التغييرات على الشروط',
     'terms_changes_content' => 'نحتفظ بالحق في تعديل هذه الشروط في أي وقت دون إشعار مسبق.',
+
+    // Dunya Alatfaal Header & Hero Banner - دنيا الأطفال
+    'dunya_alatfaal' => 'دنيا الأطفال',
+    'support_messages' => 'رسائل الدعم والاتصال',
+    'offers_notifications' => 'التنبيهات والعروض الترويجية',
+    'kids_wishlist' => 'قائمة الأمنيات والمفضلة للطفل',
+    'search_kids_placeholder' => 'ابحث عن ملابس، ألعاب ومستلزمات الأطفال...',
+    'all_categories' => 'الكل',
+    'baby_clothes' => 'ملابس الرضع',
+    'toys_and_education' => 'ألعاب وتعليم',
+    'mother_supplies' => 'مستلزمات الأم',
+    'gifts_and_bundles' => 'هدايا ومجموعات',
+    'campaign_tag' => '#مغامرات_الطفولة',
+    'hero_title_kids' => 'مرح وأناقة في عالم طفلك',
+    'hero_desc_kids' => 'تخفيضات موسمية هائلة تبدأ من 50% وحتى 80% على جميع الأزياء والألعاب المميزة',
+    'shop_now_kids' => 'تسوق الآن',
+    'free_shipping_banner' => 'الشحن المجاني فوق 80,000 ر.ي',
+    'daily_flash_deals' => 'عروض فلاش اليومية',
+    'yemeni_rial_symbol' => 'ر.ي',
+    'visual_search' => 'البحث البصري عبر الكاميرا',
+    'requested_quantity_unavailable' => 'الكمية المطلوبة غير متوفرة حالياً.',
+    'order_created_successfully' => 'تم إنشاء طلبك بنجاح.',
+    'order_creation_failed' => 'تعذر إنشاء الطلب الآن. يرجى مراجعة السلة والمحاولة مرة أخرى.',
+    'review_already_added' => 'Already reviewed.',
 ];

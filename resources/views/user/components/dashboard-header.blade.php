@@ -1,110 +1,179 @@
+@php
+    $user = auth()->user();
+    $fallbackUrl = isset($isDashboard) && $isDashboard ? route('home.index') : route('user.index');
+    $previousUrl = url()->previous();
+    $backUrl = $previousUrl && $previousUrl !== url()->current() ? $previousUrl : $fallbackUrl;
+    $initial = $user?->name ? mb_substr($user->name, 0, 1, 'UTF-8') : 'U';
+@endphp
+
 @push('styles')
 <style>
-    .dashboard-hero {
-        background: linear-gradient(135deg, #f0c14b 0%, #d4a853 100%);
-        color: white;
-        padding: 140px 0 80px;
+    .customer-page-header {
         position: relative;
+        z-index: 5;
         overflow: hidden;
-        margin-top: -90px;
-        margin-bottom: 40px;
+        min-height: 214px;
+        background:
+            radial-gradient(circle at 18% 22%, rgba(255, 255, 255, 0.28) 0 5px, transparent 6px),
+            radial-gradient(circle at 76% 18%, rgba(255, 255, 255, 0.18) 0 4px, transparent 5px),
+            linear-gradient(165deg, #64c9cf 0%, #6fd7cf 42%, #ffb48d 100%);
+        border-bottom-right-radius: 38px;
+        border-bottom-left-radius: 38px;
+        box-shadow: 0 12px 28px rgba(100, 201, 207, 0.24);
     }
 
-    .dashboard-hero::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="dashboard-pattern" width="40" height="40" patternUnits="userSpaceOnUse"><circle cx="20" cy="20" r="2" fill="white" opacity="0.15"/><circle cx="10" cy="10" r="1" fill="white" opacity="0.08"/><circle cx="30" cy="30" r="1" fill="white" opacity="0.08"/></pattern></defs><rect width="100" height="100" fill="url(%23dashboard-pattern)"/></svg>');
-        pointer-events: none;
+    .customer-page-header__bar {
+        position: relative;
+        display: grid;
+        grid-template-columns: 44px 1fr 44px;
+        align-items: end;
+        max-width: 480px;
+        margin: 0 auto;
+        min-height: 176px;
+        padding: 34px 22px 48px;
     }
 
-    .breadcrumb-dashboard {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(15px);
-        border-radius: 50px;
-        padding: 12px 25px;
-        margin-bottom: 30px;
+    .customer-page-header__back {
         display: inline-flex;
         align-items: center;
-        gap: 12px;
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .breadcrumb-dashboard a {
-        color: #d4a853;
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+        border: 0;
+        background: transparent;
+        color: #fff;
         text-decoration: none;
-        font-weight: 600;
-        transition: color 0.3s ease;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
+        font-size: 34px;
+        line-height: 1;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
     }
 
-    .breadcrumb-dashboard a:hover {
-        color: #b58b3a;
-    }
-
-    .dashboard-hero-title {
-        font-size: 2.5rem;
+    .customer-page-header__title {
+        margin: 0;
+        max-width: 100%;
+        overflow-wrap: anywhere;
+        color: #fff;
+        text-align: center;
+        text-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
+        white-space: normal;
+        font-size: clamp(36px, 12vw, 56px);
         font-weight: 800;
-        margin-bottom: 10px;
-        color: white;
-        text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        letter-spacing: 0;
+        line-height: 1.2;
     }
 
-    @media (max-width: 768px) {
-        .dashboard-hero {
-            padding: 120px 0 60px;
-            margin-top: -90px;
-            margin-bottom: 30px;
+    .customer-page-profile {
+        max-width: 480px;
+        margin: -24px auto 0;
+        padding: 34px 14px 20px;
+        background: #fff;
+        border-top-right-radius: 28px;
+        border-top-left-radius: 28px;
+        text-align: center;
+    }
+
+    .customer-page-profile__avatar {
+        position: relative;
+        display: inline-flex;
+        width: 96px;
+        height: 96px;
+        align-items: center;
+        justify-content: center;
+        border: 3px solid #f3d373;
+        border-radius: 50%;
+        background: #fff8e6;
+        color: #c79b33;
+        font-size: 34px;
+        font-weight: 800;
+        text-decoration: none;
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+    }
+
+    .customer-page-profile__avatar img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .customer-page-profile__edit {
+        position: absolute;
+        right: -2px;
+        bottom: 2px;
+        display: inline-flex;
+        width: 30px;
+        height: 30px;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #fff;
+        border-radius: 50%;
+        background: #111;
+        color: #fff;
+        font-size: 14px;
+    }
+
+    .customer-page-profile__name {
+        margin: 10px 0 0;
+        color: #111;
+        font-size: 18px;
+        font-weight: 800;
+    }
+
+    @media (max-width: 767.98px) {
+        body:has(.customer-page-header) main.pt-90 {
+            padding-top: 0 !important;
         }
-        .dashboard-hero-title {
-            font-size: 2rem;
+
+        body:has(.customer-page-header) .my-account.container {
+            max-width: 480px;
+            padding-inline: 10px;
         }
     }
 
-    /* Header Contrast Fix for Dashboard Pages */
-    body:has(.dashboard-hero) #header {
-        background: rgba(255, 255, 255, 0.05) !important;
-        backdrop-filter: blur(5px);
-    }
+    @media (min-width: 768px) {
+        .customer-page-header {
+            min-height: 230px;
+            margin-top: 18px;
+            border-bottom-right-radius: 48px;
+            border-bottom-left-radius: 48px;
+        }
 
-    body:has(.dashboard-hero) #header .navigation__link,
-    body:has(.dashboard-hero) #header .header-tools__item {
-        color: white !important;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        .customer-page-header__bar,
+        .customer-page-profile {
+            max-width: 1140px;
+        }
+
+        .customer-page-header__bar {
+            min-height: 190px;
+        }
     }
 </style>
 @endpush
 
-<section class="dashboard-hero">
-    <div class="container position-relative">
-        <div class="row justify-content-center text-center">
-            <div class="col-lg-8">
-                <div class="breadcrumb-dashboard">
-                    <a href="{{ route('home.index') }}">
-                        <i class="bi bi-house"></i>
-                        الرئيسية
-                    </a>
-                    
-                    @if(!isset($isDashboard) || !$isDashboard)
-                    <i class="bi bi-chevron-left" style="color: #a0aec0; font-size: 12px;"></i>
-                    <a href="{{ route('user.index') }}">لوحة التحكم</a>
-                    @endif
-                    
-                    <i class="bi bi-chevron-left" style="color: #a0aec0; font-size: 12px;"></i>
-                    <span style="color: #1a202c; font-weight: 700;">{{ $title }}</span>
-                </div>
+<section class="customer-page-header" dir="rtl">
+    <div class="customer-page-header__bar">
+        <a class="customer-page-header__back" href="{{ $backUrl }}" aria-label="رجوع">
+            <i class="bi bi-arrow-right"></i>
+        </a>
 
-                <h1 class="dashboard-hero-title">{{ $title }}</h1>
-                @if(isset($description))
-                <p class="lead mb-0 text-white-50">{{ $description }}</p>
-                @endif
-            </div>
-        </div>
+        <h1 class="customer-page-header__title">{{ $title }}</h1>
+
+        <span aria-hidden="true"></span>
     </div>
+
+    @if(isset($isDashboard) && $isDashboard && $user)
+        <div class="customer-page-profile">
+            <a class="customer-page-profile__avatar" href="{{ route('user.profile') }}" aria-label="تعديل صورة الحساب">
+                @if($user->profile_photo)
+                    <img src="{{ asset('storage/profile_photos/'.$user->profile_photo) }}" alt="{{ $user->name }}">
+                @else
+                    <span>{{ $initial }}</span>
+                @endif
+                <span class="customer-page-profile__edit" aria-hidden="true">
+                    <i class="bi bi-camera-fill"></i>
+                </span>
+            </a>
+            <p class="customer-page-profile__name">{{ $user->name }}</p>
+        </div>
+    @endif
 </section>

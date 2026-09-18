@@ -3,18 +3,23 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ProductResource;
+use App\Http\Resources\CategoryResource;
 use App\Http\Resources\ProductCollection;
+use App\Http\Resources\ProductResource;
 use App\Repositories\Contracts\ProductRepositoryInterface;
-use Illuminate\Http\Request;
+use App\Services\CategoryPageService;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class ApiProductController extends Controller
 {
     protected $productRepository;
 
-    public function __construct(ProductRepositoryInterface $productRepository)
-    {
+    public function __construct(
+        ProductRepositoryInterface $productRepository,
+        private CategoryPageService $categoryPage
+    ) {
         $this->productRepository = $productRepository;
     }
 
@@ -50,7 +55,7 @@ class ApiProductController extends Controller
     {
         $product = $this->productRepository->findBySlug($slug);
 
-        if (!$product) {
+        if (! $product) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Product not found',
@@ -122,19 +127,28 @@ class ApiProductController extends Controller
      */
     public function byCategory(string $categorySlug, Request $request): JsonResponse
     {
-        $category = \App\Models\Category::where('slug', $categorySlug)->first();
-
-        if (!$category) {
+        try {
+            $data = $this->categoryPage->getPageData($request, $categorySlug);
+        } catch (ModelNotFoundException) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Category not found',
             ], 404);
         }
 
-        $perPage = min($request->per_page ?? 12, 50);
-        $products = $this->productRepository->getByCategory($category->id, $perPage);
+        $products = new ProductCollection($data['products']);
+        $paginatedProducts = $products->toArray($request);
 
-        return response()->json(new ProductCollection($products));
+        return response()->json([
+            'status' => 'success',
+            'data' => [
+                'selected_category' => new CategoryResource($data['category']),
+                'top_categories' => CategoryResource::collection($data['topCategories']),
+                'products' => $paginatedProducts,
+            ],
+            'meta' => $paginatedProducts['meta'],
+            'links' => $paginatedProducts['links'],
+        ]);
     }
 
     /**
@@ -144,7 +158,7 @@ class ApiProductController extends Controller
     {
         $brand = \App\Models\Brand::where('slug', $brandSlug)->first();
 
-        if (!$brand) {
+        if (! $brand) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Brand not found',

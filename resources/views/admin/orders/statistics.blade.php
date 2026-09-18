@@ -95,7 +95,7 @@
                                         <span class="badge bg-primary">تم الشحن</span>
                                     @elseif($status == 'delivered')
                                         <span class="badge bg-success">تم التسليم</span>
-                                    @elseif($status == 'cancelled')
+                                    @elseif($status == 'canceled')
                                         <span class="badge bg-danger">ملغي</span>
                                     @endif
                                 </td>

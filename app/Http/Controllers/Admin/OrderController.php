@@ -5,15 +5,15 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderTracking;
-use App\Models\ShippingMethod;
 use App\Models\PaymentMethod;
+use App\Models\ShippingMethod;
 use App\Models\User;
 use App\Models\UserActivity;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
-use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 class OrderController extends Controller
 {
@@ -44,15 +44,14 @@ class OrderController extends Controller
         // Apply search filter
         if ($request->has('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('id', 'like', "%{$search}%")
-                  ->orWhere('name', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhereHas('user', function($q) use ($search) {
-                      $q->where('name', 'like', "%{$search}%")
-                        ->orWhere('email', 'like', "%{$search}%");
-                  });
+                    ->orWhere('name', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%")
+                    ->orWhereHas('user', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -124,7 +123,7 @@ class OrderController extends Controller
         $order->save();
 
         // Add tracking information
-        if ($request->has('tracking_comment') && !empty($request->tracking_comment)) {
+        if ($request->has('tracking_comment') && ! empty($request->tracking_comment)) {
             OrderTracking::create([
                 'order_id' => $order->id,
                 'status' => $request->status,
@@ -185,7 +184,7 @@ class OrderController extends Controller
 
         $pdf = PDF::loadView('admin.orders.invoice', compact('order'));
 
-        return $pdf->download('invoice-' . $order->id . '.pdf');
+        return $pdf->download('invoice-'.$order->id.'.pdf');
     }
 
     /**
@@ -243,8 +242,6 @@ class OrderController extends Controller
         return redirect()->route('admin.order.tracking', $order)->with('success', 'تم إضافة معلومات التتبع بنجاح');
     }
 
-
-
     /**
      * Display order statistics.
      */
@@ -287,10 +284,11 @@ class OrderController extends Controller
             ->get()
             ->map(function ($item) {
                 $user = User::find($item->user_id);
+
                 return [
                     'user' => $user,
                     'order_count' => $item->order_count,
-                    'total_spent' => $item->total_spent
+                    'total_spent' => $item->total_spent,
                 ];
             });
 

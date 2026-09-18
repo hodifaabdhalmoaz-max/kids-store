@@ -1,4 +1,7 @@
 @extends('layouts.app')
+@push('styles')
+<link rel="stylesheet" href="{{ asset('assets/css/mobile-market.css') }}?v={{ filemtime(public_path('assets/css/mobile-market.css')) }}" type="text/css" />
+@endpush
 @section('content')
 <style>
   .pc__btn-wl {
@@ -69,119 +72,140 @@
 </style>
 <main>
 
-  <section class="swiper-container js-swiper-slider swiper-number-pagination slideshow" data-settings='{
-        "autoplay": {
-          "delay": 5000
-        },
-        "slidesPerView": 1,
-        "effect": "fade",
-        "loop": true
-      }'>
-    <div class="swiper-wrapper">
-      @forelse($slides as $slide)
-      <div class="swiper-slide">
-        <div class="overflow-hidden position-relative h-100">
-          <div class="slideshow-character position-absolute bottom-0 pos_left-center">
-            @if($slide->image)
-            <img loading="lazy" src="{{ asset('uploads/slides/' . $slide->image) }}" width="400" height="733"
-              alt="{{ $slide->title ?? 'شريحة عرض' }}"
-              class="slideshow-character__img animate animate_fade animate_btt animate_delay-9 w-auto h-auto" />
-            @endif
-          </div>
-          <div class="slideshow-text container position-absolute start-50 top-50 translate-middle">
-            @if($slide->tagline)
-            <h6 class="text_inline_dash text-uppercase fs-base fw-medium animate animate_fade animate_btt animate_delay-3">
-              {{ $slide->tagline }}
-            </h6>
-            @endif
-            @if($slide->title)
-            <h2 class="h1 fw-normal mb-0 animate animate_fade animate_btt animate_delay-5">{{ $slide->title }}</h2>
-            @endif
-            @if($slide->subtitle)
-            <h2 class="h1 fw-bold animate animate_fade animate_btt animate_delay-7">{{ $slide->subtitle }}</h2>
-            @endif
-            <a href="{{ $slide->link ?? '#' }}"
-              class="btn-link btn-link_lg default-underline fw-medium animate animate_fade animate_btt animate_delay-7">تسوق
-              الآن</a>
-          </div>
-        </div>
-      </div>
-      @empty
-      <div class="swiper-slide">
-        <div class="overflow-hidden position-relative h-100">
-          <div class="slideshow-character position-absolute bottom-0 pos_left-center">
-            <img loading="lazy" src="{{ asset('assets/images/home/demo3/slideshow-character1.png') }}" width="542" height="733"
-              alt="ملابس أطفال عصرية"
-              class="slideshow-character__img animate animate_fade animate_btt animate_delay-9 w-auto h-auto" />
-            <div class="character_markup type2">
-              <p
-                class="text-uppercase font-sofia mark-grey-color animate animate_fade animate_btt animate_delay-10 mb-0">
-                So Cuts</p>
+  <!-- Mobile marketplace experience -->
+  <div class="kids-market-shell d-block d-lg-none">
+    <x-shop.top-header-banner
+      :banner="$banner"
+      :activeCategory="$activeMarketCategory"
+      :promotions="$homeTabPromotions ?? []"
+    />
+    <x-shop.mobile-market-home
+      :categories="$categories"
+      :featured-products="$featured_products"
+      :latest-products="$latest_products"
+      :offer-products="$offer_products"
+      :market-products="$market_products"
+      :active-category="$activeMarketCategory"
+      :promotions="$homeTabPromotions ?? []"
+    />
+  </div>
+
+  <!-- Desktop-only Slideshow Section -->
+  <div class="d-none d-lg-block">
+    <section class="swiper-container js-swiper-slider swiper-number-pagination slideshow" data-settings='{
+          "autoplay": {
+            "delay": 5000
+          },
+          "slidesPerView": 1,
+          "effect": "fade",
+          "loop": true
+        }'>
+      <div class="swiper-wrapper">
+        @forelse($slides as $slide)
+        <div class="swiper-slide">
+          <div class="overflow-hidden position-relative h-100">
+            <div class="slideshow-character position-absolute bottom-0 pos_left-center">
+              @if($slide->image)
+              <img loading="lazy" src="{{ asset('uploads/slides/' . $slide->image) }}" width="400" height="733"
+                alt="{{ $slide->title ?? 'شريحة عرض' }}"
+                class="slideshow-character__img animate animate_fade animate_btt animate_delay-9 w-auto h-auto" />
+              @endif
+            </div>
+            <div class="slideshow-text container position-absolute start-50 top-50 translate-middle">
+              @if($slide->tagline)
+              <h6 class="text_inline_dash text-uppercase fs-base fw-medium animate animate_fade animate_btt animate_delay-3">
+                {{ $slide->tagline }}
+              </h6>
+              @endif
+              @if($slide->title)
+              <h2 class="h1 fw-normal mb-0 animate animate_fade animate_btt animate_delay-5">{{ $slide->title }}</h2>
+              @endif
+              @if($slide->subtitle)
+              <h2 class="h1 fw-bold animate animate_fade animate_btt animate_delay-7">{{ $slide->subtitle }}</h2>
+              @endif
+              <a href="{{ $slide->link ?? '#' }}"
+                class="btn-link btn-link_lg default-underline fw-medium animate animate_fade animate_btt animate_delay-7">تسوق
+                الآن</a>
             </div>
           </div>
-          <div class="slideshow-text container position-absolute start-50 top-50 translate-middle">
-            <h6 class="text_inline_dash text-uppercase fs-base fw-medium animate animate_fade animate_btt animate_delay-3">
-              وصل حديثاً</h6>
-            <h2 class="h1 fw-normal mb-0 animate animate_fade animate_btt animate_delay-5">طفل سعيد</h2>
-            <h2 class="h1 fw-bold animate animate_fade animate_btt animate_delay-7">مع متجرنا</h2>
-            <a href="#"
-              class="btn-link btn-link_lg default-underline fw-medium animate animate_fade animate_btt animate_delay-7">تسوق
-              الآن</a>
-          </div>
         </div>
-      </div>
-
-      <div class="swiper-slide">
-        <div class="overflow-hidden position-relative h-100">
-          <div class="slideshow-character position-absolute bottom-0 pos_left-center">
-            <img loading="lazy" src="{{ asset('assets/images/slideshow-character1.png') }}" width="400" height="733"
-              alt="مجموعة أطفال شتوية"
-              class="slideshow-character__img animate animate_fade animate_btt animate_delay-9 w-auto h-auto" />
-            <div class="character_markup">
-              <p class="text-uppercase font-sofia fw-bold animate animate_fade animate_rtl animate_delay-10">للشتاء
-              </p>
+        @empty
+        <div class="swiper-slide">
+          <div class="overflow-hidden position-relative h-100">
+            <div class="slideshow-character position-absolute bottom-0 pos_left-center">
+              <img loading="lazy" src="{{ asset('assets/images/home/demo3/slideshow-character1.png') }}" width="542" height="733"
+                alt="ملابس أطفال عصرية"
+                class="slideshow-character__img animate animate_fade animate_btt animate_delay-9 w-auto h-auto" />
+              <div class="character_markup type2">
+                <p
+                  class="text-uppercase font-sofia mark-grey-color animate animate_fade animate_btt animate_delay-10 mb-0">
+                  So Cuts</p>
+              </div>
+            </div>
+            <div class="slideshow-text container position-absolute start-50 top-50 translate-middle">
+              <h6 class="text_inline_dash text-uppercase fs-base fw-medium animate animate_fade animate_btt animate_delay-3">
+                وصل حديثاً</h6>
+              <h2 class="h1 fw-normal mb-0 animate animate_fade animate_btt animate_delay-5">طفل سعيد</h2>
+              <h2 class="h1 fw-bold animate animate_fade animate_btt animate_delay-7">مع متجرنا</h2>
+              <a href="#"
+                class="btn-link btn-link_lg default-underline fw-medium animate animate_fade animate_btt animate_delay-7">تسوق
+                الآن</a>
             </div>
           </div>
-          <div class="slideshow-text container position-absolute start-50 top-50 translate-middle">
-            <h6 class="text_inline_dash text-uppercase fs-base fw-medium animate animate_fade animate_btt animate_delay-3">
-              وصل حديثاً</h6>
-            <h2 class="h1 fw-normal mb-0 animate animate_fade animate_btt animate_delay-5">عالم الأطفال</h2>
-            <h2 class="h1 fw-bold animate animate_fade animate_btt animate_delay-7">المميز</h2>
-            <a href="#"
-              class="btn-link btn-link_lg default-underline fw-medium animate animate_fade animate_btt animate_delay-7">تسوق
-              الآن</a>
+        </div>
+
+        <div class="swiper-slide">
+          <div class="overflow-hidden position-relative h-100">
+            <div class="slideshow-character position-absolute bottom-0 pos_left-center">
+              <img loading="lazy" src="{{ asset('assets/images/slideshow-character1.png') }}" width="400" height="733"
+                alt="مجموعة أطفال شتوية"
+                class="slideshow-character__img animate animate_fade animate_btt animate_delay-9 w-auto h-auto" />
+              <div class="character_markup">
+                <p class="text-uppercase font-sofia fw-bold animate animate_fade animate_rtl animate_delay-10">للشتاء
+                </p>
+              </div>
+            </div>
+            <div class="slideshow-text container position-absolute start-50 top-50 translate-middle">
+              <h6 class="text_inline_dash text-uppercase fs-base fw-medium animate animate_fade animate_btt animate_delay-3">
+                وصل حديثاً</h6>
+              <h2 class="h1 fw-normal mb-0 animate animate_fade animate_btt animate_delay-5">عالم الأطفال</h2>
+              <h2 class="h1 fw-bold animate animate_fade animate_btt animate_delay-7">المميز</h2>
+              <a href="#"
+                class="btn-link btn-link_lg default-underline fw-medium animate animate_fade animate_btt animate_delay-7">تسوق
+                الآن</a>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="swiper-slide">
-        <div class="overflow-hidden position-relative h-100">
-          <div class="slideshow-character position-absolute bottom-0 pos_left-center">
-            <img loading="lazy" src="{{ asset('assets/images/slideshow-character2.png') }}" width="400" height="690"
-              alt="منتجات أطفال ممتعة"
-              class="slideshow-character__img animate animate_fade animate_rtl animate_delay-10 w-auto h-auto" />
-          </div>
-          <div class="slideshow-text container position-absolute start-50 top-50 translate-middle">
-            <h6 class="text_inline_dash text-uppercase fs-base fw-medium animate animate_fade animate_btt animate_delay-3">
-              وصل حديثاً</h6>
-            <h2 class="h1 fw-normal mb-0 animate animate_fade animate_btt animate_delay-5">أشياء ممتعة</h2>
-            <h2 class="h1 fw-bold animate animate_fade animate_btt animate_delay-7">لطفلك</h2>
-            <a href="#"
-              class="btn-link btn-link_lg default-underline fw-medium animate animate_fade animate_btt animate_delay-7">تسوق
-              الآن</a>
+        <div class="swiper-slide">
+          <div class="overflow-hidden position-relative h-100">
+            <div class="slideshow-character position-absolute bottom-0 pos_left-center">
+              <img loading="lazy" src="{{ asset('assets/images/slideshow-character2.png') }}" width="400" height="690"
+                alt="منتجات أطفال ممتعة"
+                class="slideshow-character__img animate animate_fade animate_rtl animate_delay-10 w-auto h-auto" />
+            </div>
+            <div class="slideshow-text container position-absolute start-50 top-50 translate-middle">
+              <h6 class="text_inline_dash text-uppercase fs-base fw-medium animate animate_fade animate_btt animate_delay-3">
+                وصل حديثاً</h6>
+              <h2 class="h1 fw-normal mb-0 animate animate_fade animate_btt animate_delay-5">أشياء ممتعة</h2>
+              <h2 class="h1 fw-bold animate animate_fade animate_btt animate_delay-7">لطفلك</h2>
+              <a href="#"
+                class="btn-link btn-link_lg default-underline fw-medium animate animate_fade animate_btt animate_delay-7">تسوق
+                الآن</a>
+            </div>
           </div>
         </div>
+        @endforelse
       </div>
-      @endforelse
-    </div>
 
-    <div class="container">
-      <div
-        class="slideshow-pagination slideshow-number-pagination d-flex align-items-center position-absolute bottom-0 mb-5">
+      <div class="container">
+        <div
+          class="slideshow-pagination slideshow-number-pagination d-flex align-items-center position-absolute bottom-0 mb-5">
+        </div>
       </div>
-    </div>
-  </section>
-  <div class="container mw-1620 bg-white border-radius-10">
+    </section>
+  </div>
+  <div class="container mw-1620 bg-white border-radius-10 d-none d-lg-block">
     <div class="mb-3 mb-xl-5 pt-1 pb-4"></div>
     <section class="category-carousel container">
       <h2 class="section-title text-center mb-5">تسوق حسب الفئة</h2>

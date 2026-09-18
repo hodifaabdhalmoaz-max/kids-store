@@ -111,3 +111,24 @@ This project is a premium e-commerce storefront for kids' products, designed to 
 - **Fix**: Added the three IDE helper file patterns to the `# IDE Files` section of `.gitignore`.
 - **Rule**: IDE-generated helper files must never be committed — they are environment-specific and regenerated on demand via `php artisan ide-helper:generate`.
 
+## Session Audit Implementation (2026-06-04 - Part 2)
+
+### Security Hardening
+- **API Cart Routes Security**: Wrapped all `/cart` API endpoints in `routes/api.php` with `auth:sanctum` to prevent unauthenticated/anonymous cart manipulation.
+- **Address Selection Protection**: Added `findOrFail` validation to `UserController::addressSetDefault()` to verify that the address exists and belongs to the authenticated user before modifying defaults, preventing silent state manipulation.
+- **Secure Profile Photo Uploads**: Replaced predictable `time()` prefix naming convention in `UserController::profileUpdate()` with `Str::uuid()`.
+- **Deduplicated Configurations**: Removed the duplicate `'2fa'` array from `config/security.php` to ensure the canonical `'two_factor'` settings are always used.
+
+### Performance Optimization
+- **Dashboard Aggregate Query**: Rewrote `AdminController::index()` statistics retrieval to use a single `selectRaw` query on `orders`, reducing DB queries from 8 down to 1 when displaying admin metrics.
+- **OPcache Protection**: Deleted all occurrences of `opcache_reset()` in `AdminController.php` upload routes and the `clearOpcache()` helper in `ImageService.php` to prevent site-wide cache reset overhead on every image upload.
+- **Global View Composer Reduction**: Optimized `SecurityServiceProvider` view composer to share only `isSecureConnection`, removing redundant properties already natively available in Blade views.
+- **Dead Code Pruning**: Removed unused, high-query dashboard rendering helpers `calculateRevenueData()` and `getChartData()` in `AdminController`.
+
+### Architectural Refactoring & Safety
+- **Service Dependency Injection**: Standardized image handling by injecting `ImageService` into `AdminController` via constructor DI, replacing duplicate helper methods (`Generate*Image`) with standard service method calls.
+- **Order Soft Deletes**: Integrated `SoftDeletes` in the `Order` model and database migration to safeguard order records against permanent deletion.
+- **Newsletter Subscription Persistence**: Implemented database persistence for newsletter subscriptions in `HomeController::newsletter_subscribe()` using the `NewsletterSubscriber` model instead of returning a stub response.
+- **Repository Cleanliness**: Relocated 21 markdown documentation files to `/docs/` and deleted legacy test archives (`test-pint.zip` and `test_webp.php`) from the root.
+
+

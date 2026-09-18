@@ -45,6 +45,7 @@ return Application::configure(basePath: dirname(__DIR__))
             // Use the named 'api' limiter defined in RateLimitServiceProvider
             'throttle:api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \App\Http\Middleware\PerformanceMonitoring::class,
         ]);
 
         // REMOVED: throttleApi('60,1') — now handled by named limiters in RateLimitServiceProvider

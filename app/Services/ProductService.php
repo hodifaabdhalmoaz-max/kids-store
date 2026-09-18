@@ -2,15 +2,13 @@
 
 namespace App\Services;
 
-use App\Models\Product;
-use App\Models\Category;
 use App\Models\Brand;
+use App\Models\Category;
 use App\Models\Color;
-use App\Models\Size;
+use App\Models\Product;
 use App\Models\Review;
+use App\Models\Size;
 use App\Repositories\Contracts\ProductRepositoryInterface;
-use App\Services\StatisticService;
-use App\Services\AuditService;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
@@ -18,24 +16,35 @@ use Illuminate\Support\Collection;
 class ProductService
 {
     protected $productRepository;
+
     protected $statisticService;
+
     protected $auditService;
 
     public function __construct(
-        ProductRepositoryInterface $productRepository,
-        StatisticService $statisticService,
-        AuditService $auditService
+        ProductRepositoryInterface|StatisticService $productRepository,
+        StatisticService|AuditService $statisticService,
+        ?AuditService $auditService = null
     ) {
+        if ($productRepository instanceof StatisticService) {
+            $this->productRepository = app(ProductRepositoryInterface::class);
+            $this->statisticService = $productRepository;
+            $this->auditService = $statisticService instanceof AuditService
+                ? $statisticService
+                : app(AuditService::class);
+
+            return;
+        }
+
         $this->productRepository = $productRepository;
-        $this->statisticService = $statisticService;
-        $this->auditService = $auditService;
+        $this->statisticService = $statisticService instanceof StatisticService
+            ? $statisticService
+            : app(StatisticService::class);
+        $this->auditService = $auditService ?? app(AuditService::class);
     }
 
     /**
      * Get filtered and paginated products
-     *
-     * @param Request $request
-     * @return LengthAwarePaginator
      */
     public function getFilteredProducts(Request $request): LengthAwarePaginator
     {
@@ -54,39 +63,35 @@ class ProductService
         ];
 
         // Log search statistics if search is provided
-        if (!empty($filters['search'])) {
+        if (! empty($filters['search'])) {
             $this->logSearchStatistics($filters['search'], 0); // We'll get count from repository
         }
 
         $perPage = $request->per_page ?? 12;
+
         return $this->productRepository->getWithFilters($filters, $perPage);
     }
-
-
 
     /**
      * Log search statistics
      */
     protected function logSearchStatistics(string $search, int $resultsCount): void
     {
-        $this->statisticService->logSearch($search, $resultsCount);
+        $this->statisticService->logSearch($search, ['results_count' => $resultsCount]);
         $this->auditService->log('search', [
             'query' => $search,
-            'results_count' => $resultsCount
+            'results_count' => $resultsCount,
         ]);
     }
 
     /**
      * Get product by slug with related data
-     *
-     * @param string $slug
-     * @return Product
      */
     public function getProductBySlug(string $slug): Product
     {
         $product = $this->productRepository->findBySlug($slug);
 
-        if (!$product) {
+        if (! $product) {
             throw new \Illuminate\Database\Eloquent\ModelNotFoundException('Product not found');
         }
 
@@ -105,16 +110,12 @@ class ProductService
         $this->auditService->log('product_view', [
             'product_id' => $product->id,
             'product_name' => $product->name,
-            'product_price' => $product->current_price
+            'product_price' => $product->current_price,
         ]);
     }
 
     /**
      * Get related products for a given product
-     *
-     * @param Product $product
-     * @param int $limit
-     * @return Collection
      */
     public function getRelatedProducts(Product $product, int $limit = 4): Collection
     {
@@ -123,9 +124,6 @@ class ProductService
 
     /**
      * Get product reviews with average rating
-     *
-     * @param Product $product
-     * @return array
      */
     public function getProductReviews(Product $product): array
     {
@@ -134,16 +132,12 @@ class ProductService
 
         return [
             'reviews' => $reviews,
-            'average_rating' => $avgRating
+            'average_rating' => $avgRating,
         ];
     }
 
     /**
      * Search products by term
-     *
-     * @param string $search
-     * @param int $perPage
-     * @return LengthAwarePaginator
      */
     public function searchProducts(string $search, int $perPage = 12): LengthAwarePaginator
     {
@@ -151,10 +145,10 @@ class ProductService
 
         // Log search statistics
         $resultsCount = $products->total();
-        $this->statisticService->logSearch($search, $resultsCount);
+        $this->statisticService->logSearch($search, ['results_count' => $resultsCount]);
         $this->auditService->log('search_page', [
             'query' => $search,
-            'results_count' => $resultsCount
+            'results_count' => $resultsCount,
         ]);
 
         return $products;
@@ -162,10 +156,6 @@ class ProductService
 
     /**
      * Get products by category
-     *
-     * @param string $slug
-     * @param int $perPage
-     * @return array
      */
     public function getProductsByCategory(string $slug, int $perPage = 12): array
     {
@@ -177,21 +167,17 @@ class ProductService
         $this->auditService->log('category_view', [
             'category_id' => $category->id,
             'category_name' => $category->name,
-            'products_count' => $products->total()
+            'products_count' => $products->total(),
         ]);
 
         return [
             'category' => $category,
-            'products' => $products
+            'products' => $products,
         ];
     }
 
     /**
      * Get products by brand
-     *
-     * @param string $slug
-     * @param int $perPage
-     * @return array
      */
     public function getProductsByBrand(string $slug, int $perPage = 12): array
     {
@@ -202,19 +188,17 @@ class ProductService
         $this->auditService->log('brand_view', [
             'brand_id' => $brand->id,
             'brand_name' => $brand->name,
-            'products_count' => $products->total()
+            'products_count' => $products->total(),
         ]);
 
         return [
             'brand' => $brand,
-            'products' => $products
+            'products' => $products,
         ];
     }
 
     /**
      * Get filter options for product listing
-     *
-     * @return array
      */
     public function getFilterOptions(): array
     {
@@ -228,10 +212,6 @@ class ProductService
 
     /**
      * Store a review for a product
-     *
-     * @param Product $product
-     * @param array $reviewData
-     * @return Review
      */
     public function storeProductReview(Product $product, array $reviewData): Review
     {
@@ -251,7 +231,7 @@ class ProductService
             'product_id' => $product->id,
             'product_name' => $product->name,
             'rating' => $reviewData['rating'],
-            'review_id' => $review->id
+            'review_id' => $review->id,
         ]);
 
         return $review;

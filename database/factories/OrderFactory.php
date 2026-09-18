@@ -20,7 +20,6 @@ class OrderFactory extends Factory
         return [
             'user_id' => User::factory(),
             'name' => $this->faker->name(),
-            'email' => $this->faker->email(),
             'phone' => $this->faker->numerify('77#######'),
             'locality' => $this->faker->streetName(),
             'address' => $this->faker->streetAddress(),

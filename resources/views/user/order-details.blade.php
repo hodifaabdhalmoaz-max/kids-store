@@ -99,6 +99,7 @@
                                                 <div class="row align-items-center">
                                                     <div class="col-md-6 mb-2 mb-md-0">
                                                         <h6 class="fw-bold mb-1 text-dark fs-5">{{ $item->product->name }}</h6>
+                                                        <x-order-item-options :options="$item->options" compact />
                                                         <p class="text-muted small mb-0 d-none d-md-block">{{ Str::limit($item->product->short_description, 100) }}</p>
                                                         <p class="text-muted small mb-0 d-block d-md-none">{{ Str::limit($item->product->short_description, 40) }}</p>
                                                     </div>

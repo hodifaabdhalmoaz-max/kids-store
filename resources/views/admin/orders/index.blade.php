@@ -67,6 +67,10 @@
                             <td>
                                 @if($order->status == 'ordered')
                                     <span class="badge bg-warning">مطلوب</span>
+                                @elseif($order->status == 'processing')
+                                    <span class="badge bg-info">قيد المعالجة</span>
+                                @elseif($order->status == 'shipped')
+                                    <span class="badge bg-primary">تم الشحن</span>
                                 @elseif($order->status == 'delivered')
                                     <span class="badge bg-success">مسلم</span>
                                 @elseif($order->status == 'canceled')

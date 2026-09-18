@@ -161,6 +161,7 @@
                                                 <div>
                                                     <h6 class="mb-0">{{ $item->product->name }}</h6>
                                                     <small class="text-muted">SKU: {{ $item->product->SKU }}</small>
+                                                    <x-order-item-options :options="$item->options" compact />
                                                 </div>
                                             </div>
                                         @else

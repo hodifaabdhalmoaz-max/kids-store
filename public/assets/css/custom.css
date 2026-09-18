@@ -1590,3 +1590,18 @@ button {
         display: none !important;
     }
 }
+
+/*
+   واجهات العميل على الهاتف تستخدم هيدر/تنقل حديث داخل صفحات المتجر.
+   نخفي الهيدر القديم الظاهر بالشعار في المنتصف والفوتر الأسود الطويل على الجوال فقط.
+*/
+@media (max-width: 991.98px) {
+    body:not(.admin) .header-mobile {
+        display: none !important;
+    }
+
+    body:not(.admin) .site-footer,
+    body:not(.admin) > hr.mt-5 {
+        display: none !important;
+    }
+}

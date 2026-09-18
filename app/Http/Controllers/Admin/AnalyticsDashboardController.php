@@ -3,23 +3,28 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Services\MonitoringService;
-use App\Services\ErrorTrackingService;
-use App\Services\StatisticService;
 use App\Repositories\Contracts\OrderRepositoryInterface;
 use App\Repositories\Contracts\ProductRepositoryInterface;
 use App\Repositories\Contracts\UserRepositoryInterface;
-use Illuminate\Http\Request;
+use App\Services\ErrorTrackingService;
+use App\Services\MonitoringService;
+use App\Services\StatisticService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class AnalyticsDashboardController extends Controller
 {
     protected $monitoringService;
+
     protected $errorTrackingService;
+
     protected $statisticService;
+
     protected $orderRepository;
+
     protected $productRepository;
+
     protected $userRepository;
 
     public function __construct(
@@ -32,9 +37,10 @@ class AnalyticsDashboardController extends Controller
     ) {
         $this->middleware('auth');
         $this->middleware(function ($request, $next) {
-            if (!Auth::check() || Auth::user()->utype !== 'ADM') {
+            if (! Auth::check() || Auth::user()->utype !== 'ADM') {
                 abort(403, 'Unauthorized access');
             }
+
             return $next($request);
         });
 
@@ -68,6 +74,7 @@ class AnalyticsDashboardController extends Controller
     public function systemHealth(): JsonResponse
     {
         $health = $this->monitoringService->getSystemHealth();
+
         return response()->json($health);
     }
 
@@ -77,6 +84,7 @@ class AnalyticsDashboardController extends Controller
     public function performanceMetrics(): JsonResponse
     {
         $metrics = $this->monitoringService->getPerformanceMetrics();
+
         return response()->json($metrics);
     }
 
@@ -87,6 +95,7 @@ class AnalyticsDashboardController extends Controller
     {
         $days = $request->get('days', 7);
         $stats = $this->errorTrackingService->getErrorStatistics($days);
+
         return response()->json($stats);
     }
 
@@ -168,7 +177,7 @@ class AnalyticsDashboardController extends Controller
             'pending' => $this->orderRepository->getByStatus('ordered')->sum('total'),
             'processing' => $this->orderRepository->getByStatus('processing')->sum('total'),
             'shipped' => $this->orderRepository->getByStatus('shipped')->sum('total'),
-            'cancelled' => $this->orderRepository->getByStatus('cancelled')->sum('total'),
+            'cancelled' => $this->orderRepository->getByStatus('canceled')->sum('total'),
         ];
     }
 

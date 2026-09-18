@@ -1,14 +1,19 @@
 <?php
 
+use App\Http\Controllers\Admin\AdPlacementController;
+use App\Http\Controllers\Admin\MarketingCampaignController;
+use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CategoryPageController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LanguageController;
+use App\Http\Controllers\Marketing\CampaignAssetImageController;
+use App\Http\Controllers\MessageCenterController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WishlistController;
-use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Middleware\AuthAdmin;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -34,12 +39,17 @@ Route::middleware(['smart.throttle:search'])->group(function () {
 // ═══════════════════════════════════════════════════════════
 Route::middleware(['smart.throttle:public'])->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home.index');
-    Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
+    Route::get('/shop', fn () => redirect()->route('categories.index'))->name('shop.index');
     Route::get('/categories', [ShopController::class, 'categories'])->name('categories.index');
-    Route::get('/shop/category/{slug}', [ShopController::class, 'category'])->name('shop.category');
+    Route::get('/shop/category/{slug}', [CategoryPageController::class, 'show'])->name('shop.category');
     Route::get('/shop/brand/{slug}', [ShopController::class, 'brand'])->name('shop.brand');
     Route::get('/offers', [ShopController::class, 'offers'])->name('shop.offers');
     Route::get('/shop/{product_slug}', [ShopController::class, 'product_details'])->name('shop.product.details');
+    Route::get('/messages', [MessageCenterController::class, 'index'])->name('messages.index');
+    Route::get('/messages/{section}', [MessageCenterController::class, 'section'])
+        ->whereIn('section', ['orders', 'activity', 'promo', 'news'])
+        ->name('messages.section');
+    Route::post('/messages/clear', [MessageCenterController::class, 'clear'])->name('messages.clear');
     Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
     Route::post('/contact', [HomeController::class, 'contact_send'])->name('contact.send');
     Route::get('/about', [HomeController::class, 'about'])->name('about');
@@ -49,6 +59,7 @@ Route::middleware(['smart.throttle:public'])->group(function () {
     Route::get('/shipping', [HomeController::class, 'shipping'])->name('shipping');
     Route::get('/faq', [HomeController::class, 'faq'])->name('faq');
     Route::post('/newsletter/subscribe', [HomeController::class, 'newsletter_subscribe'])->name('newsletter.subscribe');
+    Route::get('/campaign-assets/{asset}/image', [CampaignAssetImageController::class, 'show'])->name('campaign-assets.image');
 });
 
 // ═══════════════════════════════════════════════════════════
@@ -110,6 +121,7 @@ Route::middleware(['auth', 'smart.throttle:user_dashboard'])->group(function () 
 
     // Reviews — تقييمات المنتجات
     Route::post('/review/{product_id}', [ReviewController::class, 'store'])->name('review.store');
+    Route::post('/product/review/{product_id}', [ReviewController::class, 'store'])->name('product.review.store');
 });
 
 // ═══════════════════════════════════════════════════════════
@@ -166,6 +178,12 @@ Route::middleware(['auth', AuthAdmin::class, 'smart.throttle:admin'])->group(fun
     Route::get('/admin/slide/edit/{id}', [AdminController::class, 'slide_edit'])->name('admin.slide.edit');
     Route::put('/admin/slide/update', [AdminController::class, 'slide_update'])->name('admin.slide.update');
     Route::delete('/admin/slide/{id}/delete', [AdminController::class, 'slide_delete'])->name('admin.slide.delete');
+
+    // Marketing campaigns
+    Route::prefix('/admin/marketing')->name('admin.marketing.')->group(function () {
+        Route::resource('campaigns', MarketingCampaignController::class)->except(['show']);
+        Route::resource('placements', AdPlacementController::class)->except(['show']);
+    });
 
     //coupons
     Route::get('/admin/coupons', [AdminController::class, 'coupons'])->name('admin.coupons');

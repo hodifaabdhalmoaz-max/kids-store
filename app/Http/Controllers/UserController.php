@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use App\Models\Order;
 use App\Models\UserActivity;
 use App\Models\Wishlist;
@@ -73,7 +74,7 @@ class UserController extends Controller
             }
 
             $file     = $request->file('profile_photo');
-            $filename = time() . '_' . $user->id . '.' . $file->getClientOriginalExtension();
+            $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
             $file->storeAs('profile_photos', $filename, 'public');
             $user->profile_photo = $filename;
         }
@@ -219,8 +220,9 @@ class UserController extends Controller
 
     public function addressSetDefault($id)
     {
+        $address = Address::where('user_id', Auth::id())->findOrFail($id);
         Address::where('user_id', Auth::id())->update(['isdefault' => false]);
-        Address::where('user_id', Auth::id())->where('id', $id)->update(['isdefault' => true]);
+        $address->update(['isdefault' => true]);
         return redirect()->route('user.addresses')->with('success', 'تم تعيين العنوان كافتراضي ✓');
     }
 }

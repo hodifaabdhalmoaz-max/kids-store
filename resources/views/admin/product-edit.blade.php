@@ -42,8 +42,8 @@
                 @error('name') <span class="alret alert-denger text-center">{{$message}} @enderror
 
                 <fieldset class="name">
-                    <div class="body-title mb-10">الرابط <span class="tf-color-1">*</span></div>
-                    <input class="mb-10" type="text" placeholder="أدخل رابط المنتج" name="slug" tabindex="0" value="{{$product->slug}}" aria-required="true" required="">
+                    <div class="body-title mb-10">الرابط</div>
+                    <input class="mb-10" type="text" placeholder="أدخل رابط المنتج" name="slug" tabindex="0" value="{{$product->slug}}" aria-required="false">
                     <div class="text-tiny">لا تتجاوز 100 حرف عند إدخال رابط المنتج.</div>
                 </fieldset>
                 @error('slug') <span class="alret alert-denger text-center">{{$message}} @enderror
@@ -77,6 +77,21 @@
                     </fieldset>
                     @error('brand_id') <span class="alret alert-denger text-center">{{$message}} @enderror
                 </div>
+
+                <fieldset class="name">
+                    <div class="body-title mb-10">فئات إضافية</div>
+                    <div class="d-flex flex-wrap gap-3" style="gap: 12px; margin-top: 10px; flex-wrap: wrap;">
+                        @foreach($categories as $category)
+                            <label class="d-inline-flex align-items-center gap-2 px-3 py-2 border rounded cursor-pointer" style="cursor: pointer; background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 6px 12px;">
+                                <input type="checkbox" name="category_ids[]" value="{{ $category->id }}" @if(in_array($category->id, old('category_ids', $product->categories->pluck('id')->toArray()))) checked @endif style="width: 16px; height: 16px; margin: 0 5px;">
+                                <span class="text-sm font-medium">{{ $category->name }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                    <div class="text-tiny">اختياري. سيتم حفظ الفئة الأساسية تلقائيا ضمن فئات المنتج.</div>
+                </fieldset>
+                @error('category_ids') <span class="alert alert-danger text-center">{{$message}}</span> @enderror
+                @error('category_ids.*') <span class="alert alert-danger text-center">{{$message}}</span> @enderror
 
                 <fieldset class="shortdescription">
                     <div class="body-title mb-10">الوصف المختصر <span class="tf-color-1">*</span></div>
@@ -160,9 +175,9 @@
 
                 <div class="cols gap22">
                     <fieldset class="name">
-                        <div class="body-title mb-10">رمز المنتج <span class="tf-color-1">*</span>
+                        <div class="body-title mb-10">رمز المنتج
                         </div>
-                        <input class="mb-10" type="text" placeholder="أدخل رمز المنتج" name="SKU" tabindex="0" value="{{$product->SKU}}" aria-required="true" required="">
+                        <input class="mb-10" type="text" placeholder="أدخل رمز المنتج" name="SKU" tabindex="0" value="{{$product->SKU}}" aria-required="false">
                     </fieldset>
                     @error('SKU') <span class="alret alert-denger text-center">{{$message}} @enderror
                     <fieldset class="name">
@@ -179,14 +194,32 @@
                         <div class="body-title mb-10">الألوان المتاحة للمنتج</div>
                         <div class="d-flex flex-wrap gap-3" style="gap: 12px; margin-top: 10px; flex-wrap: wrap;">
                             @foreach($colors as $color)
-                            <label class="d-inline-flex align-items-center gap-2 px-3 py-2 border rounded cursor-pointer" style="cursor: pointer; background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 6px 12px;">
-                                <input type="checkbox" name="colors[]" value="{{$color->id}}" @if(in_array($color->id, old('colors', $product->colors->pluck('id')->toArray()))) checked @endif style="width: 16px; height: 16px; margin: 0 5px;">
-                                <span style="display: inline-block; width: 16px; height: 16px; border-radius: 50%; background-color: {{$color->hex_code ?? '#ccc'}}; border: 1px solid #bbb; margin: 0 5px;"></span>
-                                <span class="text-sm font-medium">{{$color->name}}</span>
-                            </label>
+                            @php($colorImages = $product->colorImages->where('color_id', $color->id))
+                            <div style="width: 240px; background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 10px;">
+                                <label class="d-inline-flex align-items-center gap-2 cursor-pointer" style="cursor: pointer;">
+                                    <input type="checkbox" name="colors[]" value="{{$color->id}}" data-product-color-checkbox @if(in_array($color->id, old('colors', $product->colors->pluck('id')->toArray()))) checked @endif style="width: 16px; height: 16px; margin: 0 5px;">
+                                    <span style="display: inline-block; width: 16px; height: 16px; border-radius: 50%; background-color: {{$color->hex_code ?? '#ccc'}}; border: 1px solid #bbb; margin: 0 5px;"></span>
+                                    <span class="text-sm font-medium">{{$color->name}}</span>
+                                </label>
+                                @if($colorImages->isNotEmpty())
+                                    <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px;">
+                                        @foreach($colorImages as $image)
+                                            <label style="position: relative; display: inline-block;">
+                                                <img src="{{ asset($image->image_path) }}" alt="{{$color->name}}" style="width: 48px; height: 58px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd;">
+                                                <input type="checkbox" name="remove_color_images[]" value="{{$image->id}}" title="حذف" style="position: absolute; top: 2px; right: 2px;">
+                                            </label>
+                                        @endforeach
+                                    </div>
+                                @endif
+                                <div style="margin-top: 8px;">
+                                    <span class="text-tiny d-block mb-1">إضافة صور لهذا اللون</span>
+                                    <input type="file" name="color_images[{{$color->id}}][]" accept="image/*" multiple data-product-color-images style="width: 100%; font-size: 12px;">
+                                </div>
+                            </div>
                             @endforeach
                         </div>
                         @error('colors') <span class="alert alert-danger text-center mt-2 d-block">{{$message}}</span> @enderror
+                        @error('color_images.*.*') <span class="alert alert-danger text-center mt-2 d-block">{{$message}}</span> @enderror
                     </fieldset>
 
                     <fieldset class="name">
@@ -251,6 +284,7 @@
                     </fieldset>
                     @error('is_offer') <span class="alret alert-denger text-center">{{$message}} @enderror
                 </div>
+                @include('admin.partials.storefront-product-fields', ['product' => $product])
                 <div class="cols gap10">
                     <button class="tf-button w-full" type="submit">تحديث المنتج</button>
                 </div>
@@ -283,8 +317,33 @@
                 });
             });
 
-            $("input[name='name']").on("change", function(){
-                $("input[name='slug']").val(StringToSlug($(this).val()));
+            $("[data-product-color-images]").on("change", function(){
+                if (this.files && this.files.length > 0) {
+                    $(this).closest("div").parent().find("[data-product-color-checkbox]").prop("checked", true);
+                }
+            });
+
+            const slugInput = $("input[name='slug']");
+            const skuInput = $("input[name='SKU']");
+            let slugTouched = false;
+            let skuTouched = false;
+
+            slugInput.on("input", function(){
+                slugTouched = true;
+            });
+
+            skuInput.on("input", function(){
+                skuTouched = true;
+            });
+
+            $("input[name='name']").on("input change", function(){
+                if (!slugTouched || !slugInput.val()) {
+                    slugInput.val(StringToSlug($(this).val()));
+                }
+
+                if (!skuTouched || !skuInput.val()) {
+                    skuInput.val(StringToSku($(this).val()));
+                }
             });
 
         });
@@ -292,8 +351,17 @@
         function StringToSlug(Text)
         {
             return Text.toLowerCase()
-            .replace(/[^\w ]+/g,"")
-            .replace(/ +/g,"-");
+            .replace(/[^\p{L}\p{N}\s_-]+/gu, "")
+            .replace(/[\s_]+/g, "-")
+            .replace(/^-+|-+$/g, "");
+        }
+
+        function StringToSku(Text)
+        {
+            return Text.toUpperCase()
+            .replace(/[^\p{L}\p{N}]+/gu, "-")
+            .replace(/^-+|-+$/g, "")
+            .slice(0, 64);
         }
     </script>
 @endpush

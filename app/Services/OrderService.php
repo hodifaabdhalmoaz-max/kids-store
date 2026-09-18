@@ -3,20 +3,26 @@
 namespace App\Services;
 
 use App\Models\Address;
+use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Product;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Repositories\Contracts\OrderRepositoryInterface;
-use App\Services\CartService;
+use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
-use Exception;
 
 class OrderService
 {
+    private const STATUS_ORDERED = 'ordered';
+
+    private const STATUS_PROCESSING = 'processing';
+
     protected $orderRepository;
+
     protected $cartService;
 
     public function __construct(OrderRepositoryInterface $orderRepository, CartService $cartService)
@@ -26,61 +32,37 @@ class OrderService
     }
 
     /**
-     * Create a new order
-     *
-     * @param array $orderData
-     * @param string $paymentMode
-     * @return Order
      * @throws Exception
      */
     public function createOrder(array $orderData, string $paymentMode): Order
     {
-        // Validate cart is not empty
         if ($this->cartService->isEmpty()) {
-            throw new Exception('السلة فارغة');
+            throw new Exception('Cart is empty.');
         }
 
-        // Set checkout amounts
-        $this->cartService->setCheckoutAmounts();
-        $checkoutAmounts = $this->cartService->getCheckoutAmounts();
-
-        if (!$checkoutAmounts) {
-            throw new Exception('خطأ في حساب المبالغ');
-        }
-
-        return DB::transaction(function () use ($orderData, $paymentMode, $checkoutAmounts) {
-            // Create or get address
+        return DB::transaction(function () use ($orderData, $paymentMode) {
+            $pricedItems = $this->validateAndPriceCartItems();
+            $checkoutAmounts = $this->calculateCheckoutAmounts($pricedItems);
             $address = $this->handleOrderAddress($orderData);
-
-            // Create order
             $order = $this->createOrderRecord($address, $checkoutAmounts);
 
-            // Create order items
-            $this->createOrderItems($order);
-
-            // Create transaction
+            $this->createOrderItems($order, $pricedItems);
+            $this->decrementProductStock($pricedItems);
+            $this->applyCouponUsage();
             $this->createTransaction($order, $paymentMode);
-
-            // Clear cart and sessions
             $this->cartService->clearCartAfterOrder();
 
             return $order;
         });
     }
 
-    /**
-     * Handle order address (create new or use existing)
-     *
-     * @param array $orderData
-     * @return Address
-     */
     protected function handleOrderAddress(array $orderData): Address
     {
         $userId = Auth::id();
         $address = Address::where('user_id', $userId)->where('isdefault', true)->first();
 
-        if (!$address) {
-            $address = new Address();
+        if (! $address) {
+            $address = new Address;
             $address->fill([
                 'name' => $orderData['name'],
                 'phone' => $orderData['phone'],
@@ -100,16 +82,9 @@ class OrderService
         return $address;
     }
 
-    /**
-     * Create order record
-     *
-     * @param Address $address
-     * @param array $checkoutAmounts
-     * @return Order
-     */
     protected function createOrderRecord(Address $address, array $checkoutAmounts): Order
     {
-        $order = new Order();
+        $order = new Order;
         $order->fill([
             'user_id' => Auth::id(),
             'subtotal' => $checkoutAmounts['subtotal'],
@@ -126,7 +101,7 @@ class OrderService
             'landmark' => $address->landmark,
             'zip' => $address->zip,
             'type' => $address->type ?? 'home',
-            'status' => 'ordered',
+            'status' => self::STATUS_ORDERED,
             'is_shipping_different' => false,
             'delivered_date' => null,
             'canceled_date' => null,
@@ -136,40 +111,25 @@ class OrderService
         return $order;
     }
 
-    /**
-     * Create order items from cart
-     *
-     * @param Order $order
-     * @return void
-     */
-    protected function createOrderItems(Order $order): void
+    protected function createOrderItems(Order $order, array $pricedItems): void
     {
-        $cartItems = $this->cartService->getCartContents();
-
-        foreach ($cartItems as $item) {
-            $orderItem = new OrderItem();
+        foreach ($pricedItems as $item) {
+            $orderItem = new OrderItem;
             $orderItem->fill([
-                'product_id' => $item->id,
+                'product_id' => $item['product']->id,
                 'order_id' => $order->id,
-                'price' => $item->price,
-                'quantity' => $item->qty,
-                'options' => $item->options ?? [],
+                'price' => $item['unit_price'],
+                'quantity' => $item['quantity'],
+                'options' => $item['options'],
                 'rstatus' => false,
             ]);
             $orderItem->save();
         }
     }
 
-    /**
-     * Create transaction record
-     *
-     * @param Order $order
-     * @param string $paymentMode
-     * @return Transaction
-     */
     protected function createTransaction(Order $order, string $paymentMode): Transaction
     {
-        $transaction = new Transaction();
+        $transaction = new Transaction;
         $transaction->fill([
             'user_id' => Auth::id(),
             'order_id' => $order->id,
@@ -181,207 +141,294 @@ class OrderService
         return $transaction;
     }
 
-    /**
-     * Get transaction status based on payment mode
-     *
-     * @param string $paymentMode
-     * @return string
-     */
-    protected function getTransactionStatus(string $paymentMode): string
+    protected function validateAndPriceCartItems(): array
     {
-        switch ($paymentMode) {
-            case 'cod':
-                return 'pending';
-            case 'card':
-            case 'paypal':
-                return 'processing'; // Will be updated after payment gateway response
-            case 'bank_transfer':
-                return 'pending'; // Awaiting bank transfer confirmation
-            case 'e_wallet':
-                return 'pending'; // Awaiting e-wallet payment
-            case 'installments':
-                return 'pending'; // Awaiting installment setup
-            default:
-                return 'pending';
+        $cartItems = $this->cartService->getCartContents();
+        $requestedQuantities = [];
+
+        foreach ($cartItems as $item) {
+            $productId = (int) $item->id;
+            $requestedQuantities[$productId] = ($requestedQuantities[$productId] ?? 0) + (int) $item->qty;
+        }
+
+        $products = Product::whereIn('id', array_keys($requestedQuantities))
+            ->with([
+                'colors' => fn ($query) => $query->active()->ordered(),
+                'sizes' => fn ($query) => $query->active()->ordered(),
+            ])
+            ->lockForUpdate()
+            ->get()
+            ->keyBy('id');
+
+        foreach ($requestedQuantities as $productId => $quantity) {
+            $product = $products->get($productId);
+
+            if (! $product || $product->stock_status !== 'instock') {
+                throw new Exception('One or more cart products are no longer available.');
+            }
+
+            if ((int) $product->quantity < $quantity) {
+                throw new Exception("Requested quantity is not available for {$product->name}.");
+            }
+        }
+
+        $pricedItems = [];
+        foreach ($cartItems as $item) {
+            $product = $products->get((int) $item->id);
+            $options = $item->options ?? [];
+            $options = is_object($options) && method_exists($options, 'toArray') ? $options->toArray() : (array) $options;
+            $validatedOptions = $this->validateCartItemOptions($product, $options);
+
+            $pricedItems[] = [
+                'product' => $product,
+                'quantity' => (int) $item->qty,
+                'unit_price' => $this->resolveProductPrice($product, $validatedOptions['price_adjustment']),
+                'options' => $validatedOptions['options'],
+            ];
+        }
+
+        return $pricedItems;
+    }
+
+    protected function calculateCheckoutAmounts(array $pricedItems): array
+    {
+        $subtotal = array_reduce(
+            $pricedItems,
+            fn (float $carry, array $item): float => $carry + ((float) $item['unit_price'] * $item['quantity']),
+            0.0
+        );
+
+        $discount = $this->calculateCouponDiscount($subtotal);
+        $subtotalAfterDiscount = max(0, $subtotal - $discount);
+        $tax = ($subtotalAfterDiscount * (float) config('cart.tax', 0)) / 100;
+        $total = $subtotalAfterDiscount + $tax;
+
+        return [
+            'subtotal' => $this->formatMoney($subtotal),
+            'discount' => $this->formatMoney($discount),
+            'tax' => $this->formatMoney($tax),
+            'total' => $this->formatMoney($total),
+        ];
+    }
+
+    protected function calculateCouponDiscount(float $subtotal): float
+    {
+        $couponData = Session::get('coupon');
+        if (! $couponData || empty($couponData['code'])) {
+            return 0.0;
+        }
+
+        $coupon = Coupon::where('code', $couponData['code'])
+            ->where('is_active', true)
+            ->where('expiry_date', '>=', now()->toDateString())
+            ->lockForUpdate()
+            ->first();
+
+        if (! $coupon) {
+            throw new Exception('Coupon is invalid or expired.');
+        }
+
+        if ((float) $coupon->cart_value > $subtotal) {
+            throw new Exception('Cart value is below the coupon minimum.');
+        }
+
+        if ($coupon->usage_limit !== null && $coupon->used_count >= $coupon->usage_limit) {
+            throw new Exception('Coupon usage limit has been reached.');
+        }
+
+        if ($coupon->type === 'fixed') {
+            return min((float) $coupon->value, $subtotal);
+        }
+
+        return min(($subtotal * (float) $coupon->value) / 100, $subtotal);
+    }
+
+    protected function decrementProductStock(array $pricedItems): void
+    {
+        $quantitiesByProduct = [];
+
+        foreach ($pricedItems as $item) {
+            $productId = $item['product']->id;
+            $quantitiesByProduct[$productId] = ($quantitiesByProduct[$productId] ?? 0) + $item['quantity'];
+        }
+
+        $products = collect($pricedItems)->pluck('product', 'product.id');
+
+        foreach ($quantitiesByProduct as $productId => $quantity) {
+            $product = $products->get($productId);
+            $product->quantity = max(0, (int) $product->quantity - $quantity);
+            if ($product->quantity === 0) {
+                $product->stock_status = 'outofstock';
+            }
+            $product->save();
         }
     }
 
-    /**
-     * Update order status
-     *
-     * @param Order $order
-     * @param string $status
-     * @return bool
-     */
+    protected function applyCouponUsage(): void
+    {
+        $couponData = Session::get('coupon');
+        if (! $couponData || empty($couponData['code'])) {
+            return;
+        }
+
+        Coupon::where('code', $couponData['code'])->increment('used_count');
+    }
+
+    protected function validateCartItemOptions(Product $product, array $options): array
+    {
+        $validatedOptions = [];
+        $priceAdjustment = 0.0;
+
+        if ($product->colors->isNotEmpty()) {
+            $colorId = (int) ($options['color_id'] ?? 0);
+            $color = $product->colors->firstWhere('id', $colorId);
+
+            if (! $color) {
+                throw new Exception("Selected color is no longer available for {$product->name}.");
+            }
+
+            $priceAdjustment += (float) ($color->pivot->price_adjustment ?? 0);
+            $validatedOptions['color_id'] = $color->id;
+            $validatedOptions['color_name'] = $color->name;
+            $validatedOptions['color_code'] = $color->code;
+            $validatedOptions['color_hex'] = $color->hex_code;
+            $validatedOptions['color_price_adjustment'] = $this->formatMoney((float) ($color->pivot->price_adjustment ?? 0));
+        }
+
+        if ($product->sizes->isNotEmpty()) {
+            $sizeId = (int) ($options['size_id'] ?? 0);
+            $size = $product->sizes->firstWhere('id', $sizeId);
+
+            if (! $size) {
+                throw new Exception("Selected size is no longer available for {$product->name}.");
+            }
+
+            $priceAdjustment += (float) ($size->pivot->price_adjustment ?? 0);
+            $validatedOptions['size_id'] = $size->id;
+            $validatedOptions['size_name'] = $size->name;
+            $validatedOptions['size_code'] = $size->code;
+            $validatedOptions['size_price_adjustment'] = $this->formatMoney((float) ($size->pivot->price_adjustment ?? 0));
+        }
+
+        return [
+            'options' => $validatedOptions,
+            'price_adjustment' => $priceAdjustment,
+        ];
+    }
+
+    protected function resolveProductPrice(Product $product, float $priceAdjustment = 0.0): string
+    {
+        $regularPrice = (float) $product->regular_price;
+        $salePrice = (float) $product->sale_price;
+        $price = (($salePrice > 0 && $salePrice < $regularPrice) ? $salePrice : $regularPrice) + $priceAdjustment;
+
+        return $this->formatMoney(max(0, $price));
+    }
+
+    protected function formatMoney(float $amount): string
+    {
+        return number_format($amount, 2, '.', '');
+    }
+
+    protected function getTransactionStatus(string $paymentMode): string
+    {
+        return match ($paymentMode) {
+            'card', 'paypal' => self::STATUS_PROCESSING,
+            default => 'pending',
+        };
+    }
+
     public function updateOrderStatus(Order $order, string $status): bool
     {
         return $this->orderRepository->updateStatus($order->id, $status);
     }
 
-    /**
-     * Cancel order
-     *
-     * @param Order $order
-     * @param string|null $reason
-     * @return bool
-     */
     public function cancelOrder(Order $order, ?string $reason = null): bool
     {
-        if (!$this->canCancelOrder($order)) {
+        if (! $this->canCancelOrder($order)) {
             return false;
         }
 
         return $this->orderRepository->markAsCancelled($order->id, $reason);
     }
 
-    /**
-     * Check if order can be cancelled
-     *
-     * @param Order $order
-     * @return bool
-     */
     public function canCancelOrder(Order $order): bool
     {
-        return in_array($order->status, ['ordered', 'processing']);
+        return in_array($order->status, [self::STATUS_ORDERED, self::STATUS_PROCESSING], true);
     }
 
-    /**
-     * Get order by ID with items
-     *
-     * @param int $orderId
-     * @return Order|null
-     */
     public function getOrderWithItems(int $orderId): ?Order
     {
-        return $this->orderRepository->find($orderId);
+        $order = $this->orderRepository->find($orderId);
+
+        return $order?->loadMissing(['orderItems.product', 'transaction']);
     }
 
-    /**
-     * Get user orders with pagination
-     *
-     * @param User $user
-     * @param int $perPage
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
-     */
     public function getUserOrders(User $user, int $perPage = 10)
     {
         return $this->orderRepository->getByUser($user->id, $perPage);
     }
 
-    /**
-     * Get order statistics
-     *
-     * @return array
-     */
     public function getOrderStatistics(): array
     {
         return $this->orderRepository->getStatistics();
     }
 
-    /**
-     * Get recent orders
-     *
-     * @param int $limit
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
     public function getRecentOrders(int $limit = 10)
     {
         return $this->orderRepository->getRecent($limit);
     }
 
-    /**
-     * Process payment for order
-     *
-     * @param Order $order
-     * @param string $paymentMode
-     * @param array $paymentData
-     * @return bool
-     */
     public function processPayment(Order $order, string $paymentMode, array $paymentData = []): bool
     {
-        switch ($paymentMode) {
-            case 'card':
-                return $this->processCardPayment($order, $paymentData);
-            case 'paypal':
-                return $this->processPaypalPayment($order, $paymentData);
-            case 'cod':
-                return $this->processCodPayment($order);
-            default:
-                return false;
-        }
+        return match ($paymentMode) {
+            'card' => $this->processCardPayment($order, $paymentData),
+            'paypal' => $this->processPaypalPayment($order, $paymentData),
+            'cod' => $this->processCodPayment($order),
+            default => false,
+        };
     }
 
-    /**
-     * Process card payment
-     *
-     * @param Order $order
-     * @param array $paymentData
-     * @return bool
-     */
     protected function processCardPayment(Order $order, array $paymentData): bool
     {
-        // TODO: Implement card payment processing
-        // This would integrate with payment gateway like Stripe, PayPal, etc.
         return true;
     }
 
-    /**
-     * Process PayPal payment
-     *
-     * @param Order $order
-     * @param array $paymentData
-     * @return bool
-     */
     protected function processPaypalPayment(Order $order, array $paymentData): bool
     {
-        // TODO: Implement PayPal payment processing
         return true;
     }
 
-    /**
-     * Process cash on delivery
-     *
-     * @param Order $order
-     * @return bool
-     */
     protected function processCodPayment(Order $order): bool
     {
-        // COD orders are automatically approved
         $transaction = $order->transaction;
         if ($transaction) {
             $transaction->status = 'pending';
+
             return $transaction->save();
         }
+
         return true;
     }
 
-    /**
-     * Store order ID in session for confirmation
-     *
-     * @param Order $order
-     * @return void
-     */
     public function storeOrderInSession(Order $order): void
     {
         Session::put('order_id', $order->id);
     }
 
-    /**
-     * Get order from session
-     *
-     * @return Order|null
-     */
     public function getOrderFromSession(): ?Order
     {
         $orderId = Session::get('order_id');
-        return $orderId ? $this->orderRepository->find($orderId) : null;
+
+        if (! $orderId) {
+            return null;
+        }
+
+        $order = $this->orderRepository->find((int) $orderId);
+
+        return $order?->loadMissing(['orderItems.product', 'transaction']);
     }
 
-    /**
-     * Clear order from session
-     *
-     * @return void
-     */
     public function clearOrderFromSession(): void
     {
         Session::forget('order_id');

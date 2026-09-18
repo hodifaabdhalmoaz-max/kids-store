@@ -298,4 +298,28 @@ return [
     // SEO
     'site_description' => 'An e-commerce store specializing in children\'s products offering a wide range of high-quality clothing, toys, and accessories for kids at affordable prices',
     'site_keywords' => 'kids store, children clothing, toys for kids, children accessories, baby products, gifts for kids, children essentials',
+
+    // Dunya Alatfaal Header & Hero Banner
+    'dunya_alatfaal' => 'Dunya Alatfaal',
+    'support_messages' => 'Support Messages & Contact',
+    'offers_notifications' => 'Notifications & Promotional Offers',
+    'kids_wishlist' => 'Kid\'s Wishlist & Favorites',
+    'search_kids_placeholder' => 'Search for children\'s clothing, toys, and essentials...',
+    'all_categories' => 'All',
+    'baby_clothes' => 'Baby Clothes',
+    'toys_and_education' => 'Toys & Education',
+    'mother_supplies' => 'Mother Supplies',
+    'gifts_and_bundles' => 'Gifts & Bundles',
+    'campaign_tag' => '#ChildhoodAdventures',
+    'hero_title_kids' => 'Fun & Style in Your Child\'s World',
+    'hero_desc_kids' => 'Huge seasonal discounts starting from 50% up to 80% on all outstanding fashion and toys',
+    'shop_now_kids' => 'Shop Now',
+    'free_shipping_banner' => 'Free shipping on orders above 80,000 YER',
+    'daily_flash_deals' => 'Daily Flash Deals',
+    'yemeni_rial_symbol' => 'YER',
+    'visual_search' => 'Visual Search via Camera',
+    'requested_quantity_unavailable' => 'The requested quantity is not available.',
+    'order_created_successfully' => 'Your order has been created successfully.',
+    'order_creation_failed' => 'We could not create your order right now. Please review your cart and try again.',
+    'review_already_added' => 'You have already reviewed this product.',
 ];

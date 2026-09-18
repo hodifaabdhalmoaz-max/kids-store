@@ -20,7 +20,7 @@ class ProductResource extends JsonResource
             'slug' => $this->slug,
             'sku' => $this->SKU,
             'short_description' => $this->short_description,
-            'description' => $this->when($request->routeIs('api.products.show'), $this->description),
+            'description' => $this->description,
             'regular_price' => (float) $this->regular_price,
             'sale_price' => (float) $this->sale_price,
             'current_price' => (float) $this->current_price,
@@ -28,10 +28,12 @@ class ProductResource extends JsonResource
             'stock_status' => $this->stock_status,
             'quantity' => (int) $this->quantity,
             'featured' => (bool) $this->featured,
-            'image' => $this->image ? asset('uploads/products/' . $this->image) : null,
-            'gallery' => $this->when($this->images, function() {
-                return collect(explode(',', $this->images))->map(function($image) {
-                    return asset('uploads/products/' . trim($image));
+            'image' => $this->image ? asset('uploads/products/'.$this->image) : null,
+            'gallery' => $this->when($this->images, function () {
+                $images = is_array($this->images) ? $this->images : explode(',', $this->images);
+
+                return collect($images)->map(function ($image) {
+                    return asset('uploads/products/'.trim($image));
                 })->filter()->values();
             }),
             'category' => new CategoryResource($this->whenLoaded('category')),

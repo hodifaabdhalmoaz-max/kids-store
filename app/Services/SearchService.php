@@ -2,16 +2,16 @@
 
 namespace App\Services;
 
-use App\Models\Product;
-use App\Models\Category;
 use App\Models\Brand;
+use App\Models\Category;
 use App\Models\Color;
+use App\Models\Product;
 use App\Models\Size;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * SearchService — Centralized product search, filtering, and sorting.
@@ -31,13 +31,14 @@ class SearchService
 
     private function tableExists(string $table): bool
     {
-        if (!isset(self::$tableExistsCache[$table])) {
+        if (! isset(self::$tableExistsCache[$table])) {
             self::$tableExistsCache[$table] = Cache::remember(
                 "table_exists_{$table}",
                 86400,
-                fn() => Schema::hasTable($table)
+                fn () => Schema::hasTable($table)
             );
         }
+
         return self::$tableExistsCache[$table];
     }
 
@@ -57,11 +58,11 @@ class SearchService
         return [
             'relevance' => function (Builder $q, string $dir): void {
                 $q->orderByDesc('featured')
-                   ->orderBy('created_at', $dir === 'asc' ? 'asc' : 'desc');
+                    ->orderBy('created_at', $dir === 'asc' ? 'asc' : 'desc');
             },
 
             'price' => function (Builder $q, string $dir): void {
-                $q->orderByRaw('COALESCE(sale_price, regular_price) ' . ($dir === 'asc' ? 'ASC' : 'DESC'));
+                $q->orderByRaw('COALESCE(sale_price, regular_price) '.($dir === 'asc' ? 'ASC' : 'DESC'));
             },
 
             'newest' => function (Builder $q, string $dir): void {
@@ -80,7 +81,7 @@ class SearchService
                 $q->addSelect([
                     'total_sold' => DB::table('order_items')
                         ->selectRaw('COALESCE(SUM(quantity), 0)')
-                        ->whereColumn('order_items.product_id', 'products.id')
+                        ->whereColumn('order_items.product_id', 'products.id'),
                 ]);
                 $q->orderBy('total_sold', $dir === 'asc' ? 'asc' : 'desc');
             },
@@ -128,12 +129,25 @@ class SearchService
     private function buildBaseQuery(): Builder
     {
         $relations = ['category', 'brand'];
-        if ($this->tableExists('colors')) $relations[] = 'colors';
-        if ($this->tableExists('sizes'))  $relations[] = 'sizes';
+        if ($this->tableExists('category_product')) {
+            $relations[] = 'categories';
+        }
+        if ($this->tableExists('colors')) {
+            $relations[] = 'colors';
+        }
+        if ($this->tableExists('sizes')) {
+            $relations[] = 'sizes';
+        }
 
-        return Product::with($relations)
-            ->withCount(['reviews as active_reviews_count' => fn($q) => $q->where('status', true)])
-            ->withAvg(['reviews as active_reviews_avg' => fn($q) => $q->where('status', true)], 'rating');
+        $query = Product::with($relations)
+            ->withCount(['reviews as active_reviews_count' => fn ($q) => $q->where('status', true)])
+            ->withAvg(['reviews as active_reviews_avg' => fn ($q) => $q->where('status', true)], 'rating');
+
+        if (Schema::hasColumn('products', 'is_active')) {
+            $query->where('is_active', true);
+        }
+
+        return $query;
     }
 
     /**
@@ -142,36 +156,38 @@ class SearchService
     private function applyTextSearch(Builder $query, array $params): void
     {
         $rawSearch = $params['search'] ?? null;
-        if (empty($rawSearch)) return;
+        if (empty($rawSearch)) {
+            return;
+        }
 
         $search = $this->sanitizeSearchTerm($rawSearch);
-        $terms  = $this->extractSearchTerms($search);
+        $terms = $this->extractSearchTerms($search);
 
         $query->where(function (Builder $q) use ($search, $terms) {
             // البحث الأساسي في الحقول الرئيسية
             $q->where('name', 'like', "%{$search}%")
-              ->orWhere('short_description', 'like', "%{$search}%")
-              ->orWhere('description', 'like', "%{$search}%")
-              ->orWhere('SKU', 'like', "%{$search}%");
+                ->orWhere('short_description', 'like', "%{$search}%")
+                ->orWhere('description', 'like', "%{$search}%")
+                ->orWhere('SKU', 'like', "%{$search}%");
 
             // البحث في الفئات والعلامات التجارية
-            $q->orWhereHas('category', fn($cq) => $cq->where('name', 'like', "%{$search}%"))
-              ->orWhereHas('brand',    fn($bq) => $bq->where('name', 'like', "%{$search}%"));
+            $q->orWhereHas('category', fn ($cq) => $cq->where('name', 'like', "%{$search}%"))
+                ->orWhereHas('brand', fn ($bq) => $bq->where('name', 'like', "%{$search}%"));
 
             // البحث في الألوان والأحجام
             if ($this->tableExists('colors')) {
-                $q->orWhereHas('colors', fn($cq) => $cq->where('name', 'like', "%{$search}%"));
+                $q->orWhereHas('colors', fn ($cq) => $cq->where('name', 'like', "%{$search}%"));
             }
             if ($this->tableExists('sizes')) {
-                $q->orWhereHas('sizes', fn($sq) => $sq->where('name', 'like', "%{$search}%"));
+                $q->orWhereHas('sizes', fn ($sq) => $sq->where('name', 'like', "%{$search}%"));
             }
 
             // البحث بالكلمات المفتاحية المتعددة
             if (count($terms) > 1) {
                 foreach ($terms as $term) {
                     $q->orWhere('name', 'like', "%{$term}%")
-                      ->orWhere('short_description', 'like', "%{$term}%")
-                      ->orWhere('description', 'like', "%{$term}%");
+                        ->orWhere('short_description', 'like', "%{$term}%")
+                        ->orWhere('description', 'like', "%{$term}%");
                 }
             }
         });
@@ -185,47 +201,47 @@ class SearchService
     private function applyFilters(Builder $query, array $params): void
     {
         // فلترة حسب الفئة
-        $this->applyArrayFilter($query, 'category_id', $params['categories'] ?? $params['category'] ?? null);
+        $this->applyCategoryFilter($query, $params['categories'] ?? $params['category'] ?? null);
 
         // فلترة حسب العلامة التجارية
         $this->applyArrayFilter($query, 'brand_id', $params['brands'] ?? $params['brand'] ?? null);
 
         // فلترة حسب نطاق الأسعار
         if (isset($params['min_price']) || isset($params['max_price'])) {
-            $min = (float)($params['min_price'] ?? 0);
-            $max = (float)($params['max_price'] ?? 1_000_000);
+            $min = (float) ($params['min_price'] ?? 0);
+            $max = (float) ($params['max_price'] ?? 1_000_000);
 
             $query->where(function (Builder $q) use ($min, $max) {
-                $q->where(fn($sq) => $sq->whereNull('sale_price')->whereBetween('regular_price', [$min, $max]))
-                  ->orWhere(fn($sq) => $sq->whereNotNull('sale_price')->whereBetween('sale_price', [$min, $max]));
+                $q->where(fn ($sq) => $sq->whereNull('sale_price')->whereBetween('regular_price', [$min, $max]))
+                    ->orWhere(fn ($sq) => $sq->whereNotNull('sale_price')->whereBetween('sale_price', [$min, $max]));
             });
         }
 
         // فلترة حسب حالة المخزون
-        if (!empty($params['stock_status'])) {
+        if (! empty($params['stock_status'])) {
             $query->where('stock_status', $params['stock_status']);
         }
 
         // فلترة المنتجات المميزة
         if (isset($params['featured']) && $params['featured'] !== '') {
-            $query->where('featured', (bool)$params['featured']);
+            $query->where('featured', (bool) $params['featured']);
         }
 
         // فلترة العروض
         if (isset($params['is_offer']) && $params['is_offer'] !== '') {
-            $query->where('is_offer', (bool)$params['is_offer']);
+            $query->where('is_offer', (bool) $params['is_offer']);
         }
 
         // فلترة حسب الألوان (many-to-many)
-        if (!empty($params['colors']) && $this->tableExists('colors')) {
+        if (! empty($params['colors']) && $this->tableExists('colors')) {
             $ids = $this->normalizeIds($params['colors']);
-            $query->whereHas('colors', fn($cq) => $cq->whereIn('colors.id', $ids));
+            $query->whereHas('colors', fn ($cq) => $cq->whereIn('colors.id', $ids));
         }
 
         // فلترة حسب الأحجام (many-to-many)
-        if (!empty($params['sizes']) && $this->tableExists('sizes')) {
+        if (! empty($params['sizes']) && $this->tableExists('sizes')) {
             $ids = $this->normalizeIds($params['sizes']);
-            $query->whereHas('sizes', fn($sq) => $sq->whereIn('sizes.id', $ids));
+            $query->whereHas('sizes', fn ($sq) => $sq->whereIn('sizes.id', $ids));
         }
     }
 
@@ -234,18 +250,18 @@ class SearchService
      */
     private function applySorting(Builder $query, array $params): void
     {
-        $sortBy    = $params['sort_by']        ?? 'relevance';
+        $sortBy = $params['sort_by'] ?? 'relevance';
         $direction = $params['sort_direction'] ?? 'desc';
 
         $strategies = $this->getSortStrategies();
 
         // Fallback to relevance if unknown sort_by
-        if (!isset($strategies[$sortBy])) {
+        if (! isset($strategies[$sortBy])) {
             $sortBy = 'relevance';
         }
 
         // Sanitize direction
-        if (!in_array($direction, self::ALLOWED_DIRECTIONS, true)) {
+        if (! in_array($direction, self::ALLOWED_DIRECTIONS, true)) {
             $direction = 'desc';
         }
 
@@ -261,9 +277,28 @@ class SearchService
      */
     private function applyArrayFilter(Builder $query, string $column, $value): void
     {
-        if (empty($value)) return;
+        if (empty($value)) {
+            return;
+        }
         $ids = $this->normalizeIds($value);
         $query->whereIn($column, $ids);
+    }
+
+    private function applyCategoryFilter(Builder $query, $value): void
+    {
+        if (empty($value)) {
+            return;
+        }
+
+        $ids = $this->normalizeIds($value);
+
+        $query->where(function (Builder $categoryQuery) use ($ids) {
+            $categoryQuery->whereIn('category_id', $ids);
+
+            if ($this->tableExists('category_product')) {
+                $categoryQuery->orWhereHas('categories', fn ($query) => $query->whereIn('categories.id', $ids));
+            }
+        });
     }
 
     /**
@@ -271,7 +306,7 @@ class SearchService
      */
     private function normalizeIds($value): array
     {
-        return is_array($value) ? $value : explode(',', (string)$value);
+        return is_array($value) ? $value : explode(',', (string) $value);
     }
 
     /**
@@ -279,7 +314,8 @@ class SearchService
      */
     private function resolvePerPage(array $params): int
     {
-        $perPage = (int)($params['per_page'] ?? 12);
+        $perPage = (int) ($params['per_page'] ?? 12);
+
         return ($perPage > 0 && $perPage <= 100) ? $perPage : 12;
     }
 
@@ -322,17 +358,19 @@ class SearchService
     public function quickSearch(string $query, int $limit = 5): array
     {
         $search = $this->sanitizeSearchTerm($query);
-        if (strlen($search) < 2) return [];
+        if (strlen($search) < 2) {
+            return [];
+        }
 
         return [
-            'products'    => Product::where('name', 'like', "%{$search}%")
+            'products' => Product::where('name', 'like', "%{$search}%")
                 ->orWhere('short_description', 'like', "%{$search}%")
                 ->select('id', 'name', 'slug', 'image', 'regular_price', 'sale_price')
                 ->limit($limit)->get(),
-            'categories'  => Category::where('name', 'like', "%{$search}%")
+            'categories' => Category::where('name', 'like', "%{$search}%")
                 ->select('id', 'name', 'slug', 'image')
                 ->limit(3)->get(),
-            'brands'      => Brand::where('name', 'like', "%{$search}%")
+            'brands' => Brand::where('name', 'like', "%{$search}%")
                 ->select('id', 'name', 'slug', 'image')
                 ->limit(3)->get(),
             'suggestions' => $this->getSearchSuggestions($search),
@@ -369,7 +407,8 @@ class SearchService
                     ->toArray();
             });
         } catch (\Exception $e) {
-            Log::error('Error fetching popular search terms: ' . $e->getMessage());
+            Log::error('Error fetching popular search terms: '.$e->getMessage());
+
             return [];
         }
     }
@@ -386,9 +425,9 @@ class SearchService
         return Cache::remember('search_filters', 1800, function () {
             $filters = [
                 'categories' => Category::select('id', 'name', 'slug')->withCount('products')->orderBy('name')->get(),
-                'brands'     => Brand::select('id', 'name', 'slug')->withCount('products')->orderBy('name')->get(),
-                'colors'     => collect(),
-                'sizes'      => collect(),
+                'brands' => Brand::select('id', 'name', 'slug')->withCount('products')->orderBy('name')->get(),
+                'colors' => collect(),
+                'sizes' => collect(),
                 'price_ranges' => $this->getPriceRanges(),
             ];
 
@@ -416,19 +455,22 @@ class SearchService
     protected function getPriceRanges(): array
     {
         $maxPrice = Product::max('regular_price');
-        if ($maxPrice <= 0) return [];
+        if ($maxPrice <= 0) {
+            return [];
+        }
 
-        $step   = ceil($maxPrice / 5);
+        $step = ceil($maxPrice / 5);
         $ranges = [];
         for ($i = 0; $i < 5; $i++) {
             $min = $i * $step;
             $max = ($i === 4) ? $maxPrice : ($i + 1) * $step;
             $ranges[] = [
-                'min'   => $min,
-                'max'   => $max,
-                'label' => number_format($min) . ' - ' . number_format($max) . ' ريال',
+                'min' => $min,
+                'max' => $max,
+                'label' => number_format($min).' - '.number_format($max).' ريال',
             ];
         }
+
         return $ranges;
     }
 
@@ -442,9 +484,10 @@ class SearchService
     protected function extractSearchTerms(string $search): array
     {
         $terms = preg_split('/\s+/', trim($search));
+
         return array_unique(array_filter(
-            array_map(fn($t) => $this->sanitizeSearchTerm($t), $terms),
-            fn($t) => strlen($t) >= 2
+            array_map(fn ($t) => $this->sanitizeSearchTerm($t), $terms),
+            fn ($t) => strlen($t) >= 2
         ));
     }
 
@@ -455,18 +498,18 @@ class SearchService
     {
         try {
             DB::table('statistics')->insert([
-                'type'       => 'search',
-                'data'       => json_encode([
-                    'query'      => $query,
-                    'timestamp'  => now(),
+                'type' => 'search',
+                'data' => json_encode([
+                    'query' => $query,
+                    'timestamp' => now(),
                     'user_agent' => request()->userAgent(),
-                    'ip'         => request()->ip(),
+                    'ip' => request()->ip(),
                 ]),
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
         } catch (\Exception $e) {
-            Log::error('Error logging search query: ' . $e->getMessage());
+            Log::error('Error logging search query: '.$e->getMessage());
         }
     }
 
@@ -477,6 +520,7 @@ class SearchService
     {
         $term = str_replace(['%', '_'], ['\\%', '\\_'], $term);
         $term = preg_replace('/[^\p{L}\p{N}\s\-_]/u', '', $term);
+
         return preg_replace('/\s+/', ' ', trim($term));
     }
 
@@ -485,8 +529,9 @@ class SearchService
      */
     public function advancedSearch(array $filters)
     {
-        $cacheKey = 'advanced_search_' . md5(serialize($filters));
-        return Cache::remember($cacheKey, 300, fn() => $this->searchProducts($filters));
+        $cacheKey = 'advanced_search_'.md5(serialize($filters));
+
+        return Cache::remember($cacheKey, 300, fn () => $this->searchProducts($filters));
     }
 
     /**
@@ -495,6 +540,7 @@ class SearchService
     public function searchByCode(string $code): ?Product
     {
         $code = $this->sanitizeSearchTerm($code);
+
         return Product::where('SKU', $code)
             ->orWhere('SKU', 'like', "%{$code}%")
             ->with(['category', 'brand'])
@@ -507,8 +553,8 @@ class SearchService
     public function getRelatedProducts(Product $product, int $limit = 8)
     {
         return Product::where('id', '!=', $product->id)
-            ->where(fn($q) => $q->where('category_id', $product->category_id)
-                                ->orWhere('brand_id', $product->brand_id))
+            ->where(fn ($q) => $q->where('category_id', $product->category_id)
+                ->orWhere('brand_id', $product->brand_id))
             ->where('stock_status', 'instock')
             ->orderByDesc('featured')
             ->orderByDesc('created_at')

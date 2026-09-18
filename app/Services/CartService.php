@@ -11,9 +11,6 @@ class CartService
 {
     /**
      * Add product to cart
-     *
-     * @param array $productData
-     * @return void
      */
     public function addToCart(array $productData): void
     {
@@ -21,16 +18,13 @@ class CartService
             $productData['id'],
             $productData['name'],
             $productData['quantity'],
-            $productData['price']
+            $productData['price'],
+            $productData['options'] ?? []
         )->associate('App\Models\Product');
     }
 
     /**
      * Update cart item quantity
-     *
-     * @param string $rowId
-     * @param int $quantity
-     * @return void
      */
     public function updateCartQuantity(string $rowId, int $quantity): void
     {
@@ -39,9 +33,6 @@ class CartService
 
     /**
      * Increase cart item quantity by 1
-     *
-     * @param string $rowId
-     * @return void
      */
     public function increaseQuantity(string $rowId): void
     {
@@ -52,9 +43,6 @@ class CartService
 
     /**
      * Decrease cart item quantity by 1
-     *
-     * @param string $rowId
-     * @return void
      */
     public function decreaseQuantity(string $rowId): void
     {
@@ -65,9 +53,6 @@ class CartService
 
     /**
      * Remove item from cart
-     *
-     * @param string $rowId
-     * @return void
      */
     public function removeItem(string $rowId): void
     {
@@ -76,8 +61,6 @@ class CartService
 
     /**
      * Empty the entire cart
-     *
-     * @return void
      */
     public function emptyCart(): void
     {
@@ -96,8 +79,6 @@ class CartService
 
     /**
      * Get cart count
-     *
-     * @return int
      */
     public function getCartCount(): int
     {
@@ -106,8 +87,6 @@ class CartService
 
     /**
      * Get cart subtotal
-     *
-     * @return string
      */
     public function getCartSubtotal(): string
     {
@@ -116,8 +95,6 @@ class CartService
 
     /**
      * Get cart tax
-     *
-     * @return string
      */
     public function getCartTax(): string
     {
@@ -126,8 +103,6 @@ class CartService
 
     /**
      * Get cart total
-     *
-     * @return string
      */
     public function getCartTotal(): string
     {
@@ -136,25 +111,22 @@ class CartService
 
     /**
      * Apply coupon code to cart
-     *
-     * @param string $couponCode
-     * @return array
      */
     public function applyCoupon(string $couponCode): array
     {
         if (empty($couponCode)) {
             return [
                 'success' => false,
-                'message' => 'كود الخصم غير صحيح!'
+                'message' => 'كود الخصم غير صحيح!',
             ];
         }
 
         $coupon = $this->validateCoupon($couponCode);
-        
-        if (!$coupon) {
+
+        if (! $coupon) {
             return [
                 'success' => false,
-                'message' => 'كود الخصم غير صحيح أو منتهي الصلاحية!'
+                'message' => 'كود الخصم غير صحيح أو منتهي الصلاحية!',
             ];
         }
 
@@ -163,7 +135,7 @@ class CartService
             'code' => $coupon->code,
             'type' => $coupon->type,
             'value' => $coupon->value,
-            'cart_value' => $coupon->cart_value
+            'cart_value' => $coupon->cart_value,
         ]);
 
         // Calculate discount
@@ -171,74 +143,83 @@ class CartService
 
         return [
             'success' => true,
-            'message' => 'تم تطبيق كود الخصم بنجاح!'
+            'message' => 'تم تطبيق كود الخصم بنجاح!',
         ];
     }
 
     /**
      * Validate coupon code
-     *
-     * @param string $couponCode
-     * @return Coupon|null
      */
     protected function validateCoupon(string $couponCode): ?Coupon
     {
         return Coupon::where('code', $couponCode)
+            ->where('is_active', true)
             ->where('expiry_date', '>=', Carbon::today())
-            ->where('cart_value', '<=', $this->getCartSubtotal())
+            ->where('cart_value', '<=', $this->normalizeMoney($this->getCartSubtotal()))
+            ->where(function ($query) {
+                $query->whereNull('usage_limit')
+                    ->orWhereColumn('used_count', '<', 'usage_limit');
+            })
             ->first();
     }
 
     /**
      * Calculate discount based on applied coupon
-     *
-     * @return void
      */
     public function calculateDiscount(): void
     {
         $discount = 0;
-        
+
         if (Session::has('coupon')) {
             $coupon = Session::get('coupon');
-            
+
             if ($coupon['type'] === 'fixed') {
                 $discount = $coupon['value'];
             } else {
-                $discount = ($this->getCartSubtotal() * $coupon['value']) / 100;
+                $discount = ($this->normalizeMoney($this->getCartSubtotal()) * $coupon['value']) / 100;
             }
 
-            $subtotalAfterDiscount = $this->getCartSubtotal() - $discount;
+            $discount = min($discount, $this->normalizeMoney($this->getCartSubtotal()));
+            $subtotalAfterDiscount = $this->normalizeMoney($this->getCartSubtotal()) - $discount;
             $taxAfterDiscount = ($subtotalAfterDiscount * config('cart.tax')) / 100;
             $totalAfterDiscount = $subtotalAfterDiscount + $taxAfterDiscount;
 
             Session::put('discounts', [
-                'discount' => number_format(floatval($discount), 0, '.', ''),
-                'subtotal' => number_format(floatval($subtotalAfterDiscount), 0, '.', ''),
-                'tax' => number_format(floatval($taxAfterDiscount), 0, '.', ''),
-                'total' => number_format(floatval($totalAfterDiscount), 0, '.', ''),
+                'discount' => $this->formatSessionAmount($discount),
+                'subtotal' => $this->formatSessionAmount($subtotalAfterDiscount),
+                'tax' => $this->formatSessionAmount($taxAfterDiscount),
+                'total' => $this->formatSessionAmount($totalAfterDiscount),
             ]);
         }
     }
 
+    private function normalizeMoney(string|int|float $value): float
+    {
+        return (float) str_replace(',', '', (string) $value);
+    }
+
+    private function formatSessionAmount(string|int|float $value): string
+    {
+        $formatted = number_format($this->normalizeMoney($value), 2, '.', '');
+
+        return rtrim(rtrim($formatted, '0'), '.');
+    }
+
     /**
      * Remove coupon from cart
-     *
-     * @return array
      */
     public function removeCoupon(): array
     {
         Session::forget(['coupon', 'discounts']);
-        
+
         return [
             'success' => true,
-            'message' => 'تم إزالة كود الخصم بنجاح!'
+            'message' => 'تم إزالة كود الخصم بنجاح!',
         ];
     }
 
     /**
      * Check if coupon is applied
-     *
-     * @return bool
      */
     public function hasCoupon(): bool
     {
@@ -247,8 +228,6 @@ class CartService
 
     /**
      * Get applied coupon details
-     *
-     * @return array|null
      */
     public function getAppliedCoupon(): ?array
     {
@@ -257,8 +236,6 @@ class CartService
 
     /**
      * Get discount details
-     *
-     * @return array|null
      */
     public function getDiscountDetails(): ?array
     {
@@ -267,13 +244,12 @@ class CartService
 
     /**
      * Set checkout amounts in session
-     *
-     * @return void
      */
     public function setCheckoutAmounts(): void
     {
-        if (!$this->getCartCount() > 0) {
+        if ($this->getCartCount() <= 0) {
             Session::forget('checkout');
+
             return;
         }
 
@@ -297,8 +273,6 @@ class CartService
 
     /**
      * Get checkout amounts
-     *
-     * @return array|null
      */
     public function getCheckoutAmounts(): ?array
     {
@@ -307,8 +281,6 @@ class CartService
 
     /**
      * Clear cart and related sessions after order
-     *
-     * @return void
      */
     public function clearCartAfterOrder(): void
     {
@@ -318,8 +290,6 @@ class CartService
 
     /**
      * Check if cart is empty
-     *
-     * @return bool
      */
     public function isEmpty(): bool
     {
@@ -328,8 +298,6 @@ class CartService
 
     /**
      * Get cart summary for display
-     *
-     * @return array
      */
     public function getCartSummary(): array
     {

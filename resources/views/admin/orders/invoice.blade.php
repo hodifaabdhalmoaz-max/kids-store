@@ -134,7 +134,7 @@
                 تم الشحن
                 @elseif($order->status == 'delivered')
                 تم التسليم
-                @elseif($order->status == 'cancelled')
+                @elseif($order->status == 'canceled')
                 ملغي
                 @endif
                 <br>
@@ -155,7 +155,10 @@
         <tbody>
             @foreach($order->orderItems as $item)
             <tr>
-                <td>{{ $item->product->name }}</td>
+                <td>
+                    {{ $item->product->name }}
+                    <x-order-item-options :options="$item->options" compact />
+                </td>
                 <td>{{ $item->quantity }}</td>
                 <td>{{ format_price($item->price) }}</td>
                 <td>{{ format_price($item->quantity * $item->price) }}</td>

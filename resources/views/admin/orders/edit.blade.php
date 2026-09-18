@@ -24,7 +24,7 @@
                         <option value="processing" {{ $order->status == 'processing' ? 'selected' : '' }}>قيد المعالجة</option>
                         <option value="shipped" {{ $order->status == 'shipped' ? 'selected' : '' }}>تم الشحن</option>
                         <option value="delivered" {{ $order->status == 'delivered' ? 'selected' : '' }}>تم التسليم</option>
-                        <option value="cancelled" {{ $order->status == 'cancelled' ? 'selected' : '' }}>ملغي</option>
+                        <option value="canceled" {{ $order->status == 'canceled' ? 'selected' : '' }}>ملغي</option>
                     </select>
                 </fieldset>
 

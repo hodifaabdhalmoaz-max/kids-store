@@ -160,6 +160,7 @@
                     <tr>
                       <td>
                         {{ $item->name}} <strong class="text-muted" dir="ltr">x {{ $item->qty  }}</strong>
+                        <x-order-item-options :options="$item->options" compact />
                       </td>
                       <td class="text-end">
                         {{ format_price($item->subtotal()) }}

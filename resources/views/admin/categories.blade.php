@@ -56,7 +56,12 @@
                                 <td class="text-center">{{$category->id}}</td>
                                 <td class="pname text-center justify-content-center">
                                     <div class="image">
-                                        <img src="{{asset('uploads/categories')}}/{{$category->image}}" alt="{{$category->name}}" class="image">
+                                        <img
+                                            src="{{ $category->image ? asset('uploads/categories/'.$category->image) : asset('assets/images/home/demo3/category_1.png') }}"
+                                            alt="{{$category->name}}"
+                                            class="image"
+                                            onerror="this.src='{{ asset('assets/images/home/demo3/category_1.png') }}'"
+                                        >
                                     </div>
                                     <div class="name">
                                         <a href="#" class="body-title-2">{{$category->name}}</a>
